@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calo — Onboarding Command</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.3.0/alpine.js" defer></script>
+<style>
+:root{
+  --green:#00C07F;--green-h:#00A96E;--green-l:#E6F9F3;--green-m:#B3EDD8;
+  --ch:#4A4A4A;
+  --w1:#FFFFFF;--w2:#F5F5F5;--w3:#EBEBEB;--w4:#D4D4D4;--w5:#9A9A9A;--w6:#6B6B6B;
+  --warn:#F5A623;--danger:#E0533A;--info:#3B82F6;
+  --f:'Lato',sans-serif;--r4:4px;--r8:8px;--r12:12px;--r16:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--w1);color:var(--ch);font-family:var(--f);font-size:13px;font-weight:400;-webkit-font-smoothing:antialiased}
+/* x-cloak hides elements until Alpine has fully initialized */
+[x-cloak]{display:none!important}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--w2)}
+::-webkit-scrollbar-thumb{background:var(--w4);border-radius:4px}
+
+/* LAYOUT */
+.sidebar{width:228px;flex-shrink:0;background:var(--w1);border-right:1px solid var(--w3);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{background:var(--w1);border-bottom:1px solid var(--w3);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.main-area{flex:1;overflow-y:auto;background:var(--w2)}
+.page-wrap{padding:28px 32px}
+
+/* LOGO */
+.logo{font-weight:900;font-size:24px;letter-spacing:-1px;color:var(--green);line-height:1}
+.logo-sub{font-size:11px;font-weight:300;color:var(--w5);margin-top:2px;letter-spacing:.02em}
+
+/* SIDEBAR NAV */
+.nav-group-label{font-size:10px;font-weight:700;color:var(--w5);letter-spacing:.12em;text-transform:uppercase;padding:16px 18px 6px}
+.nav-link{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;font-size:13px;font-weight:400;color:var(--w6);transition:all .15s;border-left:2px solid transparent}
+.nav-link:hover{background:var(--w2);color:var(--ch)}
+.nav-link.on{background:var(--green-l);color:var(--green);border-left-color:var(--green);font-weight:700}
+.branch-row{display:flex;justify-content:space-between;align-items:center;padding:7px 18px 7px 24px;cursor:pointer;font-size:12px;color:var(--w6);transition:all .12s}
+.branch-row:hover{background:var(--w2);color:var(--ch)}
+.branch-row.on{color:var(--green);font-weight:700;background:var(--green-l)}
+.branch-ct{font-size:11px;font-weight:700;background:var(--w3);color:var(--w6);padding:1px 8px;border-radius:20px}
+.branch-row.on .branch-ct{background:var(--green-m);color:var(--green-h)}
+
+/* TOPBAR */
+.search-box{background:var(--w2);border:1px solid var(--w3);border-radius:var(--r8);padding:8px 12px 8px 34px;font-size:13px;font-family:var(--f);color:var(--ch);outline:none;width:220px;transition:all .2s}
+.search-box:focus{border-color:var(--green);background:var(--w1);box-shadow:0 0 0 3px rgba(0,192,127,.1)}
+.search-wrap{position:relative}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--w5);pointer-events:none}
+.sel-pill{background:var(--w2);border:1px solid var(--w3);border-radius:var(--r8);padding:7px 10px;font-size:12px;font-family:var(--f);color:var(--ch);outline:none;cursor:pointer}
+.sel-pill:focus{border-color:var(--green)}
+
+/* BUTTONS */
+.btn{font-family:var(--f);font-size:13px;font-weight:700;border-radius:var(--r8);padding:8px 18px;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px;line-height:1}
+.btn-primary{background:var(--green);color:#fff}.btn-primary:hover{background:var(--green-h)}
+.btn-outline{background:var(--w1);color:var(--ch);border:1px solid var(--w3)}.btn-outline:hover{border-color:var(--green);color:var(--green);background:var(--green-l)}
+.btn-ghost{background:transparent;color:var(--w6);border:1px solid var(--w3)}.btn-ghost:hover{color:var(--ch);border-color:var(--w4);background:var(--w2)}
+.btn-del{background:transparent;color:var(--danger);border:1px solid rgba(224,83,58,.25)}.btn-del:hover{background:rgba(224,83,58,.07)}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-xs{padding:4px 10px;font-size:11px}
+
+/* FIELDS */
+.field{width:100%;background:var(--w1);border:1px solid var(--w3);border-radius:var(--r8);padding:9px 12px;font-size:13px;font-family:var(--f);color:var(--ch);outline:none;transition:border-color .15s}
+.field:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,192,127,.1)}
+.field::placeholder{color:var(--w5)}
+select.field option{background:var(--w1);color:var(--ch)}
+textarea.field{resize:none}
+.f-label{font-size:11px;font-weight:700;color:var(--w6);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+
+/* CARDS */
+.card{background:var(--w1);border:1px solid var(--w3);border-radius:var(--r12);padding:20px}
+.stat-card{background:var(--w1);border:1px solid var(--w3);border-radius:var(--r12);padding:22px;transition:border-color .15s;border-top:3px solid var(--green)}
+.stat-card:hover{border-color:var(--green)}
+.emp-card{background:var(--w1);border:1px solid var(--w3);border-radius:var(--r12);padding:18px;position:relative;overflow:hidden;transition:all .18s}
+.emp-card:hover{border-color:var(--green);box-shadow:0 4px 20px rgba(0,192,127,.1);transform:translateY(-2px)}
+.emp-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);opacity:0;transition:opacity .18s}
+.emp-card:hover::after{opacity:1}
+.pri-urgent::before{content:'';position:absolute;top:13px;right:13px;width:8px;height:8px;border-radius:50%;background:var(--danger);animation:pdot 1.4s infinite}
+.pri-high::before{content:'';position:absolute;top:13px;right:13px;width:8px;height:8px;border-radius:50%;background:var(--warn)}
+.trainer-card{background:var(--w1);border:1px solid var(--w3);border-radius:var(--r12);padding:16px;transition:border-color .15s}
+.trainer-card:hover{border-color:var(--green)}
+
+/* STAGE STEPS */
+.stg{border:1px solid var(--w3);border-radius:var(--r4);padding:5px 7px;cursor:pointer;transition:all .15s;background:var(--w1);text-align:center}
+.stg:hover:not(.stg-lock){border-color:var(--green);background:var(--green-l)}
+.stg-done{border-color:var(--green)!important;background:var(--green-l)!important}
+.stg-active{border-color:var(--warn)!important;background:rgba(245,166,35,.07)!important;animation:pborder 2s infinite}
+.stg-part{border-color:var(--warn)!important;background:rgba(245,166,35,.05)!important}
+.stg-lock{opacity:.18;cursor:not-allowed;pointer-events:none}
+
+/* PROGRESS */
+.ring{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--w3);stroke-width:3}
+.ring-fg{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)}
+.pbar{height:4px;border-radius:4px;background:var(--w3);overflow:hidden;position:relative}
+.pbar-fill{position:absolute;top:0;left:0;bottom:0;border-radius:4px;background:var(--green);transition:width .7s cubic-bezier(.4,0,.2,1)}
+
+/* CHIPS */
+.chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.c-green{background:var(--green-l);color:var(--green-h)}
+.c-grey{background:var(--w2);color:var(--w6);border:1px solid var(--w3)}
+.c-warn{background:rgba(245,166,35,.12);color:#7A5500}
+.c-danger{background:rgba(224,83,58,.1);color:var(--danger)}
+.c-l1{background:rgba(224,83,58,.1);color:var(--danger)}
+.c-l2{background:rgba(245,166,35,.12);color:#7A5500}
+.c-l3{background:rgba(59,130,246,.1);color:#1D4ED8}
+.c-l4{background:var(--green-l);color:var(--green-h)}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(74,74,74,.42);backdrop-filter:blur(4px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--w1);border-radius:var(--r16);width:100%;overflow:hidden;display:flex;flex-direction:column;animation:min .2s ease;box-shadow:0 16px 48px rgba(0,0,0,.14)}
+@keyframes min{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.mh{padding:22px 26px 18px;border-bottom:1px solid var(--w3)}
+.mb{padding:20px 26px;overflow-y:auto}
+.mf{padding:16px 26px;border-top:1px solid var(--w3);display:flex;gap:10px}
+
+/* LOGIN */
+.login-bg{background:var(--w2);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--w1);border:1px solid var(--w3);border-radius:var(--r16);padding:44px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.07)}
+.lvl-pill{border:1px solid var(--w3);border-radius:var(--r8);padding:8px 10px;font-size:11px;cursor:pointer;transition:all .15s;text-align:center;background:var(--w1);font-family:var(--f);color:var(--w6)}
+.lvl-pill.on{border-color:var(--green);background:var(--green-l);color:var(--green-h);font-weight:700}
+
+/* PHOTO */
+.photo-w{position:relative;cursor:pointer}
+.photo-w:hover .photo-ov{opacity:1}
+.photo-ov{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;font-size:9px;font-weight:700;color:#fff;text-align:center;border-radius:inherit}
+
+/* FLASH */
+.flash-bg{position:fixed;inset:0;background:rgba(255,255,255,.93);backdrop-filter:blur(10px);z-index:9000;display:flex;align-items:center;justify-content:center}
+.flash-card{text-align:center;animation:fi .35s cubic-bezier(.34,1.56,.64,1)}
+.flash-ring{position:absolute;border-radius:50%;border:2px solid var(--green);animation:ro 1.2s ease-out infinite}
+@keyframes fi{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+@keyframes fo{from{opacity:1}to{opacity:0}}
+@keyframes ro{0%{transform:scale(1);opacity:.5}100%{transform:scale(2.6);opacity:0}}
+
+/* ANIMATIONS */
+@keyframes pdot{0%,100%{transform:scale(1)}50%{transform:scale(1.6);opacity:.5}}
+@keyframes pborder{0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,.22)}50%{box-shadow:0 0 0 4px rgba(245,166,35,0)}}
+@keyframes fup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+@keyframes fsr{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.au{animation:fup .28s ease forwards}
+.ai{animation:fin .22s ease forwards}
+.ar{animation:fsr .28s ease forwards}
+.d1{animation-delay:.05s;opacity:0}.d2{animation-delay:.1s;opacity:0}.d3{animation-delay:.15s;opacity:0}.d4{animation-delay:.2s;opacity:0}
+
+/* MISC */
+.spinner{width:16px;height:16px;border:2px solid var(--w3);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+.spinner-w{border-color:rgba(255,255,255,.3);border-top-color:#fff}
+.hidden{display:none!important}
+.note-box{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.25);border-radius:var(--r4);padding:6px 9px;font-size:11px;color:#7A5500;font-style:italic;line-height:1.5}
+.dot-g{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;display:inline-block}
+.dot-w{width:7px;height:7px;border-radius:50%;background:var(--warn);flex-shrink:0;display:inline-block}
+.dot-gr{width:7px;height:7px;border-radius:50%;background:var(--w4);flex-shrink:0;display:inline-block}
+.scroll-y{overflow-y:auto}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:14px}
+.stitle{font-size:11px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.divider{height:1px;background:var(--w3)}
+.ptitle{font-size:20px;font-weight:900;color:var(--ch)}
+.psub{font-size:13px;color:var(--w5);font-weight:300;margin-top:2px}
+.empty{text-align:center;padding:48px 20px;color:var(--w5)}
+</style>
+</head>
+<body x-data="app()" x-init="init()">
+
+<!-- LOGIN -->
+<div x-show="!loggedIn" style="display:block" class="login-bg">
+  <div class="login-card au">
+    <div style="text-align:center;margin-bottom:32px">
+      <div class="logo" style="font-size:38px;letter-spacing:-2px">CALO</div>
+      <div class="logo-sub" style="margin-top:6px;font-size:12px">Onboarding Command Center</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
+      <template x-for="(l,i) in [{n:'L1',t:'Admin'},{n:'L2',t:'Regional'},{n:'L3',t:'Coord.'},{n:'L4',t:'Trainer'}]">
+        <div class="lvl-pill" :class="hint===i?'on':''" @click="hint=i">
+          <div style="font-size:15px;font-weight:900" x-text="l.n"></div>
+          <div style="font-size:9px;margin-top:1px;font-weight:400" x-text="l.t"></div>
+        </div>
+      </template>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <div class="f-label">User ID</div>
+        <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter user ID" class="field" style="text-transform:uppercase;font-weight:700;letter-spacing:.04em" autocomplete="off">
+      </div>
+      <div>
+        <div class="f-label">Password</div>
+        <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter password" class="field" autocomplete="off">
+      </div>
+      <div x-show="lerr" style="background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
+      <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;font-size:14px;border-radius:var(--r8);opacity:1" :style="ll?'opacity:.85;cursor:not-allowed':''">
+        <div x-show="ll" style="display:none" class="spinner spinner-w"></div>
+        <span x-text="ll?'Signing in…':'Sign In'"></span>
+      </button>
+    </div>
+
+    <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--w3)">
+      <span style="font-size:11px;color:var(--w5);font-weight:300">Authorized personnel only · Calo Group</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- MAIN APP -->
+<div x-show="loggedIn" x-cloak style="height:100vh;overflow:hidden;flex-direction:row">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div style="padding:18px 18px 14px;border-bottom:1px solid var(--w3)">
+      <div class="logo">CALO</div>
+      <div class="logo-sub">Onboarding Command</div>
+    </div>
+
+    <div style="padding:12px 14px;border-bottom:1px solid var(--w3);background:var(--w2)">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+        <div class="dot-g"></div>
+        <span style="font-weight:700;font-size:12px;color:var(--ch)" x-text="mname"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="chip" :class="'c-l'+mlevel" style="font-size:10px" x-text="'Level '+mlevel"></span>
+        <span style="font-size:11px;color:var(--w5);font-weight:300" x-text="mtitle.split(' ').slice(0,2).join(' ')"></span>
+      </div>
+      <div style="margin-top:5px;display:flex;align-items:center;gap:5px">
+        <span x-show="mmarket!=='All'" style="font-size:16px;line-height:1" x-text="flag(mmarket)"></span>
+        <span class="chip c-green" style="font-size:10px" x-text="mmarket==='All'?'🌍 Global Access':mmarket"></span>
+      </div>
+    </div>
+
+    <nav style="flex:1;overflow-y:auto;padding:6px 0">
+      <div class="nav-group-label">Navigation</div>
+      <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-link" :class="v==='pipe'?'on':''" @click="v='pipe'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Pipeline
+      </div>
+      <div class="nav-link" :class="v==='trainers'?'on':''" @click="v='trainers'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Trainers
+      </div>
+      <div class="nav-link" :class="v==='tpl'?'on':''" @click="v='tpl'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Templates
+      </div>
+      <div x-show="mlevel<=2" class="nav-link" :class="v==='rep'?'on':''" @click="v='rep'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Reports
+      </div>
+
+      <!-- Mountain Peaks (L1) -->
+      <div x-show="mlevel===1">
+        <div class="nav-group-label" style="margin-top:8px">Mountain Peaks</div>
+        <div class="branch-row" :class="mf==='All'?'on':''" @click="mf='All'">
+          <span style="font-weight:700">🌍 All Peaks</span>
+          <span class="branch-ct" x-text="emps.length"></span>
+        </div>
+        <template x-for="b in branches">
+          <div class="branch-row" :class="mf===b?'on':''" @click="mf=b">
+            <span><span x-text="flag(b)"></span>&nbsp;<span x-text="b"></span></span>
+            <span class="branch-ct" x-text="emps.filter(e=>e.country===b).length"></span>
+          </div>
+        </template>
+      </div>
+
+      <!-- Own Mountain Peak (L2–L4) -->
+      <div x-show="mlevel>1" style="margin:12px 12px 0">
+        <div style="background:var(--green-l);border:1px solid var(--green-m);border-radius:var(--r8);padding:12px">
+          <div style="font-size:22px;line-height:1;margin-bottom:4px" x-text="flag(mmarket)"></div>
+          <div style="font-size:15px;font-weight:900;color:var(--green)" x-text="mmarket"></div>
+          <div style="font-size:11px;color:var(--w6);font-weight:300;margin-top:2px" x-text="emps.filter(e=>e.country===mmarket).length+' employees'"></div>
+          <div x-show="mdept" style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:700" x-text="mdept?mdept.replace('_Status',''):'—'"></div>
+        </div>
+      </div>
+    </nav>
+
+    <div style="padding:14px;border-top:1px solid var(--w3)">
+      <button @click="loggedIn=false" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="search-wrap">
+          <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" x-model="sq" placeholder="Search employees…" class="search-box">
+        </div>
+        <select x-model="sm" class="sel-pill">
+          <template x-for="(m,i) in ['January','February','March','April','May','June','July','August','September','October','November','December']">
+            <option :value="i" x-text="m"></option>
+          </template>
+        </select>
+        <select x-model="sy" class="sel-pill">
+          <template x-for="y in [2024,2025,2026]"><option :value="y" x-text="y"></option></template>
+        </select>
+        <div x-show="ld" style="display:none" class="spinner"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;color:var(--w5);font-weight:300" x-text="new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})"></span>
+        <button x-show="mlevel<=3" @click="sf=true" class="btn btn-primary btn-sm">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Hire
+        </button>
+        <button @click="fetchAll()" class="btn btn-ghost btn-sm">Refresh</button>
+      </div>
+    </div>
+
+    <!-- VIEWS -->
+    <div class="main-area">
+      <div class="page-wrap">
+
+        <!-- DASHBOARD -->
+        <div x-show="v==='dash'">
+          <div style="margin-bottom:24px" class="au">
+            <div class="ptitle">Dashboard</div>
+            <div class="psub" x-text="new Date(sy,sm).toLocaleDateString('en-GB',{month:'long',year:'numeric'})"></div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+            <template x-for="(s,i) in dstats()">
+              <div class="stat-card au" :style="'animation-delay:'+i*.07+'s;opacity:0'">
+                <div style="font-size:11px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px" x-text="s.l"></div>
+                <div style="font-size:38px;font-weight:900;line-height:1;margin-bottom:4px" :style="'color:'+s.c" x-text="s.v"></div>
+                <div style="font-size:12px;color:var(--w5);font-weight:300" x-text="s.s"></div>
+              </div>
+            </template>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div class="card au d1">
+              <div class="stitle">Mountain Peak Overview</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <template x-for="b in branches">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                      <span style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px">
+                        <span style="font-size:18px;line-height:1" x-text="flag(b)"></span>
+                        <span x-text="b"></span>
+                      </span>
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <span style="font-size:11px;color:var(--w5);font-weight:300" x-text="binfo(b)"></span>
+                        <span style="font-size:12px;font-weight:900" :style="'color:'+pc(bpct(b))" x-text="bpct(b)+'%'"></span>
+                      </div>
+                    </div>
+                    <div class="pbar"><div class="pbar-fill" :style="'width:'+bpct(b)+'%'"></div></div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <div class="card au d2">
+              <div class="stitle">Lifecycle Stage Health</div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <template x-for="s in stages">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <span style="font-size:16px;flex-shrink:0" x-text="s.i"></span>
+                    <div style="flex:1">
+                      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                        <span style="font-size:12px;font-weight:700" x-text="s.label"></span>
+                        <span style="font-size:12px;font-weight:900;color:var(--green)" x-text="spct(s.k)+'%'"></span>
+                      </div>
+                      <div class="pbar"><div class="pbar-fill" :style="'width:'+spct(s.k)+'%'"></div></div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <div class="card au d3">
+            <div class="stitle">Current Cohort — <span style="color:var(--green)" x-text="filtered().length+' employees'"></span></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <template x-for="e in filtered().slice(0,10)">
+                <div style="text-align:center;cursor:pointer;padding:12px 10px;border-radius:var(--r8);border:1px solid var(--w3);min-width:76px;transition:all .14s;position:relative" @click="v='pipe';sq=e.name" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background=''">
+                  <div style="position:relative;display:inline-block;margin-bottom:7px">
+                    <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block">
+                    <div style="position:absolute;bottom:-3px;right:-3px;font-size:12px;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.2))" x-text="flag(e.country)"></div>
+                  </div>
+                  <div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
+                  <div style="font-size:11px;font-weight:900;margin-top:2px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
+                  <div style="font-size:9px;color:var(--w5);margin-top:2px;font-weight:700;letter-spacing:.04em" x-text="e.country"></div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- PIPELINE -->
+        <div x-show="v==='pipe'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px" class="au">
+            <div>
+              <div class="ptitle">Talent Pipeline</div>
+              <div class="psub" x-text="filtered().length+' employees · '+new Date(sy,sm).toLocaleDateString('en-GB',{month:'long',year:'numeric'})"></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <template x-for="f in [{l:'All',v:'all'},{l:'In Progress',v:'active'},{l:'Certified',v:'done'},{l:'Pending',v:'pending'}]">
+                <button @click="pf=f.v" class="btn btn-ghost btn-sm" :style="pf===f.v?'border-color:var(--green);color:var(--green);background:var(--green-l)':''" x-text="f.l"></button>
+              </template>
+            </div>
+          </div>
+
+          <div x-show="!ld && filtered().length===0" class="empty">
+            <div style="font-size:36px;margin-bottom:10px">📋</div>
+            <div style="font-size:15px;font-weight:700;color:var(--ch)">No employees found</div>
+            <div style="font-size:13px;margin-top:4px;font-weight:300">Adjust the filters or add a new hire</div>
+          </div>
+
+          <div class="cg">
+            <template x-for="(e,ei) in filtered()">
+              <div class="emp-card au" :class="{'pri-urgent':e.priority==='urgent','pri-high':e.priority==='high'}" :style="'animation-delay:'+Math.min(ei*.04,.36)+'s;opacity:0'">
+
+                <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px">
+                  <!-- Ring -->
+                  <div style="position:relative;width:50px;height:50px;flex-shrink:0">
+                    <svg width="50" height="50" class="ring" viewBox="0 0 50 50">
+                      <circle class="ring-bg" cx="25" cy="25" r="20"/>
+                      <circle class="ring-fg" cx="25" cy="25" r="20" :stroke="pc(opct(e))" :stroke-dasharray="125.7" :stroke-dashoffset="125.7*(1-opct(e)/100)"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+                      <span style="font-size:10px;font-weight:900;line-height:1" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></span>
+                    </div>
+                  </div>
+                  <!-- Photo -->
+                  <div class="photo-w" style="border-radius:var(--r8)" @click="editPhoto(e)">
+                    <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:50px;height:50px;border-radius:var(--r8);object-fit:cover;border:1px solid var(--w3)">
+                    <div class="photo-ov" style="border-radius:var(--r8);font-size:9px">Update</div>
+                  </div>
+                  <!-- Name -->
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="e.name"></div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:1px;font-weight:300;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="e.role"></div>
+                    <div style="display:flex;gap:5px;align-items:center;margin-top:5px;flex-wrap:wrap">
+                      <span class="chip c-green" style="font-size:9px;gap:4px">
+                        <span style="font-size:13px;line-height:1" x-text="flag(e.country)"></span>
+                        <span x-text="e.country"></span>
+                      </span>
+                      <span style="font-size:9px;color:var(--w5);font-weight:700;letter-spacing:.04em">MP</span>
+                    </div>
+                    <div style="font-size:10px;color:var(--w5);margin-top:3px;font-weight:300">📅 <span x-text="e.dateString"></span></div>
+                  </div>
+                </div>
+
+                <div x-show="e.notes" class="note-box" style="margin-bottom:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" x-text="e.notes"></div>
+
+                <!-- Stages (col-reverse = bottom-to-top) -->
+                <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
+                  <template x-for="s in stages">
+                    <div class="stg" :class="[scls(e,s.k), acc(e,s.k)?'':'stg-lock']" @click="omgr(e,s)">
+                      <div style="display:flex;align-items:center;justify-content:space-between">
+                        <span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em" :style="'color:'+scol(e,s.k)" x-text="s.short"></span>
+                        <span style="font-size:10px;font-weight:700" :style="'color:'+scol(e,s.k)">
+                          <span x-text="e[s.k].done"></span>/<span x-text="e[s.k].total||'—'"></span>
+                        </span>
+                      </div>
+                      <div class="pbar" style="margin-top:3px">
+                        <div class="pbar-fill" :style="'width:'+spce(e,s.k)+'%'"></div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+
+                <div style="display:flex;gap:7px;padding-top:10px;border-top:1px solid var(--w3)">
+                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
+                  <button x-show="mlevel===1" @click="cdel(e)" class="btn btn-del btn-sm">Remove</button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+
+        <!-- TRAINERS -->
+        <div x-show="v==='trainers'">
+          <div style="margin-bottom:24px" class="au">
+            <div class="ptitle">Trainer Directory</div>
+            <div class="psub">Stage trainers by Mountain Peak</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:28px">
+            <template x-for="b in (mlevel===1?branches:[mmarket])">
+              <div class="au">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <span style="font-size:26px;line-height:1" x-text="flag(b)"></span>
+                  <span style="font-size:15px;font-weight:900" x-text="b"></span>
+                  <span class="chip c-green" style="font-size:10px" x-text="emps.filter(e=>e.country===b).length+' employees'"></span>
+                  <span class="chip c-grey" style="font-size:9px;letter-spacing:.06em">MP</span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(192px,1fr));gap:10px">
+                  <template x-for="s in stages">
+                    <div class="trainer-card">
+                      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                        <span style="font-size:18px" x-text="s.i"></span>
+                        <div>
+                          <div style="font-size:12px;font-weight:700" x-text="s.label"></div>
+                          <div style="font-size:10px;color:var(--w5);font-weight:300" x-text="s.short"></div>
+                        </div>
+                      </div>
+                      <div x-data="{tr:gtr(b,s.k)}">
+                        <div x-show="tr.name" style="display:flex;align-items:center;gap:8px">
+                          <img :src="tr.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--w3)">
+                          <div>
+                            <div style="font-size:12px;font-weight:700" x-text="tr.name"></div>
+                            <div style="display:flex;align-items:center;gap:4px"><div class="dot-g" style="width:5px;height:5px"></div><span style="font-size:10px;color:var(--w5);font-weight:300">Active</span></div>
+                          </div>
+                        </div>
+                        <div x-show="!tr.name" style="font-size:11px;color:var(--w5);font-style:italic;font-weight:300">Not assigned</div>
+                      </div>
+                      <div style="font-size:10px;color:var(--w5);margin-top:8px;font-weight:300" x-text="emps.filter(e=>e.country===b&&spce(e,s.k)>0&&spce(e,s.k)<100).length+' in training'"></div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+
+        <!-- TEMPLATES -->
+        <div x-show="v==='tpl'">
+          <div style="margin-bottom:24px" class="au">
+            <div class="ptitle">Training Templates</div>
+            <div class="psub" x-text="tpls.length+' templates available'"></div>
+          </div>
+          <div class="cg">
+            <template x-for="(t,i) in tpls">
+              <div class="card au" :style="'animation-delay:'+i*.05+'s;opacity:0;cursor:pointer;transition:all .15s'" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background='var(--w1)'">
+                <div style="font-size:26px;margin-bottom:12px">📋</div>
+                <div style="font-size:14px;font-weight:700;margin-bottom:4px" x-text="t"></div>
+                <div style="font-size:12px;color:var(--w5);font-weight:300">Training plan template</div>
+                <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--w3);font-size:12px;color:var(--green);font-weight:700">Available in task manager →</div>
+              </div>
+            </template>
+            <div x-show="!tpls.length" style="grid-column:1/-1" class="empty">
+              <div style="font-size:32px;margin-bottom:10px">📂</div>
+              <div style="font-size:14px;font-weight:700">No templates found</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Check your Training Plan spreadsheet is configured correctly</div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- REPORTS -->
+        <div x-show="v==='rep'">
+          <div style="margin-bottom:24px" class="au">
+            <div class="ptitle">Analytics & Reports</div>
+            <div class="psub">Performance overview across all Mountain Peaks</div>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">
+            <div class="card au d1" style="overflow-x:auto">
+              <div class="stitle">Stage Completion by Mountain Peak</div>
+              <table style="width:100%;border-collapse:collapse">
+                <thead>
+                  <tr>
+                    <th style="text-align:left;font-size:11px;font-weight:700;color:var(--w5);padding:6px 8px;text-transform:uppercase;letter-spacing:.07em">Mountain Peak</th>
+                    <template x-for="s in stages">
+                      <th style="text-align:center;font-size:10px;font-weight:700;color:var(--w5);padding:6px 6px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap" x-text="s.short"></th>
+                    </template>
+                    <th style="text-align:center;font-size:10px;font-weight:700;color:var(--w5);padding:6px 8px">Overall</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="b in branches">
+                    <tr style="border-top:1px solid var(--w3)" onmouseover="this.style.background='var(--w2)'" onmouseout="this.style.background=''">
+                      <td style="padding:10px 8px;font-size:13px;font-weight:700;white-space:nowrap">
+                        <span style="display:inline-flex;align-items:center;gap:8px">
+                          <span style="font-size:20px;line-height:1" x-text="flag(b)"></span>
+                          <span x-text="b"></span>
+                        </span>
+                      </td>
+                      <template x-for="s in stages">
+                        <td style="padding:8px 6px;text-align:center">
+                          <div style="font-size:12px;font-weight:900;margin-bottom:3px" :style="'color:'+pc(mspct(b,s.k))" x-text="mspct(b,s.k)+'%'"></div>
+                          <div class="pbar" style="width:40px;margin:0 auto"><div class="pbar-fill" :style="'width:'+mspct(b,s.k)+'%'"></div></div>
+                        </td>
+                      </template>
+                      <td style="padding:8px;text-align:center">
+                        <span class="chip" :class="bpct(b)>=80?'c-green':bpct(b)>=50?'c-warn':'c-grey'" x-text="bpct(b)+'%'"></span>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div class="card au d2">
+                <div class="stitle">Avg. Completion</div>
+                <div style="font-size:52px;font-weight:900;color:var(--green);line-height:1" x-text="avgc()+'%'"></div>
+                <div style="font-size:12px;color:var(--w5);font-weight:300;margin-top:4px">All active employees</div>
+                <div class="pbar" style="margin-top:12px;height:6px;border-radius:6px"><div class="pbar-fill" :style="'width:'+avgc()+'%'"></div></div>
+              </div>
+              <div class="card au d3">
+                <div class="stitle">Priority Flags</div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <template x-for="p in [{k:'urgent',l:'Urgent',d:'dot-w'},{k:'high',l:'High',d:'dot-w'},{k:'normal',l:'Normal',d:'dot-g'}]">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                      <div style="display:flex;align-items:center;gap:8px"><div :class="p.d"></div><span style="font-size:13px;font-weight:700" x-text="p.l"></span></div>
+                      <span style="font-size:14px;font-weight:900;color:var(--ch)" x-text="emps.filter(e=>e.priority===p.k).length"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- TASK MANAGER -->
+<div x-show="sm_" style="display:none" class="overlay" @click.self="sm_=false">
+  <div class="modal" style="max-width:580px;max-height:90vh">
+    <div class="mh">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <img :src="se?.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:42px;height:42px;border-radius:var(--r8);object-fit:cover;border:1px solid var(--w3)">
+          <div>
+            <div style="font-size:16px;font-weight:900" x-text="as?.i+' '+as?.label"></div>
+            <div style="font-size:12px;color:var(--w5);font-weight:300;margin-top:1px">
+              <span x-text="flag(se?.country)"></span>&nbsp;<span x-text="se?.name+' · '+se?.country"></span>&nbsp;<span style="font-size:9px;font-weight:700;color:var(--w5);letter-spacing:.06em">MP</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;background:var(--w2);padding:9px 12px;border-radius:var(--r8);border:1px solid var(--w3)">
+          <div style="text-align:right">
+            <div style="font-size:10px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Trainer</div>
+            <input type="text" x-model="at.name" placeholder="Name" class="field" style="padding:4px 8px;font-size:11px;width:108px;text-align:right">
+          </div>
+          <div class="photo-w" style="border-radius:50%">
+            <img :src="at.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--green)">
+            <label class="photo-ov" style="font-size:8px;cursor:pointer">📷<input type="file" @change="utp($event)" class="hidden"></label>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:11px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.07em">Progress</span>
+          <span style="font-size:12px;font-weight:700;color:var(--green)" x-text="md()+'/'+mods.length+' tasks'"></span>
+        </div>
+        <div class="pbar" style="height:5px"><div class="pbar-fill" :style="'width:'+tpct()+'%'"></div></div>
+      </div>
+    </div>
+
+    <div x-show="acc(se,as?.k)" style="padding:10px 24px;border-bottom:1px solid var(--w3);background:var(--w2);display:flex;gap:8px">
+      <select x-model="stpl" class="field" style="flex:1;padding:7px 10px;font-size:12px">
+        <option value="">— Import template —</option>
+        <template x-for="t in tpls"><option :value="t" x-text="t"></option></template>
+      </select>
+      <button @click="itpl()" class="btn btn-primary btn-sm">Import</button>
+      <button @click="at_()" class="btn btn-ghost btn-sm">+ Task</button>
+    </div>
+
+    <div class="mb scroll-y" style="max-height:calc(90vh - 330px);display:flex;flex-direction:column;gap:6px">
+      <div x-show="!mods.length" class="empty" style="padding:28px">
+        <div style="font-size:26px;margin-bottom:8px">📋</div>
+        <div style="font-size:13px;font-weight:700">No tasks yet</div>
+        <div style="font-size:12px;font-weight:300;margin-top:2px">Import a template or add tasks manually</div>
+      </div>
+      <template x-for="(m,i) in mods">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);border:1px solid var(--w3);transition:all .12s" :style="m.done?'border-color:var(--green);background:var(--green-l)':''">
+          <input type="checkbox" x-model="m.done" :disabled="!acc(se,as?.k)" style="width:16px;height:16px;accent-color:var(--green);flex-shrink:0">
+          <div style="flex:1">
+            <input type="text" x-model="m.name" :disabled="!acc(se,as?.k)" style="width:100%;border:none;background:transparent;font-size:13px;font-family:var(--f);color:var(--ch);outline:none;font-weight:700" :style="m.done?'text-decoration:line-through;color:var(--w5);font-weight:400':''">
+          </div>
+          <a x-show="m.link&&m.link!=='#'" :href="m.link" target="_blank" style="font-size:11px;color:var(--info);flex-shrink:0">🔗</a>
+          <button x-show="acc(se,as?.k)" @click="mods.splice(i,1)" style="background:none;border:none;color:var(--w5);cursor:pointer;font-size:18px;line-height:1;flex-shrink:0" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--w5)'">&times;</button>
+        </div>
+      </template>
+    </div>
+    <div class="mf">
+      <button @click="sm_=false" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+      <button @click="save_()" :disabled="sv" class="btn btn-primary" style="flex:1;justify-content:center;gap:8px">
+        <div x-show="sv" style="display:none" class="spinner spinner-w"></div>
+        <span x-text="sv?'Saving…':'Save Changes'"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- DETAIL -->
+<div x-show="sd" style="display:none" class="overlay" @click.self="sd=false">
+  <div class="modal" style="max-width:480px;max-height:90vh">
+    <div class="mh" style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:17px;font-weight:900">Employee Profile</div>
+      <button @click="sd=false" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">&times;</button>
+    </div>
+    <div class="mb scroll-y" style="max-height:calc(90vh - 110px)" x-show="de">
+      <div style="display:flex;gap:14px;margin-bottom:18px">
+        <div style="position:relative">
+          <div class="photo-w" style="border-radius:var(--r8)" @click="editPhoto(de)">
+            <img :src="de?.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:68px;height:68px;border-radius:var(--r8);object-fit:cover;border:1px solid var(--w3)">
+            <div class="photo-ov" style="border-radius:var(--r8);font-size:9px">📷<br>Update</div>
+          </div>
+          <!-- Flag badge over photo bottom-right -->
+          <div style="position:absolute;bottom:-6px;right:-6px;font-size:20px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.2))" x-text="flag(de?.country)"></div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:18px;font-weight:900" x-text="de?.name"></div>
+          <div style="font-size:12px;color:var(--w5);font-weight:300;margin-top:2px" x-text="de?.role"></div>
+          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center">
+            <span class="chip c-green" style="font-size:10px;gap:5px">
+              <span style="font-size:14px;line-height:1" x-text="flag(de?.country)"></span>
+              <span x-text="de?.country"></span>
+            </span>
+            <span class="chip c-grey" style="font-size:9px;letter-spacing:.06em">MP</span>
+            <span style="font-size:11px;color:var(--w5);font-weight:300">📅 <span x-text="de?.dateString"></span></span>
+          </div>
+          <div style="display:flex;gap:5px;margin-top:7px">
+            <template x-for="p in [{k:'normal',l:'Normal'},{k:'high',l:'High'},{k:'urgent',l:'Urgent'}]">
+              <button @click="setpri(de,p.k)" class="btn btn-ghost btn-xs" :style="de?.priority===p.k?'border-color:var(--green);color:var(--green);background:var(--green-l)':''" x-text="p.l"></button>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span class="stitle" style="margin-bottom:0">Overall Progress</span>
+          <span style="font-size:13px;font-weight:900" :style="'color:'+pc(opct(de))" x-text="opct(de)+'%'"></span>
+        </div>
+        <div class="pbar" style="height:6px;border-radius:6px"><div class="pbar-fill" :style="'width:'+opct(de)+'%'"></div></div>
+      </div>
+
+      <div class="stitle">Lifecycle Stages</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+        <template x-for="s in stages">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3)">
+            <span style="font-size:16px" x-text="s.i"></span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:700" x-text="s.label"></span>
+                <span style="font-size:12px;font-weight:900;color:var(--green)">
+                  <span x-text="de?.[s.k]?.done||0"></span>/<span x-text="de?.[s.k]?.total||0"></span>
+                </span>
+              </div>
+              <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,s.k)+'%'"></div></div>
+            </div>
+            <span x-show="de?.trainers?.[s.k]?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.[s.k]?.name"></span>
+          </div>
+        </template>
+      </div>
+
+      <div class="stitle">Notes</div>
+      <textarea x-model="de.notes" @blur="snotes(de)" class="field" style="height:68px" placeholder="Add notes about this employee…"></textarea>
+    </div>
+  </div>
+</div>
+
+
+<!-- NEW HIRE -->
+<div x-show="sf" style="display:none" class="overlay">
+  <div class="modal ar" style="max-width:430px;max-height:92vh">
+    <div class="mh">
+      <div style="font-size:17px;font-weight:900">Register New Hire</div>
+      <div style="font-size:12px;color:var(--w5);font-weight:300;margin-top:2px">Full lifecycle will be initiated on registration</div>
+    </div>
+    <div class="mb scroll-y" style="max-height:calc(92vh - 155px)">
+      <div style="background:var(--w2);border-radius:var(--r12);padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:16px;border:1px dashed var(--w4)">
+        <div style="position:relative;display:inline-block">
+          <img :src="nh.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:68px;height:68px;border-radius:50%;object-fit:cover;border:3px solid var(--green)">
+          <div style="position:absolute;bottom:-4px;right:-4px;font-size:20px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.2))" x-text="flag(nh.country)"></div>
+        </div>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer">Upload Photo <input type="file" @change="unhp($event)" class="hidden"></label>
+        <input type="text" x-model="nh.image" placeholder="Or paste image URL" class="field" style="font-size:11px;text-align:center">
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div>
+          <div class="f-label">Full Name *</div>
+          <input type="text" x-model="nh.name" placeholder="Enter full name" class="field" style="text-transform:uppercase;font-weight:700;letter-spacing:.02em">
+        </div>
+        <div>
+          <div class="f-label">Designation *</div>
+          <input type="text" x-model="nh.role" placeholder="Job title / role" class="field">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div class="f-label">Mountain Peak (MP) *</div>
+            <select x-model="nh.country" class="field">
+              <template x-for="b in (mlevel===1?branches:[mmarket])">
+                <option :value="b" x-text="flag(b)+' '+b"></option>
+              </template>
+            </select>
+          </div>
+          <div>
+            <div class="f-label">Joining Date *</div>
+            <input type="date" x-model="nh.date" class="field">
+          </div>
+        </div>
+        <div>
+          <div class="f-label">Priority</div>
+          <div style="display:flex;gap:7px">
+            <template x-for="p in [{k:'normal',l:'Normal'},{k:'high',l:'High'},{k:'urgent',l:'Urgent'}]">
+              <button @click="nh.priority=p.k" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" :style="nh.priority===p.k?'border-color:var(--green);color:var(--green);background:var(--green-l)':''" x-text="p.l"></button>
+            </template>
+          </div>
+        </div>
+        <div>
+          <div class="f-label">Notes</div>
+          <textarea x-model="nh.notes" class="field" style="height:56px" placeholder="Any initial notes…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button @click="sf=false" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+      <button @click="sreg()" :disabled="sv" class="btn btn-primary" style="flex:1;justify-content:center;gap:8px">
+        <div x-show="sv" style="display:none" class="spinner spinner-w"></div>
+        <span x-text="sv?'Registering…':'Register Employee'"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- FLASH -->
+<div x-show="fl.show" style="display:none" class="flash-bg">
+  <!-- Rings positioned relative to flash-bg (fixed full-viewport) so they center correctly -->
+  <div class="flash-ring" style="width:220px;height:220px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+  <div class="flash-ring" style="width:290px;height:290px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:.25s"></div>
+  <div class="flash-ring" style="width:360px;height:360px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:.5s"></div>
+  <!-- Content card sits on top of rings via z-index -->
+  <div class="flash-card" style="position:relative;z-index:1;text-align:center;padding:16px">
+    <div style="position:relative;display:inline-block;margin-bottom:16px">
+      <img :src="fl.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:4px solid var(--green);display:block;box-shadow:0 0 0 10px var(--green-l)">
+      <div style="position:absolute;bottom:-4px;right:-4px;font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))" x-text="flag(fl.b)"></div>
+    </div>
+    <div style="font-size:44px;font-weight:900;color:var(--green);line-height:1;margin-bottom:10px" x-text="fl.title"></div>
+    <div style="font-size:18px;font-weight:700;color:var(--ch);margin-bottom:4px" x-text="fl.name"></div>
+    <div style="font-size:12px;color:var(--w5);font-weight:300;margin-bottom:14px" x-text="fl.sub"></div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px">
+      <span style="font-size:20px;line-height:1" x-text="flag(fl.b)"></span>
+      <span class="chip c-green" x-text="fl.b||'Calo Group'"></span>
+      <span class="chip c-grey" style="font-size:9px;letter-spacing:.06em">MP</span>
+    </div>
+  </div>
+</div>
+
+
+<script>
+function app(){
+  return {
+    loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
+    mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
+    v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
+    ld:false,sv:false,
+    emps:[],tpls:[],
+    branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
+    flags:{
+      'UAE':'🇦🇪','Riyadh':'🇸🇦','Jeddah':'🇸🇦','Bahrain':'🇧🇭',
+      'Kuwait':'🇰🇼','Qatar':'🇶🇦','Oman':'🇴🇲','UK':'🇬🇧'
+    },
+    flag(c){ return this.flags[c]||'🏳️'; },
+    stages:[
+      {k:'pre',  short:'Pre-Board',  label:'Pre-Boarding',  col:'PreBoarding_Status',   i:'📋'},
+      {k:'ori',  short:'Orientation',label:'Orientation',   col:'Orientation_Status',   i:'🎯'},
+      {k:'hr',   short:'HR',         label:'HR Compliance', col:'HR_Status',             i:'📝'},
+      {k:'qual', short:'Quality',    label:'Quality Std.',  col:'Quality_Status',        i:'⭐'},
+      {k:'ojt',  short:'OJT',        label:'OJT Training',  col:'OJTTraining_Status',    i:'🔧'},
+      {k:'assess',short:'Assessment',label:'Assessment',    col:'Assessment_Status',     i:'📊'},
+      {k:'cert', short:'Certified',  label:'Certification', col:'Certification_Status',  i:'🏆'},
+    ],
+    sm_:false,sd:false,sf:false,
+    se:null,as:null,mods:[],at:{name:'',img:''},stpl:'',
+    de:null,
+    nh:{name:'',role:'',country:'UAE',date:'',image:'',notes:'',priority:'normal'},
+    fl:{show:false,leaving:false,title:'',name:'',sub:'',b:'',img:''},
+
+    // ── GAS PROXY HELPER ─────────────────────────────────────────────
+    // Single function that replaces every google.script.run call.
+    // Calls POST /api/gas (Vercel serverless) → GAS Web App → Sheets.
+    gas(action, params={}) {
+      return fetch('/api/gas', {
+        method:  'POST',
+        headers: {'Content-Type':'application/json'},
+        body:    JSON.stringify({action, ...params})
+      }).then(r => {
+        if (!r.ok) throw new Error('API error ' + r.status);
+        return r.json();
+      });
+    },
+
+    init(){ this.gas('getTemplateList').then(l=>this.tpls=l||[]); },
+
+    login(){
+      if(!this.lf.u||!this.lf.p){this.lerr='Please enter your credentials.';return;}
+      this.ll=true;this.lerr='';
+      this.gas('checkLogin',{username:this.lf.u, password:this.lf.p})
+        .then(r=>{
+          this.ll=false;
+          if(r.success){
+            this.mname=r.name;this.mrole=r.role;this.mlevel=r.level;
+            this.mmarket=r.market;this.mdept=r.dept;this.mtitle=r.title;
+            this.mf=r.market==='All'?'All':r.market;
+            this.loggedIn=true;this.fetchAll();
+          } else {this.lerr='Invalid credentials. Please try again.';}
+        })
+        .catch(()=>{this.ll=false;this.lerr='Connection error. Please retry.';});
+    },
+
+    fetchAll(){
+      this.ld=true;
+      this.gas('getPipelineData').then(d=>{this.emps=d||[];this.ld=false;}).catch(()=>this.ld=false);
+    },
+
+    filtered(){
+      const m=this.mlevel>1?this.mmarket:this.mf;
+      let l=this.emps.filter(e=>{
+        const mok=m==='All'||e.country===m;
+        const sok=!this.sq||e.name.toLowerCase().includes(this.sq.toLowerCase())||e.role.toLowerCase().includes(this.sq.toLowerCase());
+        const tok=e.month==this.sm&&e.year==this.sy;
+        return mok&&sok&&tok;
+      });
+      if(this.pf==='done')l=l.filter(e=>e.cert.total>0&&e.cert.done===e.cert.total);
+      else if(this.pf==='active')l=l.filter(e=>this.stages.some(s=>e[s.k].done>0)&&!(e.cert.total>0&&e.cert.done===e.cert.total));
+      else if(this.pf==='pending')l=l.filter(e=>this.stages.every(s=>e[s.k].done===0));
+      return l;
+    },
+
+    opct(e){
+      if(!e)return 0;
+      const t=this.stages.reduce((s,k)=>s+e[k.k].total,0);
+      const d=this.stages.reduce((s,k)=>s+e[k.k].done,0);
+      return t>0?Math.round(d/t*100):0;
+    },
+    pc(p){return p>=100?'var(--green)':p>=60?'var(--warn)':p>=30?'#D97500':'var(--w5)';},
+    spce(e,k){if(!e||!e[k]||!e[k].total)return 0;return Math.round(e[k].done/e[k].total*100);},
+    spct(k){const e=this.filtered();if(!e.length)return 0;const t=e.reduce((s,x)=>s+x[k].total,0),d=e.reduce((s,x)=>s+x[k].done,0);return t>0?Math.round(d/t*100):0;},
+    mspct(b,k){const e=this.emps.filter(x=>x.country===b);if(!e.length)return 0;const t=e.reduce((s,x)=>s+x[k].total,0),d=e.reduce((s,x)=>s+x[k].done,0);return t>0?Math.round(d/t*100):0;},
+    bpct(b){const e=this.emps.filter(x=>x.country===b);if(!e.length)return 0;return Math.round(e.reduce((s,x)=>s+this.opct(x),0)/e.length);},
+    binfo(b){const e=this.emps.filter(x=>x.country===b);const c=e.filter(x=>x.cert.total>0&&x.cert.done===x.cert.total).length;return e.length+' total · '+c+' certified';},
+    avgc(){if(!this.emps.length)return 0;return Math.round(this.emps.reduce((s,e)=>s+this.opct(e),0)/this.emps.length);},
+    dstats(){
+      const e=this.emps;
+      const cert=e.filter(x=>x.cert.total>0&&x.cert.done===x.cert.total).length;
+      const act=e.filter(x=>this.stages.some(s=>x[s.k].done>0)&&!(x.cert.total>0&&x.cert.done===x.cert.total)).length;
+      return[
+        {l:'Total Employees',v:e.length,c:'var(--ch)',s:'Across all Mountain Peaks'},
+        {l:'In Training',v:act,c:'var(--warn)',s:'Active onboarding'},
+        {l:'Floor Ready',v:cert,c:'var(--green)',s:'Fully certified'},
+        {l:'Avg. Completion',v:this.avgc()+'%',c:'var(--green)',s:'All employees'},
+      ];
+    },
+
+    isd(e,k){return e&&e[k]&&e[k].total>0&&e[k].done===e[k].total;},
+    ics(e,k){
+      if(this.isd(e,k))return false;
+      const i=this.stages.findIndex(s=>s.k===k);
+      return i===0?true:this.isd(e,this.stages[i-1].k);
+    },
+    scls(e,k){
+      if(!e||!e[k])return'';
+      const s=e[k];
+      if(s.total>0&&s.done===s.total)return'stg-done';
+      if(s.done>0&&s.done<s.total)return'stg-part';
+      if(this.ics(e,k))return'stg-active';
+      return'';
+    },
+    scol(e,k){
+      const c=this.scls(e,k);
+      if(c==='stg-done')return'var(--green)';
+      if(c==='stg-active')return'var(--warn)';
+      if(c==='stg-part')return'#C07000';
+      return'var(--w5)';
+    },
+
+    acc(e,k){
+      if(!e||!k)return false;
+      if(this.mlevel===1)return true;
+      if(e.country!==this.mmarket)return false;
+      if(this.mlevel===2)return true;
+      if(this.mlevel===3)return['qual','ojt','assess','cert'].includes(k);
+      if(this.mlevel===4){const s=this.stages.find(x=>x.k===k);return s?s.col===this.mdept:false;}
+      return false;
+    },
+
+    omgr(e,s){
+      if(!this.acc(e,s.k))return;
+      this.se=e;this.as=s;
+      this.mods=JSON.parse(JSON.stringify(e[s.k].items||[]));
+      this.at=JSON.parse(JSON.stringify(e.trainers?.[s.k]||{name:'',img:''}));
+      this.stpl='';this.sm_=true;
+    },
+    md(){return this.mods.filter(m=>m.done).length;},
+    tpct(){return this.mods.length?Math.round(this.md()/this.mods.length*100):0;},
+    at_(){this.mods.push({name:'New Task',link:'#',done:false});},
+    itpl(){if(!this.stpl)return;this.gas('getTasksFromTemplate',{tab:this.stpl}).then(t=>{if(t&&t.length)this.mods=t;});},
+    utp(e){const f=e.target.files[0],r=new FileReader();r.onloadend=()=>this.at.img=r.result;r.readAsDataURL(f);},
+    save_(){
+      this.sv=true;
+      const str=this.mods.map(m=>`${m.name}|${m.link||'#'}|${m.done?'1':'0'}`).join(';;');
+      this.gas('saveFullUpdate',{row:this.se.row,colLabel:this.as.col,taskStr:str,trainer:this.at})
+        .then(()=>{
+          this.sv=false;this.sm_=false;this.fetchAll();
+          this.dofl('Saved!',this.se.image,this.se.name,this.as.label+' updated',this.se.country);
+        })
+        .catch(()=>{this.sv=false;alert('Save failed. Please retry.');});
+    },
+
+    odetail(e){this.de=JSON.parse(JSON.stringify(e));this.sd=true;},
+    snotes(e){
+      this.gas('updateCandidateField',{row:e.row,field:'Notes',value:e.notes});
+      const o=this.emps.find(x=>x.row===e.row);if(o)o.notes=e.notes;
+    },
+    setpri(e,p){
+      e.priority=p;
+      this.gas('updateCandidateField',{row:e.row,field:'Priority',value:p});
+      const o=this.emps.find(x=>x.row===e.row);if(o)o.priority=p;
+    },
+
+    editPhoto(e){
+      if(this.mlevel>2&&e.country!==this.mmarket)return;
+      const u=prompt('Paste image URL:');
+      if(u){
+        this.gas('updateCandidatePhoto',{row:e.row,imgData:u}).then(()=>this.fetchAll());
+        e.image=u;
+        if(this.de&&this.de.row===e.row)this.de.image=u;
+      }
+    },
+    unhp(e){const f=e.target.files[0],r=new FileReader();r.onloadend=()=>this.nh.image=r.result;r.readAsDataURL(f);},
+
+    sreg(){
+      if(!this.nh.name||!this.nh.date){alert('Name and joining date are required.');return;}
+      this.sv=true;
+      this.gas('addNewEmployee',{emp:this.nh})
+        .then(()=>{
+          this.sv=false;this.sf=false;this.fetchAll();
+          this.dofl('Welcome!',this.nh.image,this.nh.name.toUpperCase(),'Lifecycle launched',this.nh.country);
+          this.nh={name:'',role:'',country:this.mmarket==='All'?'UAE':this.mmarket,date:'',image:'',notes:'',priority:'normal'};
+        })
+        .catch(()=>{this.sv=false;alert('Registration failed. Please retry.');});
+    },
+
+    cdel(e){
+      if(!confirm(`Remove ${e.name}? This cannot be undone.`))return;
+      this.gas('deleteEmployee',{row:e.row}).then(()=>this.fetchAll());
+    },
+
+    gtr(b,k){
+      const e=this.emps.find(x=>x.country===b&&x.trainers?.[k]?.name);
+      return e?e.trainers[k]:{name:'',img:''};
+    },
+
+    dofl(title,img,name,sub,b){
+      this.fl={show:true,leaving:false,title,img:img||'https://cdn-icons-png.flaticon.com/512/149/149071.png',name,sub:sub||'',b:b||''};
+      setTimeout(()=>{this.fl.leaving=true;setTimeout(()=>this.fl.show=false,280);},3000);
+    },
+  };
+}
+</script>
+</body>
+</html>
