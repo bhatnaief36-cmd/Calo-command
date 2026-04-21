@@ -1,14 +1,6 @@
 {
   "version": 2,
   "name": "calo-command-center",
-  "buildCommand": "",
-  "outputDirectory": ".",
-  "functions": {
-    "api/gas.js": {
-      "runtime": "edge",
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     { "source": "/api/gas", "destination": "/api/gas" },
     { "source": "/(.*)",    "destination": "/index.html" }
@@ -20,14 +12,6 @@
         { "key": "Access-Control-Allow-Origin",  "value": "*" },
         { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Frame-Options",        "value": "SAMEORIGIN" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy",        "value": "strict-origin-when-cross-origin" }
       ]
     }
   ]
