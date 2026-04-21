@@ -161,6 +161,39 @@ textarea.field{resize:none}
 .ptitle{font-size:20px;font-weight:900;color:var(--ch)}
 .psub{font-size:13px;color:var(--w5);font-weight:300;margin-top:2px}
 .empty{text-align:center;padding:48px 20px;color:var(--w5)}
+
+/* ── ENTERPRISE DASHBOARD ────────────────────────────────────────── */
+.kpi-tile{background:var(--w1);border:1px solid var(--w3);border-radius:var(--r12);padding:20px 18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.kpi-tile::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--tile-accent,var(--green))}
+.kpi-tile:hover{border-color:var(--tile-accent,var(--green));box-shadow:0 8px 32px rgba(0,0,0,.08);transform:translateY(-3px)}
+.kpi-num{font-size:46px;font-weight:900;line-height:1;letter-spacing:-2px}
+.kpi-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--w5);margin-bottom:10px}
+.kpi-sub{font-size:11px;color:var(--w5);font-weight:300;margin-top:6px}
+.kpi-drill{font-size:10px;font-weight:700;margin-top:12px;padding-top:10px;border-top:1px solid var(--w3);display:flex;align-items:center;justify-content:space-between}
+.heat-cell{border-radius:var(--r12);padding:14px 12px;cursor:pointer;transition:all .2s;border:1px solid;position:relative}
+.heat-cell:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.heat-badge{font-size:11px;font-weight:900;padding:3px 8px;border-radius:20px;display:inline-block}
+.seg-bar{height:6px;border-radius:6px;background:var(--w3);overflow:hidden;position:relative;margin-top:6px}
+.seg-fill{position:absolute;top:0;left:0;bottom:0;border-radius:6px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.trend-up{color:var(--green);background:var(--green-l)}
+.trend-down{color:var(--danger);background:rgba(224,83,58,.1)}
+.trend-flat{color:var(--w5);background:var(--w2)}
+.tbadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;display:inline-flex;align-items:center;gap:2px}
+.funnel-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--w3);cursor:pointer;transition:background .12s;border-radius:var(--r4)}
+.funnel-row:hover{background:var(--w2)}
+.funnel-row:last-child{border-bottom:none}
+.metric-ring{position:relative;display:inline-block}
+.activity-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--w3)}
+.activity-item:last-child{border-bottom:none}
+.emp-mini{text-align:center;cursor:pointer;padding:10px 8px;border-radius:var(--r8);border:1px solid var(--w3);min-width:70px;transition:all .15s;position:relative;flex-shrink:0}
+.emp-mini:hover{border-color:var(--green);background:var(--green-l);transform:translateY(-2px)}
+.cmd-bar{background:linear-gradient(135deg,#00C07F 0%,#00A96E 60%,#009960 100%);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.cmd-stat{text-align:center;padding:0 20px;border-right:1px solid rgba(255,255,255,.2)}
+.cmd-stat:last-child{border-right:none}
+@keyframes count-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.count-up{animation:count-up .5s ease forwards}
+
+
 </style>
 </head>
 <body x-data="app()" x-init="init()">
@@ -206,7 +239,7 @@ textarea.field{resize:none}
 
 
 <!-- MAIN APP -->
-<div x-show="loggedIn" x-cloak style="height:100vh;overflow:hidden;flex-direction:row">
+<div x-show="loggedIn" x-cloak style="display:flex;height:100vh;overflow:hidden">
 
   <!-- SIDEBAR -->
   <div class="sidebar">
@@ -323,267 +356,392 @@ textarea.field{resize:none}
       <div class="page-wrap">
 
         <!-- DASHBOARD -->
-        <div x-show="v==='dash'">
+        <div x-show="v==='dash'" style="display:flex;flex-direction:column;min-height:100%">
 
-          <!-- HEADER -->
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+          <!-- COMMAND BAR -->
+          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
-              <div class="ptitle">Executive Dashboard</div>
-              <div class="psub">Live onboarding overview across all Mountain Peaks</div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Calo Group</div>
+              <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px">Onboarding Command Center</div>
             </div>
-            <button @click="fetchAll()" class="btn btn-ghost btn-sm">↻ Refresh</button>
+            <div style="display:flex;gap:0">
+              <div class="cmd-stat">
+                <div style="font-size:28px;font-weight:900;color:#fff;line-height:1" x-text="emps.length"></div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TOTAL STAFF</div>
+              </div>
+              <div class="cmd-stat">
+                <div style="font-size:28px;font-weight:900;color:#00C07F;line-height:1" x-text="certCount()"></div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">FLOOR READY</div>
+              </div>
+              <div class="cmd-stat">
+                <div style="font-size:28px;font-weight:900;color:#F5A623;line-height:1" x-text="activeCount()"></div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div>
+              </div>
+              <div class="cmd-stat">
+                <div style="font-size:28px;font-weight:900;color:white;line-height:1" x-text="avgc()+'%'"></div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">AVG COMPLETE</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding-left:20px">
+                <div style="width:8px;height:8px;border-radius:50%;background:#00C07F;box-shadow:0 0 0 3px rgba(0,192,127,.3)"></div>
+                <span style="font-size:11px;color:rgba(255,255,255,.6)">Live</span>
+                <button @click="fetchAll()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);padding:6px 12px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">↻ Refresh</button>
+              </div>
+            </div>
           </div>
 
-          <!-- KPI TILES - 5 across -->
+          <!-- KPI ROW - 5 interactive tiles -->
           <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px">
 
-            <div class="stat-card" style="cursor:pointer" @click="dashTile=null;pf='all';v='pipe'">
-              <div style="font-size:10px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Total Employees</div>
-              <div style="font-size:44px;font-weight:900;line-height:1;color:var(--ch)" x-text="emps.length"></div>
-              <div style="font-size:11px;color:var(--w5);margin-top:8px">All Mountain Peaks</div>
-              <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--w3);font-size:11px;font-weight:700;color:var(--ch)">View all →</div>
+            <div class="kpi-tile" style="--tile-accent:var(--ch)" @click="dashTile=null;pf='all';sq='';mf='All';v='pipe'">
+              <div class="kpi-label">Total Employees</div>
+              <div class="kpi-num" style="color:var(--ch)" x-text="emps.length"></div>
+              <div class="kpi-sub" x-text="branches.filter(b=>emps.some(e=>e.country===b)).length+' active peaks'"></div>
+              <div class="seg-bar" style="margin-top:10px">
+                <div class="seg-fill" style="width:100%;background:var(--w4)"></div>
+              </div>
+              <div class="kpi-drill" style="color:var(--w5)">
+                <span>View all staff</span>
+                <span>→</span>
+              </div>
             </div>
 
-            <div class="stat-card" style="cursor:pointer;border-top-color:var(--green)" @click="dashTile='certified';pf='all';v='pipe'">
-              <div style="font-size:10px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">🏆 Floor Ready</div>
-              <div style="font-size:44px;font-weight:900;line-height:1;color:var(--green)" x-text="certCount()"></div>
-              <div style="font-size:11px;color:var(--w5);margin-top:8px" x-text="emps.length ? Math.round(certCount()/emps.length*100)+'% cert rate' : '0%'"></div>
-              <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--w3);font-size:11px;font-weight:700;color:var(--green)">Drill down →</div>
+            <div class="kpi-tile" style="--tile-accent:var(--green)" @click="dashTile='certified';pf='all';v='pipe'">
+              <div class="kpi-label">🏆 Floor Ready</div>
+              <div class="kpi-num" style="color:var(--green)" x-text="certCount()"></div>
+              <div class="kpi-sub" x-text="emps.length?Math.round(certCount()/emps.length*100)+'% certification rate':'-'"></div>
+              <div class="seg-bar" style="margin-top:10px">
+                <div class="seg-fill" :style="'width:'+(emps.length?Math.round(certCount()/emps.length*100):0)+'%;background:var(--green)'"></div>
+              </div>
+              <div class="kpi-drill" style="color:var(--green)">
+                <span>Certified employees</span>
+                <span>→</span>
+              </div>
             </div>
 
-            <div class="stat-card" style="cursor:pointer;border-top-color:var(--warn)" @click="dashTile='active';pf='all';v='pipe'">
-              <div style="font-size:10px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">🔄 In Training</div>
-              <div style="font-size:44px;font-weight:900;line-height:1;color:var(--warn)" x-text="activeCount()"></div>
-              <div style="font-size:11px;color:var(--w5);margin-top:8px">Active onboarding</div>
-              <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--w3);font-size:11px;font-weight:700;color:var(--warn)">Drill down →</div>
+            <div class="kpi-tile" style="--tile-accent:var(--warn)" @click="dashTile='active';pf='all';v='pipe'">
+              <div class="kpi-label">🔄 In Training</div>
+              <div class="kpi-num" style="color:var(--warn)" x-text="activeCount()"></div>
+              <div class="kpi-sub" x-text="emps.length?Math.round(activeCount()/emps.length*100)+'% of workforce':'-'"></div>
+              <div class="seg-bar" style="margin-top:10px">
+                <div class="seg-fill" :style="'width:'+(emps.length?Math.round(activeCount()/emps.length*100):0)+'%;background:var(--warn)'"></div>
+              </div>
+              <div class="kpi-drill" style="color:var(--warn)">
+                <span>Active onboarding</span>
+                <span>→</span>
+              </div>
             </div>
 
-            <div class="stat-card" style="cursor:pointer" @click="dashTile='pending';pf='all';v='pipe'">
-              <div style="font-size:10px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">⏳ Not Started</div>
-              <div style="font-size:44px;font-weight:900;line-height:1;color:var(--w5)" x-text="pendingCount()"></div>
-              <div style="font-size:11px;color:var(--w5);margin-top:8px">Pending onboarding</div>
-              <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--w3);font-size:11px;font-weight:700;color:var(--w5)">Drill down →</div>
+            <div class="kpi-tile" style="--tile-accent:var(--w4)" @click="dashTile='pending';pf='all';v='pipe'">
+              <div class="kpi-label">⏳ Not Started</div>
+              <div class="kpi-num" style="color:var(--w5)" x-text="pendingCount()"></div>
+              <div class="kpi-sub" x-text="emps.length?Math.round(pendingCount()/emps.length*100)+'% of workforce':'-'"></div>
+              <div class="seg-bar" style="margin-top:10px">
+                <div class="seg-fill" :style="'width:'+(emps.length?Math.round(pendingCount()/emps.length*100):0)+'%;background:var(--w4)'"></div>
+              </div>
+              <div class="kpi-drill" style="color:var(--w5)">
+                <span>Pending onboarding</span>
+                <span>→</span>
+              </div>
             </div>
 
-            <div class="stat-card" style="cursor:pointer;border-top-color:var(--danger)" @click="dashTile='urgent';pf='all';v='pipe'">
-              <div style="font-size:10px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">🚨 Needs Attention</div>
-              <div style="font-size:44px;font-weight:900;line-height:1;color:var(--danger)" x-text="urgentCount()"></div>
-              <div style="font-size:11px;color:var(--w5);margin-top:8px">High + urgent</div>
-              <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--w3);font-size:11px;font-weight:700;color:var(--danger)">Drill down →</div>
+            <div class="kpi-tile" style="--tile-accent:var(--danger)" @click="dashTile='urgent';pf='all';v='pipe'">
+              <div class="kpi-label">🚨 Needs Attention</div>
+              <div class="kpi-num" style="color:var(--danger)" x-text="urgentCount()"></div>
+              <div class="kpi-sub">High + urgent priority</div>
+              <div class="seg-bar" style="margin-top:10px">
+                <div class="seg-fill" :style="'width:'+(emps.length?Math.round(urgentCount()/emps.length*100):0)+'%;background:var(--danger)'"></div>
+              </div>
+              <div class="kpi-drill" style="color:var(--danger)">
+                <span>Review now</span>
+                <span>→</span>
+              </div>
             </div>
 
           </div>
 
-          <!-- ROW 2: Completion + Funnel -->
-          <div style="display:grid;grid-template-columns:220px 1fr;gap:14px;margin-bottom:14px">
+          <!-- MOUNTAIN PEAK HEAT MAP + STAGE FUNNEL -->
+          <div style="display:grid;grid-template-columns:1fr 360px;gap:14px;margin-bottom:14px">
 
-            <!-- CSS Gauge - no SVG bindings -->
-            <div class="card" style="display:flex;flex-direction:column;align-items:center;padding:20px">
-              <div class="stitle" style="text-align:center;width:100%;margin-bottom:12px">Avg Completion</div>
-              <div style="position:relative;width:120px;height:120px;margin-bottom:12px">
-                <div style="width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--green) 0% calc(var(--pct)*1%), var(--w3) calc(var(--pct)*1%) 100%);display:flex;align-items:center;justify-content:center"
-                  :style="'--pct:'+avgc()">
-                  <div style="width:84px;height:84px;border-radius:50%;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center">
-                    <div style="font-size:28px;font-weight:900;color:var(--green);line-height:1" x-text="avgc()+'%'"></div>
-                    <div style="font-size:9px;color:var(--w5);margin-top:2px">overall</div>
-                  </div>
+            <!-- Heat Map -->
+            <div class="card" style="padding:18px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                <div>
+                  <div class="stitle" style="margin-bottom:2px">Mountain Peak Performance Heat Map</div>
+                  <div style="font-size:11px;color:var(--w5);font-weight:300">Click any peak to drill into its pipeline</div>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <div style="display:flex;gap:3px;align-items:center"><div style="width:10px;height:10px;border-radius:2px;background:rgba(0,192,127,.2)"></div><span style="font-size:10px;color:var(--w5)">High</span></div>
+                  <div style="display:flex;gap:3px;align-items:center"><div style="width:10px;height:10px;border-radius:2px;background:rgba(245,166,35,.2)"></div><span style="font-size:10px;color:var(--w5)">Mid</span></div>
+                  <div style="display:flex;gap:3px;align-items:center"><div style="width:10px;height:10px;border-radius:2px;background:rgba(224,83,58,.15)"></div><span style="font-size:10px;color:var(--w5)">Low</span></div>
                 </div>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%">
-                <div style="background:var(--green-l);border-radius:var(--r8);padding:10px;text-align:center">
-                  <div style="font-size:22px;font-weight:900;color:var(--green)" x-text="certCount()"></div>
-                  <div style="font-size:9px;color:var(--w5);font-weight:700;margin-top:2px">CERTIFIED</div>
-                </div>
-                <div style="background:var(--w2);border-radius:var(--r8);padding:10px;text-align:center">
-                  <div style="font-size:22px;font-weight:900;color:var(--ch)" x-text="emps.length - certCount()"></div>
-                  <div style="font-size:9px;color:var(--w5);font-weight:700;margin-top:2px">ONGOING</div>
-                </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+                <template x-for="b in branches">
+                  <div class="heat-cell"
+                    :style="heatStyle(b)"
+                    @click="mf=b;dashTile=null;sq='';pf='all';v='pipe'">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+                      <span style="font-size:24px;line-height:1" x-text="flag(b)"></span>
+                      <span class="heat-badge" :style="heatBadgeStyle(b)" x-text="bpct(b)+'%'"></span>
+                    </div>
+                    <div style="font-size:13px;font-weight:900;color:var(--ch);margin-bottom:2px" x-text="b"></div>
+                    <div style="font-size:10px;color:var(--w5);font-weight:300" x-text="emps.filter(e=>e.country===b).length+' staff · '+peakCertCount(b)+' certified'"></div>
+                    <div class="seg-bar" style="margin-top:8px;height:4px">
+                      <div class="seg-fill" :style="'width:'+bpct(b)+'%;background:'+(bpct(b)>=60?'var(--green)':bpct(b)>=30?'var(--warn)':' var(--danger)')"></div>
+                    </div>
+                  </div>
+                </template>
               </div>
             </div>
 
             <!-- Stage Funnel -->
-            <div class="card">
-              <div class="stitle">Lifecycle Funnel — Stage by Stage Completion</div>
-              <div style="display:flex;flex-direction:column;gap:9px">
+            <div class="card" style="padding:18px">
+              <div class="stitle" style="margin-bottom:14px">Onboarding Lifecycle Funnel</div>
+              <div style="display:flex;flex-direction:column;gap:0">
                 <template x-for="s in stages">
-                  <div style="display:flex;align-items:center;gap:10px">
-                    <div style="font-size:15px;width:24px;text-align:center;flex-shrink:0" x-text="s.i"></div>
-                    <div style="width:90px;font-size:11px;font-weight:700;color:var(--ch);flex-shrink:0" x-text="s.label"></div>
-                    <div style="flex:1;background:var(--w3);border-radius:4px;height:22px;position:relative;overflow:hidden">
-                      <div style="position:absolute;top:0;left:0;bottom:0;border-radius:4px;background:var(--green-l)"
-                        :style="'width:'+spct(s.k)+'%'"></div>
-                      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 10px">
-                        <span style="font-size:10px;font-weight:700;color:var(--ch)" x-text="stageActiveCount(s.k)+' active'"></span>
-                        <span style="font-size:11px;font-weight:900;color:var(--green)" x-text="spct(s.k)+'%'"></span>
+                  <div class="funnel-row" style="padding:8px 6px"
+                    @click="mf='All';dashTile=null;sq='';pf='all';v='pipe'">
+                    <div style="font-size:16px;width:24px;text-align:center;flex-shrink:0" x-text="s.i"></div>
+                    <div style="flex:1">
+                      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                        <span style="font-size:11px;font-weight:700;color:var(--ch)" x-text="s.short"></span>
+                        <div style="display:flex;align-items:center;gap:6px">
+                          <span style="font-size:10px;color:var(--w5)" x-text="stageActiveCount(s.k)+' active'"></span>
+                          <span style="font-size:11px;font-weight:900" :style="'color:'+s.color" x-text="spct(s.k)+'%'"></span>
+                        </div>
+                      </div>
+                      <div style="height:8px;background:var(--w3);border-radius:4px;overflow:hidden">
+                        <div style="height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.4,0,.2,1)"
+                          :style="'width:'+spct(s.k)+'%;background:'+s.color"></div>
                       </div>
                     </div>
                   </div>
                 </template>
+              </div>
+              <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--w3);display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <div style="background:var(--green-l);border-radius:var(--r8);padding:10px;text-align:center">
+                  <div style="font-size:24px;font-weight:900;color:var(--green)" x-text="certCount()"></div>
+                  <div style="font-size:9px;color:var(--w5);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.06em">Floor Ready</div>
+                </div>
+                <div style="background:var(--w2);border-radius:var(--r8);padding:10px;text-align:center">
+                  <div style="font-size:24px;font-weight:900;color:var(--ch)" x-text="emps.length-certCount()"></div>
+                  <div style="font-size:9px;color:var(--w5);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.06em">In Progress</div>
+                </div>
               </div>
             </div>
 
           </div>
 
-          <!-- ROW 3: Mountain Peaks + Priority + Stage Bars -->
+          <!-- ANALYTICS ROW - 3 panels -->
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px">
 
-            <!-- Mountain Peaks -->
-            <div class="card">
-              <div class="stitle">Mountain Peak Performance</div>
-              <div style="display:flex;flex-direction:column;gap:8px">
-                <template x-for="b in branches">
-                  <div style="cursor:pointer;border-radius:var(--r8);padding:8px;border:1px solid transparent;transition:all .15s"
-                    @click="mf=b;dashTile=null;sq='';pf='all';v='pipe'"
-                    onmouseover="this.style.background='var(--green-l)';this.style.borderColor='var(--green-m)'"
-                    onmouseout="this.style.background='';this.style.borderColor='transparent'">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
-                      <span style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px">
-                        <span x-text="flag(b)"></span>
-                        <span x-text="b"></span>
-                      </span>
-                      <div style="display:flex;align-items:center;gap:6px">
-                        <span style="font-size:10px;color:var(--w5)" x-text="emps.filter(e=>e.country===b).length+' staff'"></span>
-                        <span style="font-size:13px;font-weight:900" :style="'color:'+pc(bpct(b))" x-text="bpct(b)+'%'"></span>
-                      </div>
+            <!-- Panel 1: Overall Completion + Gauge -->
+            <div class="card" style="padding:18px">
+              <div class="stitle" style="margin-bottom:14px">Overall Completion</div>
+              <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+                <!-- CSS Conic Gauge -->
+                <div style="position:relative;width:90px;height:90px;flex-shrink:0">
+                  <div style="width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center"
+                    :style="'background:conic-gradient(var(--green) '+avgc()+'%, var(--w3) '+avgc()+'% 100%)'">
+                    <div style="width:62px;height:62px;border-radius:50%;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                      <div style="font-size:18px;font-weight:900;color:var(--green);line-height:1" x-text="avgc()+'%'"></div>
+                      <div style="font-size:8px;color:var(--w5)">avg</div>
                     </div>
-                    <div class="pbar" style="height:5px"><div class="pbar-fill" :style="'width:'+bpct(b)+'%'"></div></div>
-                    <div style="font-size:9px;color:var(--green);font-weight:700;margin-top:4px" x-text="peakCertCount(b)+' certified · click to filter'"></div>
-                  </div>
-                </template>
-              </div>
-            </div>
-
-            <!-- Priority -->
-            <div class="card">
-              <div class="stitle">Priority Breakdown</div>
-              <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:20px">
-                <div>
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                    <span style="font-size:13px;font-weight:700">🔴 Urgent</span>
-                    <span style="font-size:16px;font-weight:900;color:var(--danger)" x-text="emps.filter(e=>e.priority==='urgent').length"></span>
-                  </div>
-                  <div class="pbar" style="height:8px;border-radius:8px">
-                    <div class="pbar-fill" :style="'width:'+(emps.length?Math.round(emps.filter(e=>e.priority==='urgent').length/emps.length*100):0)+'%;background:var(--danger)'"></div>
                   </div>
                 </div>
-                <div>
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                    <span style="font-size:13px;font-weight:700">🟡 High</span>
-                    <span style="font-size:16px;font-weight:900;color:var(--warn)" x-text="emps.filter(e=>e.priority==='high').length"></span>
-                  </div>
-                  <div class="pbar" style="height:8px;border-radius:8px">
-                    <div class="pbar-fill" :style="'width:'+(emps.length?Math.round(emps.filter(e=>e.priority==='high').length/emps.length*100):0)+'%;background:var(--warn)'"></div>
-                  </div>
-                </div>
-                <div>
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                    <span style="font-size:13px;font-weight:700">🟢 Normal</span>
-                    <span style="font-size:16px;font-weight:900;color:var(--green)" x-text="emps.filter(e=>!e.priority||e.priority==='normal').length"></span>
-                  </div>
-                  <div class="pbar" style="height:8px;border-radius:8px">
-                    <div class="pbar-fill" :style="'width:'+(emps.length?Math.round(emps.filter(e=>!e.priority||e.priority==='normal').length/emps.length*100):0)+'%'"></div>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:700;color:var(--ch);margin-bottom:8px">Completion Bands</div>
+                  <div style="display:flex;flex-direction:column;gap:5px">
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:8px;height:8px;border-radius:2px;background:var(--green);flex-shrink:0"></div>
+                      <span style="font-size:11px;color:var(--w5);flex:1">100% ✓</span>
+                      <span style="font-size:12px;font-weight:900;color:var(--green)" x-text="certCount()"></span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:8px;height:8px;border-radius:2px;background:#60A5FA;flex-shrink:0"></div>
+                      <span style="font-size:11px;color:var(--w5);flex:1">51–99%</span>
+                      <span style="font-size:12px;font-weight:900;color:#2563EB" x-text="emps.filter(e=>opct(e)>50&&opct(e)<100).length"></span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:8px;height:8px;border-radius:2px;background:var(--warn);flex-shrink:0"></div>
+                      <span style="font-size:11px;color:var(--w5);flex:1">26–50%</span>
+                      <span style="font-size:12px;font-weight:900;color:var(--warn)" x-text="emps.filter(e=>opct(e)>25&&opct(e)<=50).length"></span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:8px;height:8px;border-radius:2px;background:var(--danger);flex-shrink:0"></div>
+                      <span style="font-size:11px;color:var(--w5);flex:1">0–25%</span>
+                      <span style="font-size:12px;font-weight:900;color:var(--danger)" x-text="emps.filter(e=>opct(e)<=25).length"></span>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              <div class="stitle">Completion Bands</div>
-              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-                <div style="text-align:center;padding:10px 4px;border-radius:var(--r8);background:rgba(224,83,58,.07);border:1px solid rgba(224,83,58,.2)">
-                  <div style="font-size:20px;font-weight:900;color:var(--danger)" x-text="emps.filter(e=>opct(e)<=25).length"></div>
-                  <div style="font-size:9px;color:var(--w5);font-weight:700;margin-top:3px">0–25%</div>
-                </div>
-                <div style="text-align:center;padding:10px 4px;border-radius:var(--r8);background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2)">
-                  <div style="font-size:20px;font-weight:900;color:var(--warn)" x-text="emps.filter(e=>opct(e)>25&&opct(e)<=50).length"></div>
-                  <div style="font-size:9px;color:var(--w5);font-weight:700;margin-top:3px">26–50%</div>
-                </div>
-                <div style="text-align:center;padding:10px 4px;border-radius:var(--r8);background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.2)">
-                  <div style="font-size:20px;font-weight:900;color:#2563EB" x-text="emps.filter(e=>opct(e)>50&&opct(e)<100).length"></div>
-                  <div style="font-size:9px;color:var(--w5);font-weight:700;margin-top:3px">51–99%</div>
-                </div>
-                <div style="text-align:center;padding:10px 4px;border-radius:var(--r8);background:var(--green-l);border:1px solid var(--green-m)">
-                  <div style="font-size:20px;font-weight:900;color:var(--green)" x-text="certCount()"></div>
-                  <div style="font-size:9px;color:var(--green-h);font-weight:700;margin-top:3px">100% ✓</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Stage Bars + Bottleneck -->
-            <div class="card">
-              <div class="stitle">Stage Health</div>
-              <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px;align-items:end">
+              <div style="font-size:13px;font-weight:700;color:var(--ch);margin-bottom:10px">Stage Completion %</div>
+              <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;align-items:end">
                 <template x-for="s in stages">
                   <div style="text-align:center">
-                    <div style="font-size:9px;font-weight:900;margin-bottom:3px" :style="'color:'+s.color" x-text="spct(s.k)+'%'"></div>
-                    <div style="height:64px;background:var(--w3);border-radius:4px;position:relative;overflow:hidden">
-                      <div style="position:absolute;bottom:0;left:0;right:0;border-radius:3px"
-                        :style="'height:'+spct(s.k)+'%;background:'+s.color+';transition:height 1s ease'"></div>
+                    <div style="font-size:8px;font-weight:900;margin-bottom:3px" :style="'color:'+s.color" x-text="spct(s.k)+'%'"></div>
+                    <div style="height:48px;background:var(--w2);border-radius:3px;position:relative;overflow:hidden">
+                      <div style="position:absolute;bottom:0;left:0;right:0;border-radius:2px;transition:height 1s ease"
+                        :style="'height:'+spct(s.k)+'%;background:'+s.color"></div>
                     </div>
-                    <div style="font-size:11px;margin-top:4px" x-text="s.i"></div>
+                    <div style="font-size:11px;margin-top:3px" x-text="s.i"></div>
                   </div>
                 </template>
               </div>
+            </div>
 
-              <div class="stitle">Bottleneck Alert</div>
-              <div style="display:flex;flex-direction:column;gap:5px">
-                <template x-for="item in getBottlenecks()">
-                  <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:var(--r8)"
-                    :style="'background:'+item.bg">
-                    <span style="font-size:12px;font-weight:700" x-text="item.icon+' '+item.label"></span>
-                    <span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;color:#fff"
-                      :style="'background:'+item.color"
-                      x-text="item.count+' stuck'"></span>
+            <!-- Panel 2: Priority + Distribution -->
+            <div class="card" style="padding:18px">
+              <div class="stitle" style="margin-bottom:14px">Priority Intelligence</div>
+              <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                    <div style="display:flex;align-items:center;gap:7px">
+                      <div style="width:10px;height:10px;border-radius:50%;background:var(--danger)"></div>
+                      <span style="font-size:12px;font-weight:700">Urgent</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-size:10px;color:var(--w5)" x-text="emps.length?Math.round(emps.filter(e=>e.priority==='urgent').length/emps.length*100)+'%':'-'"></span>
+                      <span style="font-size:15px;font-weight:900;color:var(--danger);min-width:20px;text-align:right" x-text="emps.filter(e=>e.priority==='urgent').length"></span>
+                    </div>
+                  </div>
+                  <div class="seg-bar" style="height:8px">
+                    <div class="seg-fill" :style="'width:'+(emps.length?Math.round(emps.filter(e=>e.priority==='urgent').length/emps.length*100):0)+'%;background:var(--danger)'"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                    <div style="display:flex;align-items:center;gap:7px">
+                      <div style="width:10px;height:10px;border-radius:50%;background:var(--warn)"></div>
+                      <span style="font-size:12px;font-weight:700">High</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-size:10px;color:var(--w5)" x-text="emps.length?Math.round(emps.filter(e=>e.priority==='high').length/emps.length*100)+'%':'-'"></span>
+                      <span style="font-size:15px;font-weight:900;color:var(--warn);min-width:20px;text-align:right" x-text="emps.filter(e=>e.priority==='high').length"></span>
+                    </div>
+                  </div>
+                  <div class="seg-bar" style="height:8px">
+                    <div class="seg-fill" :style="'width:'+(emps.length?Math.round(emps.filter(e=>e.priority==='high').length/emps.length*100):0)+'%;background:var(--warn)'"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                    <div style="display:flex;align-items:center;gap:7px">
+                      <div style="width:10px;height:10px;border-radius:50%;background:var(--green)"></div>
+                      <span style="font-size:12px;font-weight:700">Normal</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-size:10px;color:var(--w5)" x-text="emps.length?Math.round(emps.filter(e=>!e.priority||e.priority==='normal').length/emps.length*100)+'%':'-'"></span>
+                      <span style="font-size:15px;font-weight:900;color:var(--green);min-width:20px;text-align:right" x-text="emps.filter(e=>!e.priority||e.priority==='normal').length"></span>
+                    </div>
+                  </div>
+                  <div class="seg-bar" style="height:8px">
+                    <div class="seg-fill" :style="'width:'+(emps.length?Math.round(emps.filter(e=>!e.priority||e.priority==='normal').length/emps.length*100):0)+'%'"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stitle" style="margin-bottom:10px">Mountain Peak Ranking</div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <template x-for="b in peakRanking()">
+                  <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+                    <span style="font-size:14px" x-text="flag(b.name)"></span>
+                    <span style="font-size:11px;font-weight:700;flex:1;color:var(--ch)" x-text="b.name"></span>
+                    <div style="width:60px;background:var(--w3);height:5px;border-radius:4px;overflow:hidden">
+                      <div style="height:100%;border-radius:4px;transition:width 1s ease"
+                        :style="'width:'+b.pct+'%;background:'+(b.pct>=60?'var(--green)':b.pct>=30?'var(--warn)':' var(--danger)')"></div>
+                    </div>
+                    <span style="font-size:11px;font-weight:900;min-width:28px;text-align:right" :style="'color:'+(b.pct>=60?'var(--green)':b.pct>=30?'var(--warn)':' var(--danger)')" x-text="b.pct+'%'"></span>
                   </div>
                 </template>
-                <div x-show="getBottlenecks().length===0"
-                  style="font-size:12px;color:var(--green);font-weight:700;text-align:center;padding:10px;background:var(--green-l);border-radius:var(--r8)">
+              </div>
+            </div>
+
+            <!-- Panel 3: Bottleneck Intelligence -->
+            <div class="card" style="padding:18px">
+              <div class="stitle" style="margin-bottom:4px">Bottleneck Intelligence</div>
+              <div style="font-size:11px;color:var(--w5);font-weight:300;margin-bottom:14px">Stages where employees are stuck</div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">
+                <template x-for="item in getBottlenecks()">
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--r8);transition:background .15s;cursor:pointer"
+                    :style="'background:'+item.bg"
+                    @click="dashTile=null;pf='all';v='pipe'">
+                    <span style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px">
+                      <span x-text="item.icon"></span><span x-text="item.label"></span>
+                    </span>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span style="font-size:10px;color:var(--w6)" x-text="item.count+' employee'+(item.count>1?'s':'')"></span>
+                      <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;color:#fff" :style="'background:'+item.color" x-text="'stuck'"></span>
+                    </div>
+                  </div>
+                </template>
+                <div x-show="getBottlenecks().length===0" style="text-align:center;padding:14px;background:var(--green-l);border-radius:var(--r8);font-size:12px;font-weight:700;color:var(--green)">
                   ✓ No bottlenecks detected
                 </div>
               </div>
+
+              <div class="stitle" style="margin-bottom:10px">Operations Summary</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;justify-content:space-between;padding:8px;background:var(--w2);border-radius:var(--r8)">
+                  <span style="font-size:12px;color:var(--w6)">Active Mountain Peaks</span>
+                  <span style="font-size:12px;font-weight:900;color:var(--ch)" x-text="branches.filter(b=>emps.some(e=>e.country===b)).length+'/'+branches.length"></span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px;background:var(--w2);border-radius:var(--r8)">
+                  <span style="font-size:12px;color:var(--w6)">Certification Rate</span>
+                  <span style="font-size:12px;font-weight:900;color:var(--green)" x-text="emps.length?Math.round(certCount()/emps.length*100)+'%':'0%'"></span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px;background:var(--w2);border-radius:var(--r8)">
+                  <span style="font-size:12px;color:var(--w6)">Bottlenecked Stages</span>
+                  <span style="font-size:12px;font-weight:900" :style="'color:'+(getBottlenecks().length>2?'var(--danger)':getBottlenecks().length>0?'var(--warn)':' var(--green)')" x-text="getBottlenecks().length+'/7'"></span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px;background:var(--w2);border-radius:var(--r8)">
+                  <span style="font-size:12px;color:var(--w6)">Need Attention</span>
+                  <span style="font-size:12px;font-weight:900;color:var(--danger)" x-text="urgentCount()+' employees'"></span>
+                </div>
+              </div>
             </div>
 
           </div>
 
-          <!-- ROW 4: All Employees -->
-          <div class="card">
+          <!-- EMPLOYEE COMMAND STRIP -->
+          <div class="card" style="padding:18px">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-              <div class="stitle" style="margin-bottom:0">
-                All Employees
-                <span style="color:var(--green);font-weight:900" x-text="' ('+emps.length+')'"></span>
+              <div>
+                <div class="stitle" style="margin-bottom:2px">Employee Command Strip</div>
+                <div style="font-size:11px;color:var(--w5);font-weight:300">Click any employee to open their pipeline view</div>
               </div>
-              <button @click="dashTile=null;sq='';pf='all';mf='All';v='pipe'" class="btn btn-ghost btn-sm">
-                View Full Pipeline →
+              <button @click="dashTile=null;sq='';pf='all';mf='All';v='pipe'" class="btn btn-primary btn-sm">
+                Open Full Pipeline →
               </button>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <template x-for="e in emps">
-                <div style="text-align:center;cursor:pointer;padding:10px 8px;border-radius:var(--r8);border:1px solid var(--w3);min-width:70px;max-width:80px;position:relative;transition:all .15s"
+                <div class="emp-mini"
                   @click="dashTile=null;sq=e.name;pf='all';v='pipe'"
-                  onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'"
-                  onmouseout="this.style.borderColor='var(--w3)';this.style.background=''">
-                  <div x-show="e.priority==='urgent'"
-                    style="position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--danger)"></div>
-                  <div x-show="e.priority==='high'"
-                    style="position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--warn)"></div>
+                  :title="e.name+' · '+e.country+' · '+opct(e)+'% complete'">
+                  <div x-show="e.priority==='urgent'" style="position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--danger)"></div>
+                  <div x-show="e.priority==='high'" style="position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--warn)"></div>
                   <div style="position:relative;display:inline-block;margin-bottom:5px">
                     <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'"
-                      style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block">
-                    <div style="position:absolute;bottom:-3px;right:-3px;font-size:11px;line-height:1"
-                      x-text="flag(e.country)"></div>
+                      style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block">
+                    <div style="position:absolute;bottom:-3px;right:-3px;font-size:11px;line-height:1" x-text="flag(e.country)"></div>
                   </div>
-                  <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
-                    x-text="e.name.split(' ')[0]"></div>
-                  <div style="font-size:11px;font-weight:900;margin-top:2px" :style="'color:'+pc(opct(e))"
-                    x-text="opct(e)+'%'"></div>
-                  <div class="pbar" style="margin-top:4px;height:3px">
-                    <div class="pbar-fill" :style="'width:'+opct(e)+'%'"></div>
+                  <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
+                  <div style="font-size:11px;font-weight:900;margin-top:3px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
+                  <div class="seg-bar" style="margin-top:4px;height:3px">
+                    <div class="seg-fill" :style="'width:'+opct(e)+'%;background:'+pc(opct(e))"></div>
                   </div>
                 </div>
               </template>
+              <div x-show="emps.length===0" style="flex:1;text-align:center;padding:32px;color:var(--w5)">
+                <div style="font-size:24px;margin-bottom:8px">👥</div>
+                <div style="font-weight:700">No employees loaded yet</div>
+                <div style="font-size:11px;margin-top:4px;font-weight:300">Data loads automatically after login</div>
+              </div>
             </div>
           </div>
 
         </div>
-
 
 
         <!-- PIPELINE -->
@@ -1158,6 +1316,28 @@ function app(){
       return l;
     },
     drillTo(tile){ this.dashTile=this.dashTile===tile?null:tile; this.v='pipe'; this.pf='all'; },
+    // Heat map styling
+    heatStyle(b){
+      const p=this.bpct(b);
+      if(p>=70) return 'background:rgba(0,192,127,.12);border-color:rgba(0,192,127,.35)';
+      if(p>=50) return 'background:rgba(0,192,127,.06);border-color:rgba(0,192,127,.2)';
+      if(p>=30) return 'background:rgba(245,166,35,.1);border-color:rgba(245,166,35,.3)';
+      if(p>0)   return 'background:rgba(224,83,58,.07);border-color:rgba(224,83,58,.25)';
+      return 'background:var(--w2);border-color:var(--w3)';
+    },
+    heatBadgeStyle(b){
+      const p=this.bpct(b);
+      if(p>=70) return 'background:var(--green-l);color:var(--green-h)';
+      if(p>=50) return 'background:var(--green-l);color:var(--green)';
+      if(p>=30) return 'background:rgba(245,166,35,.15);color:#B45309';
+      return 'background:rgba(224,83,58,.1);color:var(--danger)';
+    },
+    peakRanking(){
+      return this.branches
+        .map(b=>({name:b,pct:this.bpct(b),count:this.emps.filter(e=>e.country===b).length}))
+        .filter(x=>x.count>0)
+        .sort((a,b)=>b.pct-a.pct);
+    },
     certCount(){ return this.emps.filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total).length; },
     activeCount(){ return this.emps.filter(e=>this.stages.some(s=>e[s.k]&&e[s.k].done>0)&&!(e.cert&&e.cert.total>0&&e.cert.done===e.cert.total)).length; },
     pendingCount(){ return this.emps.filter(e=>this.stages.every(s=>!e[s.k]||e[s.k].done===0)).length; },
