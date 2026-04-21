@@ -861,15 +861,15 @@ textarea.field{resize:none}
                           <div style="font-size:10px;color:var(--w5);font-weight:300" x-text="s.short"></div>
                         </div>
                       </div>
-                      <div x-data="{tr:gtr(b,s.k)}">
-                        <div x-show="tr.name" style="display:flex;align-items:center;gap:8px">
-                          <img :src="tr.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--w3)">
+                      <div>
+                        <div x-show="gtr(b,s.k).name" style="display:flex;align-items:center;gap:8px">
+                          <img :src="gtr(b,s.k).img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--w3)">
                           <div>
-                            <div style="font-size:12px;font-weight:700" x-text="tr.name"></div>
+                            <div style="font-size:12px;font-weight:700" x-text="gtr(b,s.k).name"></div>
                             <div style="display:flex;align-items:center;gap:4px"><div class="dot-g" style="width:5px;height:5px"></div><span style="font-size:10px;color:var(--w5);font-weight:300">Active</span></div>
                           </div>
                         </div>
-                        <div x-show="!tr.name" style="font-size:11px;color:var(--w5);font-style:italic;font-weight:300">Not assigned</div>
+                        <div x-show="!gtr(b,s.k).name" style="font-size:11px;color:var(--w5);font-style:italic;font-weight:300">Not assigned</div>
                       </div>
                       <div style="font-size:10px;color:var(--w5);margin-top:8px;font-weight:300" x-text="emps.filter(e=>e.country===b&&spce(e,s.k)>0&&spce(e,s.k)<100).length+' in training'"></div>
                     </div>
