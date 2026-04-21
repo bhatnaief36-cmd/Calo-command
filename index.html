@@ -23,6 +23,7 @@ body{background:var(--w1);color:var(--ch);font-family:var(--f);font-size:13px;fo
 ::-webkit-scrollbar-thumb{background:var(--w4);border-radius:4px}
 
 /* LAYOUT */
+.app-shell{display:flex!important;height:100vh;overflow:hidden}
 .sidebar{width:228px;flex-shrink:0;background:var(--w1);border-right:1px solid var(--w3);display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .topbar{background:var(--w1);border-bottom:1px solid var(--w3);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .main-area{flex:1;overflow-y:auto;background:var(--w2)}
@@ -229,17 +230,23 @@ textarea.field{resize:none}
         <div x-show="ll" style="display:none" class="spinner spinner-w"></div>
         <span x-text="ll?'Signing in…':'Sign In'"></span>
       </button>
+
     </div>
 
     <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--w3)">
       <span style="font-size:11px;color:var(--w5);font-weight:300">Authorized personnel only · Calo Group</span>
+      <div style="margin-top:12px">
+        <button @click="demoLogin()" class="btn btn-outline btn-sm" style="width:100%;justify-content:center;font-size:12px;color:var(--green);border-color:var(--green-m);background:var(--green-l)">
+          🎯 Preview Demo (no backend needed)
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 
 <!-- MAIN APP -->
-<div x-show="loggedIn" x-cloak style="display:flex;height:100vh;overflow:hidden">
+<div x-show="loggedIn" x-cloak class="app-shell">
 
   <!-- SIDEBAR -->
   <div class="sidebar">
@@ -1296,6 +1303,38 @@ function app(){
       this.gas('getPipelineData').then(d=>{this.emps=d||[];this.ld=false;}).catch(()=>this.ld=false);
     },
 
+    demoLogin(){
+      // Set admin session
+      this.mname='CALO-ADMIN'; this.mrole='GLOBAL_ADMIN'; this.mlevel=1;
+      this.mmarket='All'; this.mdept=null; this.mtitle='Global Administrator';
+      this.mf='All'; this.loggedIn=true;
+      // Load rich demo data
+      const mk=(total,done)=>({items:[],total,done});
+      this.emps=[
+        {row:2,name:'AHMED AL RASHIDI',role:'Kitchen Supervisor',country:'UAE',image:'https://randomuser.me/api/portraits/men/11.jpg',priority:'normal',notes:'Strong candidate',month:3,year:2025,
+          pre:mk(5,5),ori:mk(5,5),hr:mk(6,6),qual:mk(4,4),ojt:mk(5,5),assess:mk(5,5),cert:mk(3,3),trainers:{}},
+        {row:3,name:'FATIMA AL ZAABI',role:'Delivery Ops Lead',country:'UAE',image:'https://randomuser.me/api/portraits/women/12.jpg',priority:'high',notes:'Fast tracker',month:3,year:2025,
+          pre:mk(5,5),ori:mk(5,5),hr:mk(6,6),qual:mk(4,3),ojt:mk(5,4),assess:mk(5,2),cert:mk(3,0),trainers:{}},
+        {row:4,name:'MOHAMMED AL SAEEDI',role:'Fleet Coordinator',country:'Qatar',image:'https://randomuser.me/api/portraits/men/22.jpg',priority:'normal',notes:'',month:3,year:2025,
+          pre:mk(5,5),ori:mk(5,5),hr:mk(6,6),qual:mk(4,4),ojt:mk(5,5),assess:mk(5,5),cert:mk(3,3),trainers:{}},
+        {row:5,name:'SARAH JOHNSON',role:'Customer Experience Mgr',country:'UK',image:'https://randomuser.me/api/portraits/women/33.jpg',priority:'normal',notes:'Relocated from London',month:4,year:2025,
+          pre:mk(5,5),ori:mk(5,4),hr:mk(6,5),qual:mk(4,2),ojt:mk(5,1),assess:mk(5,0),cert:mk(3,0),trainers:{}},
+        {row:6,name:'KHALID AL MUTAIRI',role:'Packing Supervisor',country:'Kuwait',image:'https://randomuser.me/api/portraits/men/44.jpg',priority:'urgent',notes:'Urgently needed for Ramadan ops',month:4,year:2025,
+          pre:mk(5,5),ori:mk(5,5),hr:mk(6,6),qual:mk(4,4),ojt:mk(5,3),assess:mk(5,0),cert:mk(3,0),trainers:{}},
+        {row:7,name:'NOUR AL BALUSHI',role:'Quality Analyst',country:'Oman',image:'https://randomuser.me/api/portraits/women/55.jpg',priority:'normal',notes:'',month:4,year:2025,
+          pre:mk(5,5),ori:mk(5,5),hr:mk(6,4),qual:mk(4,0),ojt:mk(5,0),assess:mk(5,0),cert:mk(3,0),trainers:{}},
+        {row:8,name:'TARIQ AL DOSARI',role:'Cold Chain Specialist',country:'Bahrain',image:'https://randomuser.me/api/portraits/men/66.jpg',priority:'high',notes:'Cold chain cert needed',month:4,year:2025,
+          pre:mk(5,5),ori:mk(5,5),hr:mk(6,6),qual:mk(4,4),ojt:mk(5,5),assess:mk(5,4),cert:mk(3,1),trainers:{}},
+        {row:9,name:'REEM AL GHAMDI',role:'Training Coordinator',country:'Riyadh',image:'https://randomuser.me/api/portraits/women/77.jpg',priority:'normal',notes:'Internal transfer from Jeddah',month:4,year:2025,
+          pre:mk(5,5),ori:mk(5,3),hr:mk(6,2),qual:mk(4,0),ojt:mk(5,0),assess:mk(5,0),cert:mk(3,0),trainers:{}},
+        {row:10,name:'HASSAN AL MALKI',role:'Logistics Officer',country:'Jeddah',image:'https://randomuser.me/api/portraits/men/88.jpg',priority:'normal',notes:'',month:4,year:2025,
+          pre:mk(5,5),ori:mk(5,5),hr:mk(6,6),qual:mk(4,4),ojt:mk(5,5),assess:mk(5,5),cert:mk(3,2),trainers:{}},
+        {row:11,name:'LINA HASSAN',role:'Ops Analyst',country:'Qatar',image:'https://randomuser.me/api/portraits/women/99.jpg',priority:'normal',notes:'First week',month:4,year:2026,
+          pre:mk(5,2),ori:mk(5,0),hr:mk(6,0),qual:mk(4,0),ojt:mk(5,0),assess:mk(5,0),cert:mk(3,0),trainers:{}},
+      ];
+      this.tpls=['Culinary Team Onboarding','Delivery Operations','HR Compliance Checklist','Quality Standards v2','OJT Shadow Programme'];
+    },
+
     filtered(){
       const m=this.mlevel>1?this.mmarket:this.mf;
       let l=this.emps.filter(e=>{
@@ -1315,7 +1354,6 @@ function app(){
       else if(this.pf==='pending') l=l.filter(e=>this.stages.every(s=>e[s.k].done===0));
       return l;
     },
-    drillTo(tile){ this.dashTile=this.dashTile===tile?null:tile; this.v='pipe'; this.pf='all'; },
     // Heat map styling
     heatStyle(b){
       const p=this.bpct(b);
