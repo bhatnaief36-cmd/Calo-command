@@ -284,6 +284,28 @@ textarea.field{resize:none}
       </div>
 
 
+
+      <!-- ── QUALITY TRAINER NAVIGATION ────────────────────────── -->
+      <div x-show="mlevel===4 && mdept==='Quality_Status'">
+        <div class="nav-group-label" style="margin-top:4px">Quality Workspace</div>
+        <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-link" :class="v==='qual_pipe'?'on':''" @click="v='qual_pipe'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Candidate Progress
+        </div>
+        <div class="nav-link" :class="v==='qual_training'?'on':''" @click="v='qual_training'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Quality Training
+        </div>
+        <div class="nav-link" :class="v==='qual_materials'?'on':''" @click="v='qual_materials'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Training Materials
+        </div>
+      </div>
+      <!-- ── END QUALITY TRAINER NAVIGATION ────────────────────── -->
       <!-- ── HR NAVIGATION (only for HR users) ────────────────── -->
       <div x-show="mlevel===4 && mdept==='HR_Status'">
         <div class="nav-group-label" style="margin-top:4px">HR Workspace</div>
@@ -295,7 +317,7 @@ textarea.field{resize:none}
 
         <div class="nav-link" :class="v==='hr_pipe'?'on':''" @click="v='hr_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-          Active Pipeline
+          Candidate Progress
         </div>
 
         <div class="nav-link" :class="v==='hr_preboard'?'on':''" @click="v='hr_preboard'">
@@ -785,15 +807,229 @@ textarea.field{resize:none}
         </div>
 
         <!-- DASHBOARD: L4 — Trainer (blank — build later) -->
-        <div x-show="v==='dash' && mlevel===4 && mdept!=='HR_Status'" style="display:flex;flex-direction:column;min-height:100%">
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <!-- QUALITY TRAINER DASHBOARD                                  -->
+        <!-- Condition: mlevel===4 && mdept==='Quality_Status'          -->
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <div x-show="v==='dash' && mlevel===4 && mdept==='Quality_Status'" style="display:flex;flex-direction:column;min-height:100%">
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
-              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Trainer</div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Quality Training · <span x-text="mmarket"></span></div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+            </div>
+            <div style="display:flex;gap:0;align-items:center">
+              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="qualEmps().length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TO TRAIN</div></div>
+              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="qualEmps().filter(e=>e.qual&&e.qual.done>0&&e.qual.done<e.qual.total).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN PROGRESS</div></div>
+              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="qualEmps().filter(e=>e.qual&&e.qual.total>0&&e.qual.done===e.qual.total).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TRAINED</div></div>
+              <div style="padding-left:16px"><button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button></div>
+            </div>
+          </div>
+
+          <!-- QUALITY KPI TILES -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+            <div class="kpi-tile" style="--tile-accent:var(--ch);cursor:pointer" @click="v='qual_pipe'">
+              <div class="kpi-label">👥 Candidate Progress</div>
+              <div class="kpi-num" style="color:var(--ch)" x-text="qualEmps().length"></div>
+              <div class="kpi-sub">Arrived from HR</div>
+              <div class="kpi-drill" style="color:var(--w5)"><span>View all</span><span>→</span></div>
+            </div>
+            <div class="kpi-tile" style="--tile-accent:#F97316;cursor:pointer" @click="v='qual_training'">
+              <div class="kpi-label">⭐ Quality Training</div>
+              <div class="kpi-num" style="color:#F97316" x-text="qualEmps().filter(e=>e.qual&&e.qual.done<e.qual.total).length"></div>
+              <div class="kpi-sub">Pending quality tasks</div>
+              <div class="kpi-drill" style="color:#F97316"><span>View stage</span><span>→</span></div>
+            </div>
+            <div class="kpi-tile" style="--tile-accent:var(--green);cursor:pointer" @click="v='qual_materials'">
+              <div class="kpi-label">📚 Training Materials</div>
+              <div class="kpi-num" style="color:var(--green)" x-text="qualMaterials.length"></div>
+              <div class="kpi-sub">Resources uploaded</div>
+              <div class="kpi-drill" style="color:var(--green)"><span>Manage</span><span>→</span></div>
+            </div>
+          </div>
+
+          <!-- CANDIDATE STRIP -->
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div class="stitle">My Candidates</div>
+              <button @click="v='qual_pipe'" class="btn btn-ghost btn-sm">View All →</button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <template x-for="e in qualEmps()">
+                <div style="text-align:center;cursor:pointer;padding:10px 8px;border-radius:var(--r8);border:1px solid var(--w3);min-width:70px;transition:all .15s" @click="v='qual_pipe'" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background=''">
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block;margin:0 auto 5px">
+                  <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
+                  <div style="font-size:10px;font-weight:900;margin-top:2px" :style="'color:'+pc(e.qual&&e.qual.total>0?Math.round(e.qual.done/e.qual.total*100):0)" x-text="(e.qual&&e.qual.total>0?Math.round(e.qual.done/e.qual.total*100):0)+'%'"></div>
+                </div>
+              </template>
+              <div x-show="qualEmps().length===0" style="flex:1;text-align:center;padding:24px;color:var(--w5)">No candidates yet — candidates arrive here after HR signs them off</div>
+            </div>
+          </div>
+        </div>
+        <!-- END QUALITY DASHBOARD -->
+
+
+        <!-- QUALITY CANDIDATE PROGRESS CARDS -->
+        <div x-show="v==='qual_pipe' && mlevel===4 && mdept==='Quality_Status'">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Candidate Progress Cards</div>
+              <div class="psub" x-text="qualEmps().length+' candidates in Quality Training · '+mmarket"></div>
+            </div>
+          </div>
+          <div class="cg">
+            <template x-for="(e,ei) in qualEmps()">
+              <div class="emp-card" :class="{'pri-urgent':e.priority==='urgent','pri-high':e.priority==='high'}">
+                <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px">
+                  <div style="position:relative;width:50px;height:50px;flex-shrink:0">
+                    <svg width="50" height="50" class="ring" viewBox="0 0 50 50"><circle class="ring-bg" cx="25" cy="25" r="20"/><circle class="ring-fg" cx="25" cy="25" r="20" :stroke="pc(opct(e))" :stroke-dasharray="125.7" :stroke-dashoffset="125.7*(1-opct(e)/100)"/></svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:900" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></span></div>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="e.name"></div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:1px;font-weight:300" x-text="e.role"></div>
+                    <span class="chip c-green" style="font-size:9px;margin-top:5px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
+                  <template x-for="s in stages">
+                    <div class="stg" :class="scls(e,s.k)">
+                      <div style="display:flex;align-items:center;justify-content:space-between">
+                        <span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em" :style="'color:'+scol(e,s.k)" x-text="s.short"></span>
+                        <span style="font-size:10px;font-weight:700" :style="'color:'+scol(e,s.k)"><span x-text="e[s.k]?e[s.k].done:0"></span>/<span x-text="e[s.k]?e[s.k].total:'—'"></span></span>
+                      </div>
+                      <div class="pbar" style="margin-top:3px"><div class="pbar-fill" :style="'width:'+spce(e,s.k)+'%'"></div></div>
+                    </div>
+                  </template>
+                </div>
+                <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
+                  <button @click="omgr(e,stages.find(s=>s.k==='qual'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Task Manager</button>
+                  <button x-show="e.qual&&e.qual.done===e.qual.total" @click="qualSignOff(e)" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → OJT</button>
+                </div>
+              </div>
+            </template>
+            <div x-show="qualEmps().length===0" class="empty" style="grid-column:1/-1">
+              <div style="font-size:32px;margin-bottom:10px">⭐</div>
+              <div style="font-size:15px;font-weight:700">No candidates yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Candidates arrive after HR signs them off</div>
+            </div>
+          </div>
+        </div>
+        <!-- END QUALITY PROGRESS CARDS -->
+
+
+        <!-- QUALITY TRAINING STAGE -->
+        <div x-show="v==='qual_training' && mlevel===4 && mdept==='Quality_Status'">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Quality Training</div>
+            <div class="psub" x-text="qualEmps().filter(e=>e.qual&&e.qual.done<e.qual.total).length+' candidates in quality training'"></div>
+          </div>
+          <div class="cg">
+            <template x-for="e in qualEmps().filter(e=>e.qual&&e.qual.total>0&&e.qual.done<e.qual.total)">
+              <div class="card" style="padding:16px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
+                  <div style="flex:1"><div style="font-size:13px;font-weight:900" x-text="e.name"></div><div style="font-size:11px;color:var(--w5)" x-text="e.role"></div></div>
+                  <span class="chip c-warn" x-text="(e.qual?e.qual.done:0)+'/'+e.qual.total+' tasks'"></span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:var(--r8);margin-bottom:8px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2)">
+                  <span style="font-size:14px">⏱</span>
+                  <span style="font-size:11px;font-weight:700;color:#1D4ED8">In Quality Training</span>
+                  <span style="width:6px;height:6px;border-radius:50%;background:#3B82F6;animation:pulse 1.5s infinite;margin-left:auto"></span>
+                </div>
+                <div class="pbar" style="height:6px;margin-bottom:10px"><div class="pbar-fill" :style="'width:'+spce(e,'qual')+'%'"></div></div>
+                <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px">
+                  <template x-for="task in (e.qual.items||[])">
+                    <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)">
+                      <div style="width:14px;height:14px;border-radius:3px;border:1px solid var(--w3);flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border-color:var(--green)':''">
+                        <svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                      <span style="font-size:12px;font-weight:500" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch)'" x-text="task.name"></span>
+                      <a x-show="task.link&&task.link!=='#'" :href="task.link" target="_blank" style="margin-left:auto;font-size:10px;color:var(--green);font-weight:700;text-decoration:none">View →</a>
+                    </div>
+                  </template>
+                </div>
+                <button @click="omgr(e,stages.find(s=>s.k==='qual'))" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">Open Task Manager</button>
+              </div>
+            </template>
+            <div x-show="qualEmps().filter(e=>e.qual&&e.qual.total>0&&e.qual.done<e.qual.total).length===0" class="empty" style="grid-column:1/-1">
+              <div style="font-size:32px;margin-bottom:10px">⭐</div>
+              <div style="font-weight:700">No candidates in quality training</div>
+            </div>
+          </div>
+        </div>
+        <!-- END QUALITY TRAINING -->
+
+
+        <!-- TRAINING MATERIALS -->
+        <div x-show="v==='qual_materials' && mlevel===4 && mdept==='Quality_Status'">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Training Materials</div>
+            <div class="psub">Upload and manage quality training resources for your candidates</div>
+          </div>
+          <div class="card" style="padding:20px;margin-bottom:16px">
+            <div class="stitle" style="margin-bottom:14px">Add Training Material</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div>
+                <div class="f-label">Material Title</div>
+                <input type="text" x-model="qualMat.title" class="field" placeholder="e.g. Brand Standards SOP" style="width:100%;box-sizing:border-box">
+              </div>
+              <div>
+                <div class="f-label">Type</div>
+                <select x-model="qualMat.type" class="field" style="width:100%;box-sizing:border-box">
+                  <option value="google_slides">📊 Google Slides</option>
+                  <option value="google_doc">📄 Google Doc / SOP</option>
+                  <option value="video">🎥 Video</option>
+                  <option value="google_sheet">📋 Google Sheet</option>
+                  <option value="link">🔗 External Link</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-bottom:12px">
+              <div class="f-label">URL / Link *</div>
+              <input type="url" x-model="qualMat.url" class="field" placeholder="Paste Google Drive, YouTube or any URL" style="width:100%;box-sizing:border-box">
+            </div>
+            <div style="margin-bottom:16px">
+              <div class="f-label">Description (optional)</div>
+              <input type="text" x-model="qualMat.desc" class="field" placeholder="Brief description" style="width:100%;box-sizing:border-box">
+            </div>
+            <button @click="qualAddMaterial()" :disabled="!qualMat.title||!qualMat.url" class="btn btn-primary" style="padding:9px 24px">+ Add Material</button>
+          </div>
+          <div class="card" style="padding:20px">
+            <div class="stitle" style="margin-bottom:14px">Quality Training Library <span style="font-size:11px;font-weight:300;color:var(--w5)" x-text="'('+qualMaterials.length+' items)'"></span></div>
+            <div x-show="qualMaterials.length===0" style="text-align:center;padding:32px;color:var(--w5)">
+              <div style="font-size:32px;margin-bottom:10px">📚</div>
+              <div style="font-weight:700">No materials yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Add your first training material above</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <template x-for="(m,i) in qualMaterials">
+                <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--w3);border-radius:var(--r8);transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--w3)'">
+                  <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div>
+                  </div>
+                  <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
+                  <button @click="qualMaterials.splice(i,1)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+        <!-- END TRAINING MATERIALS -->
+
+
+        <!-- OTHER TRAINERS (OJT, Assessment, Cert) — blank, build later -->
+        <div x-show="v==='dash' && mlevel===4 && mdept!=='HR_Status' && mdept!=='Quality_Status'" style="display:flex;flex-direction:column;min-height:100%">
+          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px" x-text="mtitle"></div>
               <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
             </div>
           </div>
-          <!-- L4 TRAINER CONTENT GOES HERE -->
+          <!-- OJT / ASSESSMENT / CERT TRAINER CONTENT — build later -->
         </div>
+
 
         <!-- ══════════════════════════════════════════════════════ -->
         <!-- HR DASHBOARD — edit only within this block             -->
@@ -833,7 +1069,7 @@ textarea.field{resize:none}
           <!-- HR KPI TILES — 6 tiles -->
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
             <div class="kpi-tile" style="--tile-accent:var(--ch);cursor:pointer" @click="v='hr_pipe'">
-              <div class="kpi-label">👥 All Candidates</div>
+              <div class="kpi-label">👥 Candidate Progress</div>
               <div class="kpi-num" style="color:var(--ch)" x-text="hrEmps().length"></div>
               <div class="kpi-sub">Total in pipeline</div>
               <div class="kpi-drill" style="color:var(--w5)"><span>View pipeline</span><span>→</span></div>
@@ -903,7 +1139,7 @@ textarea.field{resize:none}
         <div x-show="v==='hr_pipe' && mlevel===4 && mdept==='HR_Status'">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
             <div>
-              <div class="ptitle">Active Pipeline</div>
+              <div class="ptitle">Candidate Progress Cards</div>
               <div class="psub" x-text="hrEmps().length+' candidates in '+mmarket"></div>
             </div>
             <button @click="hrNH.c=mmarket;hrForm=true;hrSuccess=false" class="btn btn-primary btn-sm">+ New Candidate</button>
@@ -1636,7 +1872,7 @@ function app(){
     loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
-    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),
+    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],
     emps:[],tpls:[],
     branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
     flags:{
@@ -1793,6 +2029,30 @@ function app(){
         .filter(x=>x.count>0)
         .sort((a,b)=>b.pct-a.pct);
     },
+
+    // ── QUALITY TRAINER METHODS ───────────────────────────────────
+    qualEmps(){
+      return this.emps.filter(e=>{
+        const mok = e.country===this.mmarket;
+        const tok = !this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
+        const hrDone = e.pre&&e.pre.done===e.pre.total&&e.ori&&e.ori.done===e.ori.total&&e.hr&&e.hr.done===e.hr.total;
+        return mok&&tok&&hrDone;
+      });
+    },
+    qualSignOff(e){
+      if(!confirm('Sign off '+e.name+' from Quality and move to OJT Training?')) return;
+      if(e.qual){ e.qual.done = e.qual.total; }
+      this.dofl('Quality Signed Off!', e.image, e.name, 'Moved to OJT Training', e.country);
+      const tasks = (e.qual&&e.qual.items||[]).map(m=>m.name+'|'+(m.link||'#')+'|1').join(';;');
+      this.gas('saveFullUpdate',{row:e.row,colLabel:'Quality_Status',taskStr:tasks||'Complete|#|1',trainer:{}})
+        .then(()=>this.fetchAll()).catch(()=>this.fetchAll());
+    },
+    qualAddMaterial(){
+      if(!this.qualMat.title||!this.qualMat.url) return;
+      this.qualMaterials.push(Object.assign({},this.qualMat));
+      this.qualMat = {title:'',type:'google_slides',url:'',desc:''};
+    },
+    // ── END QUALITY METHODS ───────────────────────────────────────
     // ── HR SPECIFIC METHODS ───────────────────────────────────────
     hrEmps(){
       // ALL candidates in HR's market — optionally filtered by joining date
