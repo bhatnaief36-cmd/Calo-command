@@ -201,38 +201,46 @@ textarea.field{resize:none}
 
 <!-- LOGIN -->
 <div x-show="!loggedIn" style="display:block" class="login-bg">
-  <div class="login-card au" style="max-width:400px">
-
-    <!-- LOGO -->
-    <div style="text-align:center;margin-bottom:36px">
-      <div class="logo" style="font-size:44px;letter-spacing:-2px">CALO</div>
-      <div style="width:40px;height:3px;background:var(--green);border-radius:2px;margin:10px auto 12px"></div>
-      <div style="font-size:13px;color:var(--w5);font-weight:400;letter-spacing:.02em">Onboarding Command Center</div>
+  <div class="login-card au">
+    <div style="text-align:center;margin-bottom:32px">
+      <div class="logo" style="font-size:38px;letter-spacing:-2px">CALO</div>
+      <div class="logo-sub" style="margin-top:6px;font-size:12px">Onboarding Command Center</div>
     </div>
 
-    <!-- FORM -->
-    <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
+      <template x-for="(l,i) in [{n:'L1',t:'Admin'},{n:'L2',t:'Regional'},{n:'L3',t:'Coord.'},{n:'L4',t:'Trainer'}]">
+        <div class="lvl-pill" :class="hint===i?'on':''" @click="hint=i">
+          <div style="font-size:15px;font-weight:900" x-text="l.n"></div>
+          <div style="font-size:9px;margin-top:1px;font-weight:400" x-text="l.t"></div>
+        </div>
+      </template>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
       <div>
-        <div class="f-label">USER ID</div>
-        <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter your user ID" class="field" style="text-transform:uppercase;font-weight:700;letter-spacing:.04em" autocomplete="off">
+        <div class="f-label">User ID</div>
+        <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter user ID" class="field" style="text-transform:uppercase;font-weight:700;letter-spacing:.04em" autocomplete="off">
       </div>
       <div>
-        <div class="f-label">PASSWORD</div>
-        <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter your password" class="field" autocomplete="off">
+        <div class="f-label">Password</div>
+        <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter password" class="field" autocomplete="off">
       </div>
-      <div x-show="lerr" style="display:none;background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
-      <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px;border-radius:var(--r8);margin-top:4px" :style="ll?'opacity:.85;cursor:not-allowed':''">
+      <div x-show="lerr" style="background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
+      <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;font-size:14px;border-radius:var(--r8);opacity:1" :style="ll?'opacity:.85;cursor:not-allowed':''">
         <div x-show="ll" style="display:none" class="spinner spinner-w"></div>
         <span x-text="ll?'Signing in…':'Sign In'"></span>
       </button>
+
     </div>
 
-    <!-- FOOTER -->
-    <div style="text-align:center;margin-top:32px;padding-top:20px;border-top:1px solid var(--w3)">
-      <div style="font-size:11px;color:var(--w6);font-weight:400">© 2026 Calo Onboarding Command Center</div>
-      <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">All rights reserved · Authorized personnel only</div>
+    <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--w3)">
+      <span style="font-size:11px;color:var(--w5);font-weight:300">Authorized personnel only · Calo Group</span>
+      <div style="margin-top:12px">
+        <button @click="demoLogin()" class="btn btn-outline btn-sm" style="width:100%;justify-content:center;font-size:12px;color:var(--green);border-color:var(--green-m);background:var(--green-l)">
+          🎯 Preview Demo (no backend needed)
+        </button>
+      </div>
     </div>
-
   </div>
 </div>
 
@@ -286,7 +294,7 @@ textarea.field{resize:none}
       </div>
 
       <!-- Mountain Peaks (L1) -->
-      <div x-show="mlevel<=2">
+      <div x-show="mlevel===1">
         <div class="nav-group-label" style="margin-top:8px">Mountain Peaks</div>
         <div class="branch-row" :class="mf==='All'?'on':''" @click="mf='All'">
           <span style="font-weight:700">🌍 All Peaks</span>
@@ -301,7 +309,7 @@ textarea.field{resize:none}
       </div>
 
       <!-- Own Mountain Peak (L2–L4) -->
-      <div x-show="mlevel>2" style="margin:12px 12px 0">
+      <div x-show="mlevel>1" style="margin:12px 12px 0">
         <div style="background:var(--green-l);border:1px solid var(--green-m);border-radius:var(--r8);padding:12px">
           <div style="font-size:22px;line-height:1;margin-bottom:4px" x-text="flag(mmarket)"></div>
           <div style="font-size:15px;font-weight:900;color:var(--green)" x-text="mmarket"></div>
@@ -354,14 +362,8 @@ textarea.field{resize:none}
     <div class="main-area">
       <div class="page-wrap">
 
-
-        <!-- ════════════════════════════════════════════════════════════════ -->
-        <!-- DASHBOARD: L1 — TRAINING ARCHITECT (Admin)                     -->
-        <!-- Condition: v==='dash' && mlevel===1                            -->
-        <!-- STATUS: Full V1 Dashboard — complete                           -->
-        <!-- ════════════════════════════════════════════════════════════════ -->
-        <div x-show="v==='dash' && mlevel===1" style="display:flex;flex-direction:column;min-height:100%">
-
+        <!-- DASHBOARD -->
+        <div x-show="v==='dash'" style="display:flex;flex-direction:column;min-height:100%">
 
           <!-- COMMAND BAR -->
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
@@ -748,202 +750,6 @@ textarea.field{resize:none}
 
         </div>
 
-
-        </div>
-        <!-- END DASHBOARD: L1 TRAINING ARCHITECT -->
-
-
-        <!-- ════════════════════════════════════════════════════════════════ -->
-        <!-- DASHBOARD: REGIONAL TRAINING SPECIALIST                     -->
-        <!-- Condition: mlevel===2                                       -->
-        <!-- STATUS: Empty — ready to build                                 -->
-        <!-- ════════════════════════════════════════════════════════════════ -->
-        <div x-show="v==='dash' && (mlevel===2)">
-
-          <!-- GREEN COMMAND BAR — same as Admin -->
-          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
-            <div>
-              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Calo Group · All Mountain Peaks</div>
-              <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px">Welcome, <span x-text="mname"></span> 👋</div>
-            </div>
-            <div style="display:flex;gap:0">
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="filtered().length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY STAFF</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="certCount()"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">CERTIFIED</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="activeCount()"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;padding-left:20px">
-                <div style="width:8px;height:8px;border-radius:50%;background:#fff;opacity:.8"></div>
-                <span style="font-size:11px;color:rgba(255,255,255,.6)">Live</span>
-                <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
-              </div>
-            </div>
-          </div>
-          <!-- END COMMAND BAR -->
-
-
-          <!-- ┌──────────────────────────────────────────────────────────┐ -->
-          <!-- │  Regional Training Specialist                         │ -->
-          <!-- │  Build this dashboard below this comment block          │ -->
-          <!-- │  Each section you add here is for THIS role only        │ -->
-          <!-- └──────────────────────────────────────────────────────────┘ -->
-
-          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:360px;text-align:center">
-            <div style="width:64px;height:64px;border-radius:50%;background:var(--green-l);display:flex;align-items:center;justify-content:center;margin-bottom:20px">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-            </div>
-            <div style="font-size:20px;font-weight:900;color:var(--ch);margin-bottom:8px">Regional Training Specialist</div>
-            <div style="font-size:13px;color:var(--w5);font-weight:300;max-width:300px;line-height:1.7">Your personalised dashboard<br>is being set up.</div>
-            <button @click="v='pipe'" class="btn btn-primary" style="margin-top:24px;padding:10px 24px">
-              View Pipeline →
-            </button>
-          </div>
-
-          <!-- ═══════════════════════════════════════════════════════════ -->
-          <!-- ADD REGIONAL TRAINING SPECIALIST                 CONTENT ABOVE THIS LINE -->
-          <!-- ═══════════════════════════════════════════════════════════ -->
-
-        </div>
-        <!-- END DASHBOARD: REGIONAL TRAINING SPECIALIST -->
-
-        <!-- ════════════════════════════════════════════════════════════════ -->
-        <!-- DASHBOARD: TRAINING COORDINATOR                             -->
-        <!-- Condition: mlevel===3                                       -->
-        <!-- STATUS: Empty — ready to build                                 -->
-        <!-- ════════════════════════════════════════════════════════════════ -->
-        <div x-show="v==='dash' && (mlevel===3)">
-<div x-show="v==='dash' && (mlevel===3)">
-
-          <!-- GREEN COMMAND BAR — same as Admin -->
-          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
-            <div>
-              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Calo Group · Mountain Peak View</div>
-              <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px">Welcome, <span x-text="mname"></span> 👋</div>
-            </div>
-            <div style="display:flex;gap:0">
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="filtered().length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY STAFF</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="certCount()"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">CERTIFIED</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="activeCount()"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;padding-left:20px">
-                <div style="width:8px;height:8px;border-radius:50%;background:#fff;opacity:.8"></div>
-                <span style="font-size:11px;color:rgba(255,255,255,.6)">Live</span>
-                <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
-              </div>
-            </div>
-          </div>
-          <!-- END COMMAND BAR -->
-
-          <!-- ═══════════════════════════════════════════════════════════ -->
-          <!-- TRAINING COORDINATOR                                 -->
-          <!-- BUILD THIS DASHBOARD HERE — currently blank              -->
-          <!-- ═══════════════════════════════════════════════════════════ -->
-
-        </div>
-        <!-- END DASHBOARD: TRAINING COORDINATOR -->
-
-        <!-- ════════════════════════════════════════════════════════════════ -->
-        <!-- DASHBOARD: TRAINER DASHBOARD                                -->
-        <!-- Condition: mlevel===4 && mdept!=='HR_Status'                -->
-        <!-- STATUS: Empty — ready to build                                 -->
-        <!-- ════════════════════════════════════════════════════════════════ -->
-        <div x-show="v==='dash' && (mlevel===4 && mdept!=='HR_Status')">
-<div x-show="v==='dash' && (mlevel===4 && mdept!=='HR_Status')">
-
-          <!-- GREEN COMMAND BAR — same as Admin -->
-          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
-            <div>
-              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Calo Group · Stage Training</div>
-              <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px">Welcome, <span x-text="mname"></span> 👋</div>
-            </div>
-            <div style="display:flex;gap:0">
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="filtered().length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY STAFF</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="certCount()"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">CERTIFIED</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="activeCount()"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;padding-left:20px">
-                <div style="width:8px;height:8px;border-radius:50%;background:#fff;opacity:.8"></div>
-                <span style="font-size:11px;color:rgba(255,255,255,.6)">Live</span>
-                <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
-              </div>
-            </div>
-          </div>
-          <!-- END COMMAND BAR -->
-
-          <!-- ═══════════════════════════════════════════════════════════ -->
-          <!-- TRAINER DASHBOARD                                    -->
-          <!-- BUILD THIS DASHBOARD HERE — currently blank              -->
-          <!-- ═══════════════════════════════════════════════════════════ -->
-
-        </div>
-        <!-- END DASHBOARD: TRAINER DASHBOARD -->
-
-        <!-- ════════════════════════════════════════════════════════════════ -->
-        <!-- DASHBOARD: HR DASHBOARD                                     -->
-        <!-- Condition: mlevel===4 && mdept==='HR_Status'                -->
-        <!-- STATUS: Empty — ready to build                                 -->
-        <!-- ════════════════════════════════════════════════════════════════ -->
-        <div x-show="v==='dash' && (mlevel===4 && mdept==='HR_Status')">
-<div x-show="v==='dash' && (mlevel===4 && mdept==='HR_Status')">
-
-          <!-- GREEN COMMAND BAR — same as Admin -->
-          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
-            <div>
-              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Calo Group · Human Resources</div>
-              <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px">Welcome, <span x-text="mname"></span> 👋</div>
-            </div>
-            <div style="display:flex;gap:0">
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="filtered().length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY STAFF</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="certCount()"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">CERTIFIED</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="activeCount()"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;padding-left:20px">
-                <div style="width:8px;height:8px;border-radius:50%;background:#fff;opacity:.8"></div>
-                <span style="font-size:11px;color:rgba(255,255,255,.6)">Live</span>
-                <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
-              </div>
-            </div>
-          </div>
-          <!-- END COMMAND BAR -->
-
-          <!-- ═══════════════════════════════════════════════════════════ -->
-          <!-- HR DASHBOARD                                         -->
-          <!-- BUILD THIS DASHBOARD HERE — currently blank              -->
-          <!-- ═══════════════════════════════════════════════════════════ -->
-
-        </div>
-        <!-- END DASHBOARD: HR DASHBOARD -->
 
         <!-- PIPELINE -->
         <div x-show="v==='pipe'">
@@ -1530,7 +1336,7 @@ function app(){
     },
 
     filtered(){
-      const m=this.mlevel>2?this.mmarket:this.mf;
+      const m=this.mlevel>1?this.mmarket:this.mf;
       let l=this.emps.filter(e=>{
         const mok=m==='All'||e.country===m;
         const sok=!this.sq||e.name.toLowerCase().includes(this.sq.toLowerCase())||e.role.toLowerCase().includes(this.sq.toLowerCase());
@@ -1642,9 +1448,9 @@ function app(){
 
     acc(e,k){
       if(!e||!k)return false;
-      if(this.mlevel===1)return true;  // L1 Training Architect
-      if(this.mlevel===2)return true;  // L2 Regional Specialist = same as L1
+      if(this.mlevel===1)return true;
       if(e.country!==this.mmarket)return false;
+      if(this.mlevel===2)return true;
       if(this.mlevel===3)return['qual','ojt','assess','cert'].includes(k);
       if(this.mlevel===4){const s=this.stages.find(x=>x.k===k);return s?s.col===this.mdept:false;}
       return false;
