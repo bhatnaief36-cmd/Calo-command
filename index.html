@@ -260,20 +260,20 @@ textarea.field{resize:none}
     </div>
 
     <nav style="flex:1;overflow-y:auto;padding:6px 0">
-      <div class="nav-group-label">Navigation</div>
-      <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+      <div class="nav-group-label" x-show="mlevel<=2">Navigation</div>
+      <div x-show="mlevel<=2" class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         Dashboard
       </div>
-      <div class="nav-link" :class="v==='pipe'?'on':''" @click="v='pipe';dashTile=null;pf='all'">
+      <div x-show="mlevel<=2" class="nav-link" :class="v==='pipe'?'on':''" @click="v='pipe';dashTile=null;pf='all'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         Pipeline
       </div>
-      <div class="nav-link" :class="v==='trainers'?'on':''" @click="v='trainers'">
+      <div x-show="mlevel<=2" class="nav-link" :class="v==='trainers'?'on':''" @click="v='trainers'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Trainers
       </div>
-      <div class="nav-link" :class="v==='tpl'?'on':''" @click="v='tpl'">
+      <div x-show="mlevel<=2" class="nav-link" :class="v==='tpl'?'on':''" @click="v='tpl'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Templates
       </div>
@@ -283,7 +283,7 @@ textarea.field{resize:none}
       </div>
 
       <!-- Mountain Peaks (L1) -->
-      <div x-show="mlevel===1">
+      <div x-show="mlevel<=2">
         <div class="nav-group-label" style="margin-top:8px">Mountain Peaks</div>
         <div class="branch-row" :class="mf==='All'?'on':''" @click="mf='All'">
           <span style="font-weight:700">🌍 All Peaks</span>
@@ -351,8 +351,8 @@ textarea.field{resize:none}
     <div class="main-area">
       <div class="page-wrap">
 
-        <!-- DASHBOARD -->
-        <div x-show="v==='dash'" style="display:flex;flex-direction:column;min-height:100%">
+        <!-- DASHBOARD: L1 + L2 (Training Architect + Regional Training Specialist) -->
+        <div x-show="v==='dash' && mlevel<=2" style="display:flex;flex-direction:column;min-height:100%">
 
           <!-- COMMAND BAR -->
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
@@ -739,6 +739,39 @@ textarea.field{resize:none}
 
         </div>
 
+
+        <!-- DASHBOARD: L3 — Training Coordinator (blank — build later) -->
+        <div x-show="v==='dash' && mlevel===3" style="display:flex;flex-direction:column;min-height:100%">
+          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Training Coordinator</div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+            </div>
+          </div>
+          <!-- L3 CONTENT GOES HERE -->
+        </div>
+
+        <!-- DASHBOARD: L4 — Trainer (blank — build later) -->
+        <div x-show="v==='dash' && mlevel===4 && mdept!=='HR_Status'" style="display:flex;flex-direction:column;min-height:100%">
+          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Trainer</div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+            </div>
+          </div>
+          <!-- L4 TRAINER CONTENT GOES HERE -->
+        </div>
+
+        <!-- DASHBOARD: L5 — HR (blank — build later) -->
+        <div x-show="v==='dash' && mlevel===4 && mdept==='HR_Status'" style="display:flex;flex-direction:column;min-height:100%">
+          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Human Resources</div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+            </div>
+          </div>
+          <!-- L5 HR CONTENT GOES HERE -->
+        </div>
 
         <!-- PIPELINE -->
         <div x-show="v==='pipe'">
@@ -1325,7 +1358,7 @@ function app(){
     },
 
     filtered(){
-      const m=this.mlevel>1?this.mmarket:this.mf;
+      const m=this.mlevel>2?this.mmarket:this.mf;
       let l=this.emps.filter(e=>{
         const mok=m==='All'||e.country===m;
         const sok=!this.sq||e.name.toLowerCase().includes(this.sq.toLowerCase())||e.role.toLowerCase().includes(this.sq.toLowerCase());
