@@ -298,7 +298,7 @@ textarea.field{resize:none}
         </div>
         <div class="nav-link" :class="v==='qual_training'?'on':''" @click="v='qual_training'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          Quality Training
+          Quality Training Modules
         </div>
         <div class="nav-link" :class="v==='qual_materials'?'on':''" @click="v='qual_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
@@ -834,7 +834,7 @@ textarea.field{resize:none}
               <div class="kpi-drill" style="color:var(--w5)"><span>View all</span><span>→</span></div>
             </div>
             <div class="kpi-tile" style="--tile-accent:#F97316;cursor:pointer" @click="v='qual_training'">
-              <div class="kpi-label">⭐ Quality Training</div>
+              <div class="kpi-label">⭐ Quality Training Modules</div>
               <div class="kpi-num" style="color:#F97316" x-text="qualEmps().filter(e=>e.qual&&e.qual.done<e.qual.total).length"></div>
               <div class="kpi-sub">Pending quality tasks</div>
               <div class="kpi-drill" style="color:#F97316"><span>View stage</span><span>→</span></div>
@@ -902,7 +902,7 @@ textarea.field{resize:none}
                   </template>
                 </div>
                 <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
-                  <button @click="omgr(e,stages.find(s=>s.k==='qual'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Task Manager</button>
+                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
                   <button x-show="e.qual&&e.qual.done===e.qual.total" @click="qualSignOff(e)" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → OJT</button>
                 </div>
               </div>
