@@ -309,6 +309,10 @@ textarea.field{resize:none}
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
           Floor Ready Certification
         </div>
+        <div class="nav-link" :class="v==='dm_materials'?'on':''" @click="v='dm_materials'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Training Materials
+        </div>
       </div>
       <!-- ── END DEPT MANAGER NAVIGATION ────────────────────────── -->
       <!-- ── QUALITY TRAINER NAVIGATION ────────────────────────── -->
@@ -359,6 +363,10 @@ textarea.field{resize:none}
         <div class="nav-link" :class="v==='hr_compliance'?'on':''" @click="v='hr_compliance'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
           HR Compliance
+        </div>
+        <div class="nav-link" :class="v==='hr_materials'?'on':''" @click="v='hr_materials'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Training Materials
         </div>
 
       </div>
@@ -849,11 +857,12 @@ textarea.field{resize:none}
               <div style="padding-left:16px"><button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'"></button></div>
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
             <div class="kpi-tile" style="--tile-accent:var(--ch);cursor:pointer" @click="v='dm_pipe'"><div class="kpi-label">👥 Candidate Progress</div><div class="kpi-num" style="color:var(--ch)" x-text="dmEmps().length"></div><div class="kpi-sub">Arrived from Quality</div><div class="kpi-drill" style="color:var(--w5)"><span>View all</span><span>→</span></div></div>
             <div class="kpi-tile" style="--tile-accent:#F97316;cursor:pointer" @click="v='dm_ojt'"><div class="kpi-label">🔧 OJT Training</div><div class="kpi-num" style="color:#F97316" x-text="dmEmps().filter(e=>e.ojt&&e.ojt.done<e.ojt.total).length"></div><div class="kpi-sub">Pending OJT tasks</div><div class="kpi-drill" style="color:#F97316"><span>View stage</span><span>→</span></div></div>
             <div class="kpi-tile" style="--tile-accent:#A78BFA;cursor:pointer" @click="v='dm_assess'"><div class="kpi-label">✅ Pre-Floor Assessment</div><div class="kpi-num" style="color:#A78BFA" x-text="dmEmps().filter(e=>e.ojt&&e.ojt.done===e.ojt.total&&e.assess&&e.assess.done<e.assess.total).length"></div><div class="kpi-sub">Awaiting assessment</div><div class="kpi-drill" style="color:#A78BFA"><span>View stage</span><span>→</span></div></div>
             <div class="kpi-tile" style="--tile-accent:var(--green);cursor:pointer" @click="v='dm_cert'"><div class="kpi-label">🏆 Floor Ready Cert</div><div class="kpi-num" style="color:var(--green)" x-text="dmEmps().filter(e=>e.assess&&e.assess.done===e.assess.total&&e.cert&&e.cert.done<e.cert.total).length"></div><div class="kpi-sub">Pending certification</div><div class="kpi-drill" style="color:var(--green)"><span>View stage</span><span>→</span></div></div>
+            <div class="kpi-tile" style="--tile-accent:#3B82F6;cursor:pointer" @click="v='dm_materials'"><div class="kpi-label">📚 Training Materials</div><div class="kpi-num" style="color:#3B82F6" x-text="dmMaterials.length"></div><div class="kpi-sub">Resources uploaded</div><div class="kpi-drill" style="color:#3B82F6"><span>Manage</span><span>→</span></div></div>
           </div>
           <div class="card">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div class="stitle">My Trainees</div><button @click="v='dm_pipe'" class="btn btn-ghost btn-sm">View All →</button></div>
@@ -975,6 +984,51 @@ textarea.field{resize:none}
           </div>
         </div>
         <!-- END DM CERTIFICATION -->
+
+        <!-- DM TRAINING MATERIALS -->
+        <div x-show="v==='dm_materials' && mlevel===4 && mdept==='DEPT_MANAGER'">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Training Materials</div>
+            <div class="psub">Upload and manage OJT training resources for your trainees</div>
+          </div>
+          <div class="card" style="padding:20px;margin-bottom:16px">
+            <div class="stitle" style="margin-bottom:14px">Add Training Material</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div><div class="f-label">Material Title</div><input type="text" x-model="dmMat.title" class="field" placeholder="e.g. OJT Floor Induction SOP" style="width:100%;box-sizing:border-box"></div>
+              <div><div class="f-label">Type</div>
+                <select x-model="dmMat.type" class="field" style="width:100%;box-sizing:border-box">
+                  <option value="google_slides">📊 Google Slides</option>
+                  <option value="google_doc">📄 Google Doc / SOP</option>
+                  <option value="video">🎥 Video</option>
+                  <option value="google_sheet">📋 Google Sheet</option>
+                  <option value="link">🔗 External Link</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-bottom:12px"><div class="f-label">URL / Link *</div><input type="url" x-model="dmMat.url" class="field" placeholder="Paste Google Drive, YouTube or any URL" style="width:100%;box-sizing:border-box"></div>
+            <div style="margin-bottom:16px"><div class="f-label">Description (optional)</div><input type="text" x-model="dmMat.desc" class="field" placeholder="Brief description" style="width:100%;box-sizing:border-box"></div>
+            <button @click="dmAddMaterial()" :disabled="!dmMat.title||!dmMat.url" class="btn btn-primary" style="padding:9px 24px">+ Add Material</button>
+          </div>
+          <div class="card" style="padding:20px">
+            <div class="stitle" style="margin-bottom:14px">OJT Training Library <span style="font-size:11px;font-weight:300;color:var(--w5)" x-text="'('+dmMaterials.length+' items)'"></span></div>
+            <div x-show="dmMaterials.length===0" style="text-align:center;padding:32px;color:var(--w5)">
+              <div style="font-size:32px;margin-bottom:10px">📚</div>
+              <div style="font-weight:700">No materials yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Add your first training material above</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <template x-for="(m,i) in dmMaterials">
+                <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--w3);border-radius:var(--r8);transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--w3)'">
+                  <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div><div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div></div>
+                  <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
+                  <button @click="dmMaterials.splice(i,1)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+        <!-- END DM TRAINING MATERIALS -->
 
         <!-- QUALITY TRAINER DASHBOARD                                  -->
         <!-- Condition: mlevel===4 && mdept==='Quality_Status'          -->
@@ -1188,7 +1242,7 @@ textarea.field{resize:none}
 
 
         <!-- OTHER TRAINERS (OJT, Assessment, Cert) — blank, build later -->
-        <div x-show="v==='dash' && mlevel===4 && mdept!=='HR_Status' && mdept!=='Quality_Status'" style="display:flex;flex-direction:column;min-height:100%">
+        <div x-show="v==='dash' && mlevel===4 && mdept!=='HR_Status' && mdept!=='Quality_Status' && mdept!=='DEPT_MANAGER'" style="display:flex;flex-direction:column;min-height:100%">
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
               <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px" x-text="mtitle"></div>
@@ -1571,6 +1625,51 @@ textarea.field{resize:none}
           </div>
         </div>
         <!-- END HR ENTRY FORM ════════════════════════════════════ -->
+
+        <!-- HR TRAINING MATERIALS -->
+        <div x-show="v==='hr_materials' && mlevel===4 && mdept==='HR_Status'">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Training Materials</div>
+            <div class="psub">Upload and manage HR onboarding resources for your candidates</div>
+          </div>
+          <div class="card" style="padding:20px;margin-bottom:16px">
+            <div class="stitle" style="margin-bottom:14px">Add Training Material</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div><div class="f-label">Material Title</div><input type="text" x-model="hrMat.title" class="field" placeholder="e.g. HR Compliance Checklist" style="width:100%;box-sizing:border-box"></div>
+              <div><div class="f-label">Type</div>
+                <select x-model="hrMat.type" class="field" style="width:100%;box-sizing:border-box">
+                  <option value="google_slides">📊 Google Slides</option>
+                  <option value="google_doc">📄 Google Doc / SOP</option>
+                  <option value="video">🎥 Video</option>
+                  <option value="google_sheet">📋 Google Sheet</option>
+                  <option value="link">🔗 External Link</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-bottom:12px"><div class="f-label">URL / Link *</div><input type="url" x-model="hrMat.url" class="field" placeholder="Paste Google Drive, YouTube or any URL" style="width:100%;box-sizing:border-box"></div>
+            <div style="margin-bottom:16px"><div class="f-label">Description (optional)</div><input type="text" x-model="hrMat.desc" class="field" placeholder="Brief description" style="width:100%;box-sizing:border-box"></div>
+            <button @click="hrAddMaterial()" :disabled="!hrMat.title||!hrMat.url" class="btn btn-primary" style="padding:9px 24px">+ Add Material</button>
+          </div>
+          <div class="card" style="padding:20px">
+            <div class="stitle" style="margin-bottom:14px">HR Resource Library <span style="font-size:11px;font-weight:300;color:var(--w5)" x-text="'('+hrMaterials.length+' items)'"></span></div>
+            <div x-show="hrMaterials.length===0" style="text-align:center;padding:32px;color:var(--w5)">
+              <div style="font-size:32px;margin-bottom:10px">📚</div>
+              <div style="font-weight:700">No materials yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Add your first HR resource above</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <template x-for="(m,i) in hrMaterials">
+                <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--w3);border-radius:var(--r8);transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--w3)'">
+                  <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div><div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div></div>
+                  <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
+                  <button @click="hrMaterials.splice(i,1)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+        <!-- END HR TRAINING MATERIALS -->
 
         <!-- PIPELINE -->
         <div x-show="v==='pipe'">
@@ -2040,7 +2139,7 @@ function app(){
     loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
-    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],
+    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
     emps:[],tpls:[],
     branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
     flags:{
@@ -2231,6 +2330,16 @@ function app(){
         .then(()=>this.fetchAll()).catch(()=>this.fetchAll());
     },
     // ── END DEPT MANAGER METHODS ──────────────────────────────────
+    dmAddMaterial(){
+      if(!this.dmMat.title||!this.dmMat.url) return;
+      this.dmMaterials.push(Object.assign({},this.dmMat));
+      this.dmMat={title:'',type:'google_slides',url:'',desc:''};
+    },
+    hrAddMaterial(){
+      if(!this.hrMat.title||!this.hrMat.url) return;
+      this.hrMaterials.push(Object.assign({},this.hrMat));
+      this.hrMat={title:'',type:'google_slides',url:'',desc:''};
+    },
     // ── QUALITY TRAINER METHODS ───────────────────────────────────
     qualEmps(){
       return this.emps.filter(e=>{
