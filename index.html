@@ -282,6 +282,38 @@ textarea.field{resize:none}
         Reports
       </div>
 
+
+      <!-- ── HR NAVIGATION (only for HR users) ────────────────── -->
+      <div x-show="mlevel===4 && mdept==='HR_Status'">
+        <div class="nav-group-label" style="margin-top:4px">HR Workspace</div>
+
+        <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </div>
+
+        <div class="nav-link" :class="v==='hr_pipe'?'on':''" @click="v='hr_pipe'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Active Pipeline
+        </div>
+
+        <div class="nav-link" :class="v==='hr_preboard'?'on':''" @click="v='hr_preboard'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Pre-Boarding
+        </div>
+
+        <div class="nav-link" :class="v==='hr_orient'?'on':''" @click="v='hr_orient'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Orientation
+        </div>
+
+        <div class="nav-link" :class="v==='hr_compliance'?'on':''" @click="v='hr_compliance'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          HR Compliance
+        </div>
+
+      </div>
+      <!-- ── END HR NAVIGATION ──────────────────────────────────── -->
       <!-- Mountain Peaks (L1) -->
       <div x-show="mlevel<=2">
         <div class="nav-group-label" style="margin-top:8px">Mountain Peaks</div>
@@ -762,16 +794,331 @@ textarea.field{resize:none}
           <!-- L4 TRAINER CONTENT GOES HERE -->
         </div>
 
-        <!-- DASHBOARD: L5 — HR (blank — build later) -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- HR DASHBOARD — edit only within this block             -->
+        <!-- ══════════════════════════════════════════════════════ -->
         <div x-show="v==='dash' && mlevel===4 && mdept==='HR_Status'" style="display:flex;flex-direction:column;min-height:100%">
+
+          <!-- HR COMMAND BAR -->
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
-              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Human Resources</div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Human Resources · <span x-text="mmarket"></span></div>
               <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
             </div>
+            <div style="display:flex;gap:0;align-items:center">
+              <div class="cmd-stat">
+                <div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="hrEmps().length"></div>
+                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY STAFF</div>
+              </div>
+              <div class="cmd-stat">
+                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="hrEmps().filter(e=>e.pre&&e.pre.total>0&&e.pre.done===e.pre.total).length"></div>
+                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">PRE-BOARD ✓</div>
+              </div>
+              <div class="cmd-stat">
+                <div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="hrEmps().filter(e=>e.hr&&e.hr.done>0&&e.hr.done<e.hr.total).length"></div>
+                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">HR ACTIVE</div>
+              </div>
+              <div class="cmd-stat">
+                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="hrEmps().filter(e=>e.hr&&e.hr.total>0&&e.hr.done===e.hr.total).length"></div>
+                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">HR DONE</div>
+              </div>
+              <div style="padding-left:16px;display:flex;gap:8px">
+                <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
+                <button @click="hrForm=true" style="background:#fff;border:none;color:var(--green);padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:900;cursor:pointer;font-family:var(--f)">+ New Candidate</button>
+              </div>
+            </div>
           </div>
-          <!-- L5 HR CONTENT GOES HERE -->
+
+          <!-- HR KPI TILES -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+            <div class="kpi-tile" style="--tile-accent:var(--ch);cursor:pointer" @click="v='hr_pipe'">
+              <div class="kpi-label">All Candidates</div>
+              <div class="kpi-num" style="color:var(--ch)" x-text="hrEmps().length"></div>
+              <div class="kpi-sub">Active onboarding</div>
+              <div class="kpi-drill" style="color:var(--w5)"><span>View pipeline</span><span>→</span></div>
+            </div>
+            <div class="kpi-tile" style="--tile-accent:#F97316;cursor:pointer" @click="v='hr_preboard'">
+              <div class="kpi-label">📋 Pre-Boarding</div>
+              <div class="kpi-num" style="color:#F97316" x-text="hrEmps().filter(e=>e.pre&&e.pre.done<e.pre.total).length"></div>
+              <div class="kpi-sub">Pending pre-board tasks</div>
+              <div class="kpi-drill" style="color:#F97316"><span>View stage</span><span>→</span></div>
+            </div>
+            <div class="kpi-tile" style="--tile-accent:#A78BFA;cursor:pointer" @click="v='hr_orient'">
+              <div class="kpi-label">🎯 Orientation</div>
+              <div class="kpi-num" style="color:#A78BFA" x-text="hrEmps().filter(e=>e.ori&&e.ori.done<e.ori.total).length"></div>
+              <div class="kpi-sub">In orientation</div>
+              <div class="kpi-drill" style="color:#A78BFA"><span>View stage</span><span>→</span></div>
+            </div>
+            <div class="kpi-tile" style="--tile-accent:var(--green);cursor:pointer" @click="v='hr_compliance'">
+              <div class="kpi-label">📝 HR Compliance</div>
+              <div class="kpi-num" style="color:var(--green)" x-text="hrEmps().filter(e=>e.hr&&e.hr.done<e.hr.total).length"></div>
+              <div class="kpi-sub">Pending compliance</div>
+              <div class="kpi-drill" style="color:var(--green)"><span>View stage</span><span>→</span></div>
+            </div>
+          </div>
+
+          <!-- HR CANDIDATE STRIP -->
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div class="stitle">My Candidates — Quick View</div>
+              <button @click="v='hr_pipe'" class="btn btn-ghost btn-sm">View All →</button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <template x-for="e in hrEmps()">
+                <div style="text-align:center;cursor:pointer;padding:10px 8px;border-radius:var(--r8);border:1px solid var(--w3);min-width:70px;transition:all .15s;position:relative"
+                  @click="v='hr_pipe'"
+                  onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'"
+                  onmouseout="this.style.borderColor='var(--w3)';this.style.background=''">
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block;margin:0 auto 5px">
+                  <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
+                  <div style="font-size:10px;font-weight:900;margin-top:2px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
+                </div>
+              </template>
+              <div x-show="hrEmps().length===0" style="flex:1;text-align:center;padding:24px;color:var(--w5)">No candidates yet — click + New Candidate to add</div>
+            </div>
+          </div>
+
         </div>
+        <!-- END HR DASHBOARD ══════════════════════════════════════ -->
+
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- HR PIPELINE VIEW                                       -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <div x-show="v==='hr_pipe' && mlevel===4 && mdept==='HR_Status'">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Active Pipeline</div>
+              <div class="psub" x-text="hrEmps().length+' candidates in '+mmarket"></div>
+            </div>
+            <button @click="hrForm=true" class="btn btn-primary btn-sm">+ New Candidate</button>
+          </div>
+          <div class="cg">
+            <template x-for="(e,ei) in hrEmps()">
+              <div class="emp-card" :class="{'pri-urgent':e.priority==='urgent','pri-high':e.priority==='high'}">
+                <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px">
+                  <div style="position:relative;width:50px;height:50px;flex-shrink:0">
+                    <svg width="50" height="50" class="ring" viewBox="0 0 50 50">
+                      <circle class="ring-bg" cx="25" cy="25" r="20"/>
+                      <circle class="ring-fg" cx="25" cy="25" r="20" :stroke="pc(opct(e))" :stroke-dasharray="125.7" :stroke-dashoffset="125.7*(1-opct(e)/100)"/>
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+                      <span style="font-size:10px;font-weight:900" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></span>
+                    </div>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="e.name"></div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:1px;font-weight:300" x-text="e.role"></div>
+                    <div style="display:flex;gap:5px;align-items:center;margin-top:5px">
+                      <span class="chip c-green" style="font-size:9px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
+                    </div>
+                    <div style="font-size:10px;color:var(--w5);margin-top:3px;font-weight:300">📅 <span x-text="e.dateString"></span></div>
+                  </div>
+                </div>
+                <!-- Stage ladder — HR sees pre-board, orientation, HR compliance highlighted -->
+                <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
+                  <template x-for="s in stages">
+                    <div class="stg" :class="scls(e,s.k)">
+                      <div style="display:flex;align-items:center;justify-content:space-between">
+                        <span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em" :style="'color:'+scol(e,s.k)" x-text="s.short"></span>
+                        <span style="font-size:10px;font-weight:700" :style="'color:'+scol(e,s.k)">
+                          <span x-text="e[s.k].done"></span>/<span x-text="e[s.k].total||'—'"></span>
+                        </span>
+                      </div>
+                      <div class="pbar" style="margin-top:3px">
+                        <div class="pbar-fill" :style="'width:'+spce(e,s.k)+'%'"></div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+                <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View Details</button>
+                </div>
+              </div>
+            </template>
+            <div x-show="hrEmps().length===0" class="empty" style="grid-column:1/-1">
+              <div style="font-size:32px;margin-bottom:10px">📋</div>
+              <div style="font-size:15px;font-weight:700">No candidates yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Click + New Candidate to add your first hire</div>
+            </div>
+          </div>
+        </div>
+        <!-- END HR PIPELINE ══════════════════════════════════════ -->
+
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- HR PRE-BOARDING VIEW                                   -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <div x-show="v==='hr_preboard' && mlevel===4 && mdept==='HR_Status'">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Pre-Boarding</div>
+            <div class="psub" x-text="hrEmps().filter(e=>e.pre&&e.pre.done<e.pre.total).length+' candidates pending pre-board tasks'"></div>
+          </div>
+          <div class="cg">
+            <template x-for="e in hrEmps().filter(e=>e.pre&&e.pre.total>0)">
+              <div class="card" style="padding:16px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
+                  <div>
+                    <div style="font-size:13px;font-weight:900" x-text="e.name"></div>
+                    <div style="font-size:11px;color:var(--w5)" x-text="e.role"></div>
+                  </div>
+                  <div style="margin-left:auto">
+                    <span class="chip" :class="e.pre.done===e.pre.total?'c-green':'c-warn'" x-text="e.pre.done+'/'+e.pre.total+' tasks'"></span>
+                  </div>
+                </div>
+                <div class="pbar" style="height:6px;margin-bottom:8px">
+                  <div class="pbar-fill" :style="'width:'+spce(e,'pre')+'%'"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <template x-for="task in (e.pre.items||[])">
+                    <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)">
+                      <div style="width:14px;height:14px;border-radius:3px;border:1px solid var(--w3);flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border-color:var(--green)':''">
+                        <svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                      <span style="font-size:12px;font-weight:500" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch)'" x-text="task.name"></span>
+                    </div>
+                  </template>
+                </div>
+                <button @click="omgr(e,stages.find(s=>s.k==='pre'))" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:10px">Open Task Manager</button>
+              </div>
+            </template>
+            <div x-show="hrEmps().filter(e=>e.pre&&e.pre.total>0).length===0" class="empty" style="grid-column:1/-1">
+              <div style="font-size:32px;margin-bottom:10px">📋</div>
+              <div style="font-weight:700">No pre-boarding candidates</div>
+            </div>
+          </div>
+        </div>
+        <!-- END HR PRE-BOARDING ══════════════════════════════════ -->
+
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- HR ORIENTATION VIEW                                    -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <div x-show="v==='hr_orient' && mlevel===4 && mdept==='HR_Status'">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Orientation</div>
+            <div class="psub" x-text="hrEmps().filter(e=>e.ori&&e.ori.total>0).length+' candidates in orientation'"></div>
+          </div>
+          <div class="cg">
+            <template x-for="e in hrEmps().filter(e=>e.ori&&e.ori.total>0)">
+              <div class="card" style="padding:16px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
+                  <div>
+                    <div style="font-size:13px;font-weight:900" x-text="e.name"></div>
+                    <div style="font-size:11px;color:var(--w5)" x-text="e.role"></div>
+                  </div>
+                  <div style="margin-left:auto">
+                    <span class="chip" :class="e.ori.done===e.ori.total?'c-green':'c-warn'" x-text="e.ori.done+'/'+e.ori.total+' tasks'"></span>
+                  </div>
+                </div>
+                <div class="pbar" style="height:6px;margin-bottom:8px">
+                  <div class="pbar-fill" :style="'width:'+spce(e,'ori')+'%'"></div>
+                </div>
+                <button @click="omgr(e,stages.find(s=>s.k==='ori'))" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:6px">Open Task Manager</button>
+              </div>
+            </template>
+            <div x-show="hrEmps().filter(e=>e.ori&&e.ori.total>0).length===0" class="empty" style="grid-column:1/-1">
+              <div style="font-size:32px;margin-bottom:10px">🎯</div>
+              <div style="font-weight:700">No orientation candidates</div>
+            </div>
+          </div>
+        </div>
+        <!-- END HR ORIENTATION ═══════════════════════════════════ -->
+
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- HR COMPLIANCE VIEW                                     -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <div x-show="v==='hr_compliance' && mlevel===4 && mdept==='HR_Status'">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">HR Compliance</div>
+            <div class="psub" x-text="hrEmps().filter(e=>e.hr&&e.hr.total>0).length+' candidates in HR compliance'"></div>
+          </div>
+          <div class="cg">
+            <template x-for="e in hrEmps().filter(e=>e.hr&&e.hr.total>0)">
+              <div class="card" style="padding:16px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
+                  <div>
+                    <div style="font-size:13px;font-weight:900" x-text="e.name"></div>
+                    <div style="font-size:11px;color:var(--w5)" x-text="e.role"></div>
+                  </div>
+                  <div style="margin-left:auto">
+                    <span class="chip" :class="e.hr.done===e.hr.total?'c-green':'c-warn'" x-text="e.hr.done+'/'+e.hr.total+' tasks'"></span>
+                  </div>
+                </div>
+                <div class="pbar" style="height:6px;margin-bottom:8px">
+                  <div class="pbar-fill" :style="'width:'+spce(e,'hr')+'%'"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <template x-for="task in (e.hr.items||[])">
+                    <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)">
+                      <div style="width:14px;height:14px;border-radius:3px;border:1px solid var(--w3);flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border-color:var(--green)':''">
+                        <svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                      <span style="font-size:12px;font-weight:500" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch)'" x-text="task.name"></span>
+                    </div>
+                  </template>
+                </div>
+                <button @click="omgr(e,stages.find(s=>s.k==='hr'))" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:10px">Open Task Manager</button>
+              </div>
+            </template>
+            <div x-show="hrEmps().filter(e=>e.hr&&e.hr.total>0).length===0" class="empty" style="grid-column:1/-1">
+              <div style="font-size:32px;margin-bottom:10px">📝</div>
+              <div style="font-weight:700">No HR compliance candidates</div>
+            </div>
+          </div>
+        </div>
+        <!-- END HR COMPLIANCE ════════════════════════════════════ -->
+
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- HR ENTRY FORM MODAL                                    -->
+        <!-- ══════════════════════════════════════════════════════ -->
+        <div x-show="hrForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px"
+          :style="hrForm?'display:flex':''">
+          <div class="card" style="width:100%;max-width:460px;padding:28px;border-radius:var(--r16)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
+              <div>
+                <div style="font-size:18px;font-weight:900;color:var(--ch)">New Candidate</div>
+                <div style="font-size:12px;color:var(--w5);margin-top:3px">Add a new hire to your onboarding pipeline</div>
+              </div>
+              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:''}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div>
+                <div class="f-label">Full Name *</div>
+                <input type="text" x-model="hrNH.n" class="field" placeholder="Enter candidate full name" style="width:100%;box-sizing:border-box">
+              </div>
+              <div>
+                <div class="f-label">Designation *</div>
+                <input type="text" x-model="hrNH.d" class="field" placeholder="Job title / role" style="width:100%;box-sizing:border-box">
+              </div>
+              <div>
+                <div class="f-label">Country</div>
+                <select x-model="hrNH.c" class="field" style="width:100%;box-sizing:border-box">
+                  <template x-for="b in branches">
+                    <option :value="b" x-text="b"></option>
+                  </template>
+                </select>
+              </div>
+              <div>
+                <div class="f-label">Joining Date *</div>
+                <input type="date" x-model="hrNH.dt" class="field" :max="new Date().toISOString().split('T')[0]" style="width:100%;box-sizing:border-box">
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:22px">
+              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:''}" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+              <button @click="hrAddCandidate()" :disabled="!hrNH.n||!hrNH.d||!hrNH.dt||sv" class="btn btn-primary" style="flex:1;justify-content:center">
+                <div x-show="sv" style="display:none" class="spinner spinner-w"></div>
+                <span x-text="sv?'Adding…':'Add Candidate'"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- END HR ENTRY FORM ════════════════════════════════════ -->
 
         <!-- PIPELINE -->
         <div x-show="v==='pipe'">
@@ -1241,7 +1588,7 @@ function app(){
     loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
-    ld:false,sv:false,useDateFilter:false,dashTile:null,
+    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrNH:{n:'',d:'',c:'',dt:''},
     emps:[],tpls:[],
     branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
     flags:{
@@ -1285,7 +1632,7 @@ function app(){
         if(s){
           const r = JSON.parse(s);
           this.mname=r.name; this.mrole=r.role; this.mlevel=r.level;
-          this.mmarket=r.market; this.mdept=r.dept; this.mtitle=r.title;
+          this.mmarket=r.market; this.mdept=r.dept||null; this.mtitle=r.title;
           this.mf=r.market==='All'?'All':r.market;
           this.loggedIn=true;
           this.fetchAll();
@@ -1362,7 +1709,7 @@ function app(){
       let l=this.emps.filter(e=>{
         const mok=m==='All'||e.country===m;
         const sok=!this.sq||e.name.toLowerCase().includes(this.sq.toLowerCase())||e.role.toLowerCase().includes(this.sq.toLowerCase());
-        const tok=!this.useDateFilter||(e.month==this.sm&&e.year==this.sy);
+        const tok=!this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
         return mok&&sok&&tok;
       });
       // Dashboard tile drill-down filter
@@ -1398,6 +1745,33 @@ function app(){
         .filter(x=>x.count>0)
         .sort((a,b)=>b.pct-a.pct);
     },
+    // ── HR SPECIFIC METHODS ───────────────────────────────────────
+    hrEmps(){
+      // Returns employees for this HR's market, filtered by date if active
+      return this.emps.filter(e=>{
+        const mok = e.country===this.mmarket;
+        const tok = !this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
+        return mok&&tok;
+      });
+    },
+    hrAddCandidate(){
+      if(!this.hrNH.n||!this.hrNH.d||!this.hrNH.dt)return;
+      this.sv=true;
+      const emp={
+        name:this.hrNH.n.toUpperCase(),
+        designation:this.hrNH.d,
+        country:this.hrNH.c||this.mmarket,
+        joiningDate:this.hrNH.dt,
+        priority:'normal'
+      };
+      this.gas('addNewEmployee',{emp}).then(()=>{
+        this.sv=false;
+        this.hrForm=false;
+        this.hrNH={n:'',d:'',c:this.mmarket,dt:''};
+        this.fetchAll();
+      }).catch(()=>{this.sv=false;});
+    },
+    // ── END HR METHODS ────────────────────────────────────────────
     certCount(){ return this.emps.filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total).length; },
     activeCount(){ return this.emps.filter(e=>this.stages.some(s=>e[s.k]&&e[s.k].done>0)&&!(e.cert&&e.cert.total>0&&e.cert.done===e.cert.total)).length; },
     pendingCount(){ return this.emps.filter(e=>this.stages.every(s=>!e[s.k]||e[s.k].done===0)).length; },
