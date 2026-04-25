@@ -955,7 +955,7 @@ textarea.field{resize:none}
               <div class="kpi-sub" x-text="branches.filter(b=>emps.some(e=>e.country===b)).length+' active Mountain Peaks'"></div>
               <div class="kpi-drill" style="color:var(--w5)"><span>View all candidates</span><span>→</span></div>
             </div>
-            <div class="kpi-tile" style="--tile-accent:var(--green);cursor:pointer" @click="v='rts_mp'">
+            <div class="kpi-tile" style="--tile-accent:var(--green);cursor:pointer" @click="mf='All';pf='done';v='rts_pipe'">
               <div class="kpi-label">🏆 Floor Ready</div>
               <div class="kpi-num" style="color:var(--green)" x-text="certCount()"></div>
               <div class="kpi-sub" x-text="emps.length?Math.round(certCount()/emps.length*100)+'% certification rate':'0%'"></div>
@@ -971,13 +971,13 @@ textarea.field{resize:none}
 
           <!-- RTS KPI TILES ROW 2 -->
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
-            <div class="kpi-tile" style="--tile-accent:#F97316;cursor:pointer" @click="mf='All';v='rts_pipe'">
+            <div class="kpi-tile" style="--tile-accent:#F97316;cursor:pointer" @click="mf='All';pf='active';v='rts_pipe'">
               <div class="kpi-label">🔄 In Training</div>
               <div class="kpi-num" style="color:#F97316" x-text="activeCount()"></div>
               <div class="kpi-sub">Active across all stages</div>
               <div class="kpi-drill" style="color:#F97316"><span>View pipeline</span><span>→</span></div>
             </div>
-            <div class="kpi-tile" style="--tile-accent:var(--danger);cursor:pointer" @click="mf='All';v='rts_pipe'">
+            <div class="kpi-tile" style="--tile-accent:var(--danger);cursor:pointer" @click="mf='All';pf='all';sq='';v='rts_pipe'">
               <div class="kpi-label">🚨 Needs Attention</div>
               <div class="kpi-num" style="color:var(--danger)" x-text="urgentCount()"></div>
               <div class="kpi-sub">High + urgent priority</div>
@@ -1064,6 +1064,7 @@ textarea.field{resize:none}
                   </div>
                   <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60px" x-text="e.name.split(' ')[0]"></div>
                   <div style="font-size:10px;font-weight:900;margin-top:1px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
+                  <div style="font-size:9px;color:var(--w5);margin-top:2px;font-weight:300" x-text="e.dateString||''"></div>
                 </div>
               </template>
             </div>
