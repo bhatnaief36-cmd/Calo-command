@@ -202,45 +202,34 @@ textarea.field{resize:none}
 <!-- LOGIN -->
 <div x-show="!loggedIn" style="display:block" class="login-bg">
   <div class="login-card au">
+
     <div style="text-align:center;margin-bottom:32px">
-      <div class="logo" style="font-size:38px;letter-spacing:-2px">CALO</div>
-      <div class="logo-sub" style="margin-top:6px;font-size:12px">Onboarding Command Center</div>
+      <div class="logo" style="font-size:42px;letter-spacing:-2px">CALO</div>
+      <div style="width:36px;height:3px;background:var(--green);border-radius:2px;margin:10px auto"></div>
+      <div class="logo-sub" style="margin-top:10px;font-size:12px">Onboarding Command Center</div>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
-      <template x-for="(l,i) in [{n:'L1',t:'Admin'},{n:'L2',t:'Regional'},{n:'L3',t:'Coord.'},{n:'L4',t:'Trainer'}]">
-        <div class="lvl-pill" :class="hint===i?'on':''" @click="hint=i">
-          <div style="font-size:15px;font-weight:900" x-text="l.n"></div>
-          <div style="font-size:9px;margin-top:1px;font-weight:400" x-text="l.t"></div>
-        </div>
-      </template>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;flex-direction:column;gap:14px">
       <div>
         <div class="f-label">User ID</div>
-        <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter user ID" class="field" style="text-transform:uppercase;font-weight:700;letter-spacing:.04em" autocomplete="off">
+        <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter your user ID" class="field" style="text-transform:uppercase;font-weight:700;letter-spacing:.04em" autocomplete="off">
       </div>
       <div>
         <div class="f-label">Password</div>
-        <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter password" class="field" autocomplete="off">
+        <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter your password" class="field" autocomplete="off">
       </div>
-      <div x-show="lerr" style="background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
-      <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;font-size:14px;border-radius:var(--r8);opacity:1" :style="ll?'opacity:.85;cursor:not-allowed':''">
+      <div x-show="lerr" style="display:none;background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
+      <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px;border-radius:var(--r8)" :style="ll?'opacity:.85;cursor:not-allowed':''">
         <div x-show="ll" style="display:none" class="spinner spinner-w"></div>
         <span x-text="ll?'Signing in…':'Sign In'"></span>
       </button>
-
     </div>
 
-    <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--w3)">
-      <span style="font-size:11px;color:var(--w5);font-weight:300">Authorized personnel only · Calo Group</span>
-      <div style="margin-top:12px">
-        <button @click="demoLogin()" class="btn btn-outline btn-sm" style="width:100%;justify-content:center;font-size:12px;color:var(--green);border-color:var(--green-m);background:var(--green-l)">
-          🎯 Preview Demo (no backend needed)
-        </button>
-      </div>
+    <div style="text-align:center;margin-top:28px;padding-top:20px;border-top:1px solid var(--w3)">
+      <div style="font-size:11px;color:var(--w6);font-weight:400">© 2026 Calo · All Rights Reserved</div>
+      <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">Authorized personnel only</div>
     </div>
+
   </div>
 </div>
 
