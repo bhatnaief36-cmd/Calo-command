@@ -1868,10 +1868,10 @@ function app(){
 
       // Then sync to backend in background
       const emp = {
-        name: newEmp.name,
-        designation: newEmp.role,
-        country: newEmp.country,
-        joiningDate: this.hrNH.dt||newEmp.dateString,
+        name:     newEmp.name,
+        role:     newEmp.role,       // backend reads emp.role not emp.designation
+        country:  newEmp.country,
+        date:     newEmp.dateString, // backend reads emp.date not emp.joiningDate
         priority: 'normal',
         startStage: stg
       };
@@ -2012,7 +2012,11 @@ function app(){
       if(e.country!==this.mmarket)return false;
       if(this.mlevel===2)return true;
       if(this.mlevel===3)return['qual','ojt','assess','cert'].includes(k);
-      if(this.mlevel===4){const s=this.stages.find(x=>x.k===k);return s?s.col===this.mdept:false;}
+      if(this.mlevel===4){
+        // HR users (HR_Status) can edit pre-boarding, orientation AND hr compliance
+        if(this.mdept==='HR_Status') return ['pre','ori','hr'].includes(k);
+        const s=this.stages.find(x=>x.k===k);return s?s.col===this.mdept:false;
+      }
       return false;
     },
 
