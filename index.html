@@ -557,6 +557,25 @@ textarea.field{resize:none}
     <div class="main-area">
       <div class="page-wrap">
 
+
+        <!-- ── ANNOUNCEMENT BANNER — shown to all levels ─────────── -->
+        <template x-if="visibleAnnouncements().length>0">
+          <div style="margin-bottom:16px">
+            <template x-for="(a,ai) in visibleAnnouncements()">
+              <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--r12);margin-bottom:8px;animation:fup .3s ease"
+                :style="a.priority==='urgent'?'background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.3)':a.priority==='high'?'background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.3)':'background:var(--green-l);border:1px solid var(--green-m)'">
+                <span style="font-size:20px;flex-shrink:0" x-text="a.priority==='urgent'?'🚨':a.priority==='high'?'⚠️':'📢'"></span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13px;font-weight:900" :style="a.priority==='urgent'?'color:var(--danger)':a.priority==='high'?'color:var(--warn)':'color:var(--green-h)'" x-text="a.title"></div>
+                  <div style="font-size:12px;color:var(--ch);margin-top:3px;line-height:1.5" x-text="a.body"></div>
+                  <div style="font-size:10px;color:var(--w5);margin-top:4px" x-text="'Posted '+a.date+' · From Training Architect'"></div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </template>
+        <!-- ── END ANNOUNCEMENT BANNER ─────────────────────────────── -->
+
         <!-- DASHBOARD: L1 — TRAINING ARCHITECT -->
         <div x-show="v==='dash' && mlevel===1" style="display:flex;flex-direction:column;min-height:100%">
 
@@ -3751,7 +3770,8 @@ function app(){
           this.mf=r.market==='All'?'All':r.market;
           this.loggedIn=true;
           this.loadMaterials();
-          if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+          this.l1LoadAnnouncements(); // All levels load announcements
+          if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
           if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
           this.fetchAll();
@@ -3809,10 +3829,12 @@ function app(){
             this.loggedIn=true;
             this.loadMaterials();
             if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
-            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+            this.l1LoadAnnouncements(); // All levels load announcements
+          if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
             if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
-            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+            this.l1LoadAnnouncements(); // All levels load announcements
+          if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
           if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
             this.fetchAll();
@@ -3944,6 +3966,13 @@ function app(){
       this.l1AnnNew={title:'',body:'',priority:'normal',audience:'all'};
     },
     l1SaveAnnouncements(){ try{localStorage.setItem('calo_announcements',JSON.stringify(this.l1Announcements));}catch(e){} },
+    visibleAnnouncements(){
+      if(this.mlevel===1) return []; // L1 sees them in Announcements tab only
+      return this.l1Announcements.filter(a=>{
+        const levelStr = String(this.mlevel);
+        return a.audience==='all' || a.audience===levelStr;
+      }).slice(-3); // Show max 3 most recent
+    },
     l1LoadAnnouncements(){ try{const d=localStorage.getItem('calo_announcements');if(d)this.l1Announcements=JSON.parse(d);}catch(e){} },
     l1SaveAudit(){ try{localStorage.setItem('calo_audit',JSON.stringify(this.l1AuditLog));}catch(e){} },
     l1LoadAudit(){ try{const d=localStorage.getItem('calo_audit');if(d)this.l1AuditLog=JSON.parse(d);}catch(e){} },
