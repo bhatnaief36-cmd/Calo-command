@@ -26,7 +26,7 @@ body{background:var(--w1);color:var(--ch);font-family:var(--f);font-size:13px;fo
 .app-shell{display:flex!important;height:100vh;overflow:hidden}
 .sidebar{width:228px;flex-shrink:0;background:var(--w1);border-right:1px solid var(--w3);display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .topbar{background:var(--w1);border-bottom:1px solid var(--w3);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.main-area{flex:1;overflow-y:auto;background:var(--w2)}
+.main-area{flex:1;overflow-y:auto;background:var(--w2);min-height:0}
 .page-wrap{padding:28px 32px}
 
 /* LOGO */
@@ -341,7 +341,7 @@ textarea.field{resize:none}
   </div>
 
   <!-- CONTENT -->
-  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0">
 
     <!-- TOPBAR -->
     <div class="topbar">
