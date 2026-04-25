@@ -285,6 +285,32 @@ textarea.field{resize:none}
 
 
 
+
+      <!-- ── DEPARTMENT MANAGER NAVIGATION ────────────────────── -->
+      <div x-show="mlevel===4 && mdept==='DEPT_MANAGER'">
+        <div class="nav-group-label" style="margin-top:4px">Dept. Manager Workspace</div>
+        <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-link" :class="v==='dm_pipe'?'on':''" @click="v='dm_pipe'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Candidate Progress
+        </div>
+        <div class="nav-link" :class="v==='dm_ojt'?'on':''" @click="v='dm_ojt'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          OJT Training
+        </div>
+        <div class="nav-link" :class="v==='dm_assess'?'on':''" @click="v='dm_assess'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Pre-Floor Assessment
+        </div>
+        <div class="nav-link" :class="v==='dm_cert'?'on':''" @click="v='dm_cert'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+          Floor Ready Certification
+        </div>
+      </div>
+      <!-- ── END DEPT MANAGER NAVIGATION ────────────────────────── -->
       <!-- ── QUALITY TRAINER NAVIGATION ────────────────────────── -->
       <div x-show="mlevel===4 && mdept==='Quality_Status'">
         <div class="nav-group-label" style="margin-top:4px">Quality Workspace</div>
@@ -808,6 +834,148 @@ textarea.field{resize:none}
 
         <!-- DASHBOARD: L4 — Trainer (blank — build later) -->
         <!-- ══════════════════════════════════════════════════════════ -->
+        <!-- DEPARTMENT MANAGER DASHBOARD -->
+        <!-- Condition: v==="dash" && mlevel===4 && mdept==="DEPT_MANAGER" -->
+        <div x-show="v==='dash' && mlevel===4 && mdept==='DEPT_MANAGER'" style="display:flex;flex-direction:column;min-height:100%">
+          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Department Manager · <span x-text="mmarket"></span></div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+            </div>
+            <div style="display:flex;gap:0;align-items:center">
+              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="dmEmps().length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY TRAINEES</div></div>
+              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="dmEmps().filter(e=>e.ojt&&e.ojt.done>0&&e.ojt.done<e.ojt.total).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN OJT</div></div>
+              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="dmEmps().filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">FLOOR READY</div></div>
+              <div style="padding-left:16px"><button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'"></button></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+            <div class="kpi-tile" style="--tile-accent:var(--ch);cursor:pointer" @click="v='dm_pipe'"><div class="kpi-label">👥 Candidate Progress</div><div class="kpi-num" style="color:var(--ch)" x-text="dmEmps().length"></div><div class="kpi-sub">Arrived from Quality</div><div class="kpi-drill" style="color:var(--w5)"><span>View all</span><span>→</span></div></div>
+            <div class="kpi-tile" style="--tile-accent:#F97316;cursor:pointer" @click="v='dm_ojt'"><div class="kpi-label">🔧 OJT Training</div><div class="kpi-num" style="color:#F97316" x-text="dmEmps().filter(e=>e.ojt&&e.ojt.done<e.ojt.total).length"></div><div class="kpi-sub">Pending OJT tasks</div><div class="kpi-drill" style="color:#F97316"><span>View stage</span><span>→</span></div></div>
+            <div class="kpi-tile" style="--tile-accent:#A78BFA;cursor:pointer" @click="v='dm_assess'"><div class="kpi-label">✅ Pre-Floor Assessment</div><div class="kpi-num" style="color:#A78BFA" x-text="dmEmps().filter(e=>e.ojt&&e.ojt.done===e.ojt.total&&e.assess&&e.assess.done<e.assess.total).length"></div><div class="kpi-sub">Awaiting assessment</div><div class="kpi-drill" style="color:#A78BFA"><span>View stage</span><span>→</span></div></div>
+            <div class="kpi-tile" style="--tile-accent:var(--green);cursor:pointer" @click="v='dm_cert'"><div class="kpi-label">🏆 Floor Ready Cert</div><div class="kpi-num" style="color:var(--green)" x-text="dmEmps().filter(e=>e.assess&&e.assess.done===e.assess.total&&e.cert&&e.cert.done<e.cert.total).length"></div><div class="kpi-sub">Pending certification</div><div class="kpi-drill" style="color:var(--green)"><span>View stage</span><span>→</span></div></div>
+          </div>
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div class="stitle">My Trainees</div><button @click="v='dm_pipe'" class="btn btn-ghost btn-sm">View All →</button></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <template x-for="e in dmEmps()">
+                <div style="text-align:center;cursor:pointer;padding:10px 8px;border-radius:var(--r8);border:1px solid var(--w3);min-width:70px;transition:all .15s" @click="v='dm_pipe'" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background=''">
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block;margin:0 auto 5px">
+                  <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
+                  <div style="font-size:10px;font-weight:900;margin-top:2px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
+                </div>
+              </template>
+              <div x-show="dmEmps().length===0" style="flex:1;text-align:center;padding:24px;color:var(--w5)">No trainees yet — candidates arrive after Quality sign-off</div>
+            </div>
+          </div>
+        </div>
+        <!-- END DM DASHBOARD -->
+
+        <!-- DM CANDIDATE PROGRESS CARDS -->
+        <div x-show="v==='dm_pipe' && mlevel===4 && mdept==='DEPT_MANAGER'">
+          <div style="margin-bottom:24px"><div class="ptitle">Candidate Progress Cards</div><div class="psub" x-text="dmEmps().length+' trainees · '+mmarket"></div></div>
+          <div class="cg">
+            <template x-for="(e,ei) in dmEmps()">
+              <div class="emp-card" :class="{'pri-urgent':e.priority==='urgent','pri-high':e.priority==='high'}">
+                <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px">
+                  <div style="position:relative;width:50px;height:50px;flex-shrink:0">
+                    <svg width="50" height="50" class="ring" viewBox="0 0 50 50"><circle class="ring-bg" cx="25" cy="25" r="20"/><circle class="ring-fg" cx="25" cy="25" r="20" :stroke="pc(opct(e))" :stroke-dasharray="125.7" :stroke-dashoffset="125.7*(1-opct(e)/100)"/></svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:900" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></span></div>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="e.name"></div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:1px;font-weight:300" x-text="e.role"></div>
+                    <span class="chip c-green" style="font-size:9px;margin-top:5px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
+                  <template x-for="s in stages">
+                    <div class="stg" :class="scls(e,s.k)">
+                      <div style="display:flex;align-items:center;justify-content:space-between">
+                        <span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em" :style="'color:'+scol(e,s.k)" x-text="s.short"></span>
+                        <span style="font-size:10px;font-weight:700" :style="'color:'+scol(e,s.k)"><span x-text="e[s.k]?e[s.k].done:0"></span>/<span x-text="e[s.k]?e[s.k].total:'—'"></span></span>
+                      </div>
+                      <div class="pbar" style="margin-top:3px"><div class="pbar-fill" :style="'width:'+spce(e,s.k)+'%'"></div></div>
+                    </div>
+                  </template>
+                </div>
+                <div style="padding-top:10px;border-top:1px solid var(--w3)"><button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View</button></div>
+              </div>
+            </template>
+            <div x-show="dmEmps().length===0" class="empty" style="grid-column:1/-1"><div style="font-size:32px;margin-bottom:10px">🔧</div><div style="font-size:15px;font-weight:700">No trainees yet</div></div>
+          </div>
+        </div>
+        <!-- END DM CANDIDATE PROGRESS -->
+
+        <!-- DM OJT TRAINING -->
+        <div x-show="v==='dm_ojt' && mlevel===4 && mdept==='DEPT_MANAGER'">
+          <div style="margin-bottom:24px"><div class="ptitle">OJT Training</div><div class="psub" x-text="dmEmps().filter(e=>e.ojt&&e.ojt.total>0&&e.ojt.done<e.ojt.total).length+' candidates in OJT'"></div></div>
+          <div class="cg">
+            <template x-for="e in dmEmps().filter(e=>e.ojt&&e.ojt.total>0&&e.ojt.done<e.ojt.total)">
+              <div class="card" style="padding:16px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
+                  <div style="flex:1"><div style="font-size:13px;font-weight:900" x-text="e.name"></div><div style="font-size:11px;color:var(--w5)" x-text="e.role"></div></div>
+                  <span class="chip c-warn" x-text="(e.ojt?e.ojt.done:0)+'/'+e.ojt.total+' tasks'"></span>
+                </div>
+                <div class="pbar" style="height:6px;margin-bottom:10px"><div class="pbar-fill" :style="'width:'+spce(e,'ojt')+'%'"></div></div>
+                <div style="display:flex;gap:6px">
+                  <button @click="omgr(e,stages.find(s=>s.k==='ojt'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Task Manager</button>
+                  <button x-show="e.ojt&&e.ojt.done===e.ojt.total" @click="dmAdvance(e,'ojt')" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Move to Assessment</button>
+                </div>
+              </div>
+            </template>
+            <div x-show="dmEmps().filter(e=>e.ojt&&e.ojt.total>0&&e.ojt.done<e.ojt.total).length===0" class="empty" style="grid-column:1/-1"><div style="font-size:32px;margin-bottom:10px">🔧</div><div style="font-weight:700">No candidates in OJT</div></div>
+          </div>
+        </div>
+        <!-- END DM OJT -->
+
+        <!-- DM PRE-FLOOR ASSESSMENT -->
+        <div x-show="v==='dm_assess' && mlevel===4 && mdept==='DEPT_MANAGER'">
+          <div style="margin-bottom:24px"><div class="ptitle">Pre-Floor Assessment</div><div class="psub" x-text="dmEmps().filter(e=>e.ojt&&e.ojt.done===e.ojt.total&&e.assess&&e.assess.done<e.assess.total).length+' candidates in assessment'"></div></div>
+          <div class="cg">
+            <template x-for="e in dmEmps().filter(e=>e.ojt&&e.ojt.done===e.ojt.total&&e.assess&&e.assess.total>0&&e.assess.done<e.assess.total)">
+              <div class="card" style="padding:16px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
+                  <div style="flex:1"><div style="font-size:13px;font-weight:900" x-text="e.name"></div><div style="font-size:11px;color:var(--w5)" x-text="e.role"></div></div>
+                  <span class="chip" style="background:rgba(167,139,250,.12);color:#7C3AED" x-text="(e.assess?e.assess.done:0)+'/'+e.assess.total+' tasks'"></span>
+                </div>
+                <div class="pbar" style="height:6px;margin-bottom:10px"><div class="pbar-fill" style="background:#A78BFA" :style="'width:'+spce(e,'assess')+'%';background:'#A78BFA'"></div></div>
+                <div style="display:flex;gap:6px">
+                  <button @click="omgr(e,stages.find(s=>s.k==='assess'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Task Manager</button>
+                  <button x-show="e.assess&&e.assess.done===e.assess.total" @click="dmAdvance(e,'assess')" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Move to Certification</button>
+                </div>
+              </div>
+            </template>
+            <div x-show="dmEmps().filter(e=>e.ojt&&e.ojt.done===e.ojt.total&&e.assess&&e.assess.done<e.assess.total).length===0" class="empty" style="grid-column:1/-1"><div style="font-size:32px;margin-bottom:10px">✅</div><div style="font-weight:700">No candidates in assessment</div><div style="font-size:12px;margin-top:4px;font-weight:300">Candidates appear here after completing OJT</div></div>
+          </div>
+        </div>
+        <!-- END DM ASSESSMENT -->
+
+        <!-- DM FLOOR READY CERTIFICATION -->
+        <div x-show="v==='dm_cert' && mlevel===4 && mdept==='DEPT_MANAGER'">
+          <div style="margin-bottom:24px"><div class="ptitle">Floor Ready Certification</div><div class="psub" x-text="dmEmps().filter(e=>e.assess&&e.assess.done===e.assess.total&&e.cert&&e.cert.done<e.cert.total).length+' candidates pending certification'"></div></div>
+          <div class="cg">
+            <template x-for="e in dmEmps().filter(e=>e.assess&&e.assess.done===e.assess.total&&e.cert&&e.cert.total>0&&e.cert.done<e.cert.total)">
+              <div class="card" style="padding:16px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
+                  <div style="flex:1"><div style="font-size:13px;font-weight:900" x-text="e.name"></div><div style="font-size:11px;color:var(--w5)" x-text="e.role"></div></div>
+                  <span class="chip c-green" x-text="(e.cert?e.cert.done:0)+'/'+e.cert.total+' tasks'"></span>
+                </div>
+                <div class="pbar" style="height:6px;margin-bottom:10px"><div class="pbar-fill" :style="'width:'+spce(e,'cert')+'%'"></div></div>
+                <div style="display:flex;gap:6px">
+                  <button @click="omgr(e,stages.find(s=>s.k==='cert'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Task Manager</button>
+                  <button x-show="e.cert&&e.cert.done===e.cert.total" @click="dmSignOff(e)" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">🏆 Floor Ready!</button>
+                </div>
+              </div>
+            </template>
+            <div x-show="dmEmps().filter(e=>e.assess&&e.assess.done===e.assess.total&&e.cert&&e.cert.done<e.cert.total).length===0" class="empty" style="grid-column:1/-1"><div style="font-size:32px;margin-bottom:10px">🏆</div><div style="font-weight:700">No candidates pending certification</div><div style="font-size:12px;margin-top:4px;font-weight:300">Candidates appear here after completing assessment</div></div>
+          </div>
+        </div>
+        <!-- END DM CERTIFICATION -->
+
         <!-- QUALITY TRAINER DASHBOARD                                  -->
         <!-- Condition: mlevel===4 && mdept==='Quality_Status'          -->
         <!-- ══════════════════════════════════════════════════════════ -->
@@ -2030,6 +2198,39 @@ function app(){
         .sort((a,b)=>b.pct-a.pct);
     },
 
+
+    // ── DEPARTMENT MANAGER METHODS ────────────────────────────────
+    dmEmps(){
+      // Candidates who completed Quality — arrived from Quality sign-off
+      return this.emps.filter(e=>{
+        const mok = e.country===this.mmarket;
+        const tok = !this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
+        const qualDone = e.qual&&e.qual.done===e.qual.total;
+        return mok&&tok&&qualDone;
+      });
+    },
+    dmAdvance(e, stage){
+      // Move candidate from one stage to next
+      const labels = {ojt:'OJT',assess:'Assessment'};
+      const next   = {ojt:'Pre-Floor Assessment',assess:'Floor Ready Certification'};
+      if(!confirm('Move '+e.name+' to '+next[stage]+'?')) return;
+      if(e[stage]) e[stage].done = e[stage].total;
+      this.dofl('Stage Complete!', e.image, e.name, 'Moving to '+next[stage], e.country);
+      const tasks = (e[stage]&&e[stage].items||[]).map(m=>m.name+'|'+(m.link||'#')+'|1').join(';;');
+      const colMap = {ojt:'OJTTraining_Status', assess:'Assessment_Status'};
+      this.gas('saveFullUpdate',{row:e.row,colLabel:colMap[stage],taskStr:tasks||'Complete|#|1',trainer:{}})
+        .then(()=>this.fetchAll()).catch(()=>this.fetchAll());
+    },
+    dmSignOff(e){
+      // Final sign-off — candidate is Floor Ready
+      if(!confirm('Certify '+e.name+' as Floor Ready?')) return;
+      if(e.cert) e.cert.done = e.cert.total;
+      this.dofl('Floor Ready!', e.image, e.name, 'Certified and Floor Ready', e.country);
+      const tasks = (e.cert&&e.cert.items||[]).map(m=>m.name+'|'+(m.link||'#')+'|1').join(';;');
+      this.gas('saveFullUpdate',{row:e.row,colLabel:'Certification_Status',taskStr:tasks||'Complete|#|1',trainer:{}})
+        .then(()=>this.fetchAll()).catch(()=>this.fetchAll());
+    },
+    // ── END DEPT MANAGER METHODS ──────────────────────────────────
     // ── QUALITY TRAINER METHODS ───────────────────────────────────
     qualEmps(){
       return this.emps.filter(e=>{
@@ -2276,6 +2477,7 @@ function app(){
       if(this.mlevel===4){
         // HR users (HR_Status) can edit pre-boarding, orientation AND hr compliance
         if(this.mdept==='HR_Status') return ['pre','ori','hr'].includes(k);
+        if(this.mdept==='DEPT_MANAGER') return ['ojt','assess','cert'].includes(k);
         const s=this.stages.find(x=>x.k===k);return s?s.col===this.mdept:false;
       }
       return false;
