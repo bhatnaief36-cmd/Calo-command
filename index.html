@@ -1022,7 +1022,7 @@ textarea.field{resize:none}
                   <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
                   <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div><div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div></div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
-                  <button @click="dmMaterials.splice(i,1)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button @click="dmRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
               </template>
             </div>
@@ -1232,7 +1232,7 @@ textarea.field{resize:none}
                     <div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div>
                   </div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
-                  <button @click="qualMaterials.splice(i,1)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button @click="qualRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
               </template>
             </div>
@@ -1600,7 +1600,7 @@ textarea.field{resize:none}
               </div>
               <div>
                 <div class="f-label">Joining Date *</div>
-                <input type="date" x-model="hrNH.dt" class="field" :max="(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})()" style="width:100%;box-sizing:border-box">
+                <input type="date" x-model="hrNH.dt" class="field" :max="(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})()"" style="width:100%;box-sizing:border-box">
               </div>
               <div>
                 <div class="f-label">Assign Starting Stage *</div>
@@ -1663,7 +1663,7 @@ textarea.field{resize:none}
                   <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
                   <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div><div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div></div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
-                  <button @click="hrMaterials.splice(i,1)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button @click="hrRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
               </template>
             </div>
@@ -2186,12 +2186,38 @@ function app(){
           this.mmarket=r.market; this.mdept=r.dept||null; this.mtitle=r.title;
           this.mf=r.market==='All'?'All':r.market;
           this.loggedIn=true;
+          this.loadMaterials();
           this.fetchAll();
         }
       } catch(e){ localStorage.removeItem('calo_session'); }
       this.gas('getTemplateList').then(l=>this.tpls=l||[]).catch(()=>{});
     },
 
+    saveMaterials(){
+      // Persist training materials per user to localStorage
+      try {
+        const key = 'calo_mat_'+this.mname+'_'+(this.mdept||'all');
+        const data = {
+          qual: this.qualMaterials,
+          dm:   this.dmMaterials,
+          hr:   this.hrMaterials,
+        };
+        localStorage.setItem(key, JSON.stringify(data));
+      } catch(e){}
+    },
+    loadMaterials(){
+      // Restore training materials for this user from localStorage
+      try {
+        const key = 'calo_mat_'+this.mname+'_'+(this.mdept||'all');
+        const raw = localStorage.getItem(key);
+        if(raw){
+          const data = JSON.parse(raw);
+          if(data.qual) this.qualMaterials = data.qual;
+          if(data.dm)   this.dmMaterials   = data.dm;
+          if(data.hr)   this.hrMaterials   = data.hr;
+        }
+      } catch(e){}
+    },
     saveSession(r){
       try { localStorage.setItem('calo_session', JSON.stringify(r)); } catch(e){}
     },
@@ -2199,6 +2225,7 @@ function app(){
     clearSession(){
       try { localStorage.removeItem('calo_session'); } catch(e){}
       this.loggedIn=false;
+      this.qualMaterials=[];this.dmMaterials=[];this.hrMaterials=[];
     },
 
     login(){
@@ -2212,7 +2239,9 @@ function app(){
             this.mmarket=r.market;this.mdept=r.dept;this.mtitle=r.title;
             this.mf=r.market==='All'?'All':r.market;
             this.saveSession(r);
-            this.loggedIn=true;this.fetchAll();
+            this.loggedIn=true;
+            this.loadMaterials();
+            this.fetchAll();
           } else {this.lerr='Invalid credentials. Please try again.';}
         })
         .catch(()=>{this.ll=false;this.lerr='Connection error. Please retry.';});
@@ -2334,11 +2363,21 @@ function app(){
       if(!this.dmMat.title||!this.dmMat.url) return;
       this.dmMaterials.push(Object.assign({},this.dmMat));
       this.dmMat={title:'',type:'google_slides',url:'',desc:''};
+      this.saveMaterials();
+    },
+    dmRemoveMaterial(i){
+      this.dmMaterials.splice(i,1);
+      this.saveMaterials();
     },
     hrAddMaterial(){
       if(!this.hrMat.title||!this.hrMat.url) return;
       this.hrMaterials.push(Object.assign({},this.hrMat));
       this.hrMat={title:'',type:'google_slides',url:'',desc:''};
+      this.saveMaterials();
+    },
+    hrRemoveMaterial(i){
+      this.hrMaterials.splice(i,1);
+      this.saveMaterials();
     },
     // ── QUALITY TRAINER METHODS ───────────────────────────────────
     qualEmps(){
@@ -2361,6 +2400,11 @@ function app(){
       if(!this.qualMat.title||!this.qualMat.url) return;
       this.qualMaterials.push(Object.assign({},this.qualMat));
       this.qualMat = {title:'',type:'google_slides',url:'',desc:''};
+      this.saveMaterials();
+    },
+    qualRemoveMaterial(i){
+      this.qualMaterials.splice(i,1);
+      this.saveMaterials();
     },
     // ── END QUALITY METHODS ───────────────────────────────────────
     // ── HR SPECIFIC METHODS ───────────────────────────────────────
@@ -2386,7 +2430,6 @@ function app(){
     },
     hrAddCandidate(){
       if(!this.hrNH.n||!this.hrNH.d||!this.hrNH.dt) return;
-      if(this.hrSaving) return; // prevent double submit
       this.hrSaving = true;
 
       const dt  = new Date(this.hrNH.dt + 'T00:00:00'); // force local time not UTC
@@ -2418,7 +2461,7 @@ function app(){
       // Add to local array — appears instantly
       this.emps.push(newEmp);
       this.hrSuccess = true;
-      this.hrSaving  = false;
+      this.hrSaving  = false; // Always reset immediately — never block UI
 
       // Reset form for next entry — keep country and stage
       const prevC = this.hrNH.c;
