@@ -138,14 +138,14 @@ textarea.field{resize:none}
 /* ANIMATIONS */
 @keyframes pdot{0%,100%{transform:scale(1)}50%{transform:scale(1.6);opacity:.5}}
 @keyframes pborder{0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,.22)}50%{box-shadow:0 0 0 4px rgba(245,166,35,0)}}
-@keyframes fup{from{opacity:.3;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fin{from{opacity:0}to{opacity:1}}
 @keyframes fsr{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 .au{animation:fup .28s ease forwards}
 .ai{animation:fin .22s ease forwards}
 .ar{animation:fsr .28s ease forwards}
-.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}
+.d1{animation-delay:.05s;opacity:0}.d2{animation-delay:.1s;opacity:0}.d3{animation-delay:.15s;opacity:0}.d4{animation-delay:.2s;opacity:0}
 
 /* MISC */
 .spinner{width:16px;height:16px;border:2px solid var(--w3);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
@@ -208,7 +208,7 @@ textarea.field{resize:none}
     </div>
 
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
-      <template x-for="(l,i) in [{n:'L1',t:'Architect'},{n:'L2',t:'RTS'},{n:'L3',t:'Coord.'},{n:'L4',t:'Trainer/HR'}]">
+      <template x-for="(l,i) in [{n:'L1',t:'Admin'},{n:'L2',t:'Regional'},{n:'L3',t:'Coord.'},{n:'L4',t:'Trainer'}]">
         <div class="lvl-pill" :class="hint===i?'on':''" @click="hint=i">
           <div style="font-size:15px;font-weight:900" x-text="l.n"></div>
           <div style="font-size:9px;margin-top:1px;font-weight:400" x-text="l.t"></div>
@@ -233,26 +233,13 @@ textarea.field{resize:none}
 
     </div>
 
-    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--w3)">
-      <div style="font-size:10px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;text-align:center">🎯 Demo — Preview as any role</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-        <button @click="demoLogin('l1')" class="btn" style="justify-content:center;padding:9px 6px;font-size:11px;border-radius:var(--r8);background:var(--green-l);color:var(--green-h);border:1px solid var(--green-m);font-weight:700">
-          🌍 Training Architect
-        </button>
-        <button @click="demoLogin('l2')" class="btn" style="justify-content:center;padding:9px 6px;font-size:11px;border-radius:var(--r8);background:rgba(59,130,246,.08);color:#1D4ED8;border:1px solid rgba(59,130,246,.2);font-weight:700">
-          📊 Regional Specialist
-        </button>
-        <button @click="demoLogin('l3')" class="btn" style="justify-content:center;padding:9px 6px;font-size:11px;border-radius:var(--r8);background:rgba(245,166,35,.08);color:#92400E;border:1px solid rgba(245,166,35,.2);font-weight:700">
-          📋 Training Coordinator
-        </button>
-        <button @click="demoLogin('l4trainer')" class="btn" style="justify-content:center;padding:9px 6px;font-size:11px;border-radius:var(--r8);background:rgba(99,102,241,.08);color:#4338CA;border:1px solid rgba(99,102,241,.2);font-weight:700">
-          🔧 Trainer
-        </button>
-        <button @click="demoLogin('l4hr')" class="btn" style="grid-column:1/-1;justify-content:center;padding:9px 6px;font-size:11px;border-radius:var(--r8);background:rgba(236,72,153,.07);color:#9D174D;border:1px solid rgba(236,72,153,.2);font-weight:700">
-          👤 HR
+    <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--w3)">
+      <span style="font-size:11px;color:var(--w5);font-weight:300">Authorized personnel only · Calo Group</span>
+      <div style="margin-top:12px">
+        <button @click="demoLogin()" class="btn btn-outline btn-sm" style="width:100%;justify-content:center;font-size:12px;color:var(--green);border-color:var(--green-m);background:var(--green-l)">
+          🎯 Preview Demo (no backend needed)
         </button>
       </div>
-      <div style="font-size:10px;color:var(--w5);text-align:center;margin-top:8px;font-weight:300">Authorized personnel only · Calo Group</div>
     </div>
   </div>
 </div>
@@ -375,114 +362,39 @@ textarea.field{resize:none}
     <div class="main-area">
       <div class="page-wrap">
 
-        <!-- ══════════════════════════════════════════════════════════════ -->
-        <!-- DASHBOARD — SCALABLE ROLE BLOCKS                              -->
-        <!--                                                               -->
-        <!-- ARCHITECTURE:                                                 -->
-        <!-- • 5 ROLE HEADERS below — one shows per login role            -->
-        <!-- • 1 SHARED BODY below headers — renders once, no duplication -->
-        <!--                                                               -->
-        <!-- TO CUSTOMISE A ROLE HEADER: find its block, edit inside it   -->
-        <!-- TO RESTRICT CONTENT: edit the shared body section            -->
-        <!-- TO CHANGE ACCESS: change x-show="mlevel===N" on each header  -->
-        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- DASHBOARD -->
         <div x-show="v==='dash'" style="display:flex;flex-direction:column;min-height:100%">
 
-          <!-- ─── ROLE HEADER BARS ─────────────────────────────────────── -->
-          <!-- Only ONE shows at a time based on logged-in role            -->
-          <!-- Each header is ~10 lines — easy to edit independently       -->
-
-          <!-- L1: TRAINING ARCHITECT ───────────────────────── -->
-          <div x-show="mlevel===1">
-            <div style="background:linear-gradient(135deg,#00A96E 0%,#007a50 100%);margin:-28px -32px 24px;padding:14px 32px;display:flex;align-items:center;justify-content:space-between">
-              <div>
-                <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.14em;margin-bottom:2px">Calo Group · Global Control</div>
-                <div style="font-size:20px;font-weight:900;color:#fff">Training Architect Dashboard</div>
+          <!-- COMMAND BAR -->
+          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Calo Group</div>
+              <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px">Onboarding Command Center</div>
+            </div>
+            <div style="display:flex;gap:0">
+              <div class="cmd-stat">
+                <div style="font-size:28px;font-weight:900;color:#fff;line-height:1" x-text="emps.length"></div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TOTAL STAFF</div>
               </div>
-              <div style="display:flex;align-items:center;gap:0">
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#fff;line-height:1" x-text="emps.length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">STAFF</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#7FFFD4;line-height:1" x-text="certCount()"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">CERTIFIED</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#FFD580;line-height:1" x-text="activeCount()"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#fff;line-height:1" x-text="avgc()+'%'"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">AVG %</div></div>
-                <div style="padding-left:16px"><button @click="fetchAll()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button></div>
+              <div class="cmd-stat">
+                <div style="font-size:28px;font-weight:900;color:#00C07F;line-height:1" x-text="certCount()"></div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">FLOOR READY</div>
+              </div>
+              <div class="cmd-stat">
+                <div style="font-size:28px;font-weight:900;color:#F5A623;line-height:1" x-text="activeCount()"></div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div>
+              </div>
+              <div class="cmd-stat">
+                <div style="font-size:28px;font-weight:900;color:white;line-height:1" x-text="avgc()+'%'"></div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">AVG COMPLETE</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding-left:20px">
+                <div style="width:8px;height:8px;border-radius:50%;background:#00C07F;box-shadow:0 0 0 3px rgba(0,192,127,.3)"></div>
+                <span style="font-size:11px;color:rgba(255,255,255,.6)">Live</span>
+                <button @click="fetchAll()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);padding:6px 12px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">↻ Refresh</button>
               </div>
             </div>
           </div>
-
-          <!-- L2: REGIONAL TRAINING SPECIALIST ────────────── -->
-          <div x-show="mlevel===2">
-            <div style="background:linear-gradient(135deg,#0284C7 0%,#01578a 100%);margin:-28px -32px 24px;padding:14px 32px;display:flex;align-items:center;justify-content:space-between">
-              <div>
-                <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.14em;margin-bottom:2px">Calo Group · All Mountain Peaks</div>
-                <div style="font-size:20px;font-weight:900;color:#fff">Regional Training Specialist</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:0">
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#fff;line-height:1" x-text="emps.length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">STAFF</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#7FFFD4;line-height:1" x-text="certCount()"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">CERTIFIED</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#FFD580;line-height:1" x-text="activeCount()"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#fff;line-height:1" x-text="avgc()+'%'"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">AVG %</div></div>
-                <div style="padding-left:16px"><button @click="fetchAll()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- L3: TRAINING COORDINATOR ────────────────────── -->
-          <div x-show="mlevel===3">
-            <div style="background:linear-gradient(135deg,#7C3AED 0%,#5b21b6 100%);margin:-28px -32px 24px;padding:14px 32px;display:flex;align-items:center;justify-content:space-between">
-              <div>
-                <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.14em;margin-bottom:2px" x-text="mmarket+' Mountain Peak'"></div>
-                <div style="font-size:20px;font-weight:900;color:#fff">Training Coordinator</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:0">
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#fff;line-height:1" x-text="filtered().length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY STAFF</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#7FFFD4;line-height:1" x-text="filtered().filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">CERTIFIED</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#FFD580;line-height:1" x-text="filtered().filter(e=>stages.some(s=>e[s.k]&&e[s.k].done>0)).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#fff;line-height:1" x-text="(filtered().length?Math.round(filtered().reduce((a,e)=>a+opct(e),0)/filtered().length):0)+'%'"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">AVG %</div></div>
-                <div style="padding-left:16px"><button @click="fetchAll()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- L4: TRAINER ─────────────────────────────────── -->
-          <div x-show="mlevel===4 && mdept!=='HR_Status'">
-            <div style="background:linear-gradient(135deg,#D97706 0%,#b45309 100%);margin:-28px -32px 24px;padding:14px 32px;display:flex;align-items:center;justify-content:space-between">
-              <div>
-                <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.14em;margin-bottom:2px" x-text="mtitle"></div>
-                <div style="font-size:20px;font-weight:900;color:#fff">Trainer Dashboard</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:0">
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#fff;line-height:1" x-text="filtered().length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY TRAINEES</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#7FFFD4;line-height:1" x-text="certCount()"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">CERTIFIED</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#FFD580;line-height:1" x-text="activeCount()"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#fff;line-height:1" x-text="avgc()+'%'"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">AVG %</div></div>
-                <div style="padding-left:16px"><button @click="fetchAll()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- L4: HR ──────────────────────────────────────── -->
-          <div x-show="mlevel===4 && mdept==='HR_Status'">
-            <div style="background:linear-gradient(135deg,#BE185D 0%,#9d174d 100%);margin:-28px -32px 24px;padding:14px 32px;display:flex;align-items:center;justify-content:space-between">
-              <div>
-                <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.14em;margin-bottom:2px" x-text="mmarket+' · Human Resources'"></div>
-                <div style="font-size:20px;font-weight:900;color:#fff">HR Dashboard</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:0">
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#fff;line-height:1" x-text="filtered().length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY STAFF</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#7FFFD4;line-height:1" x-text="filtered().filter(e=>e.hr&&e.hr.total>0&&e.hr.done===e.hr.total).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">HR DONE</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#FFD580;line-height:1" x-text="filtered().filter(e=>e.hr&&e.hr.done>0&&e.hr.done<e.hr.total).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">HR ACTIVE</div></div>
-                <div class="cmd-stat"><div style="font-size:22px;font-weight:900;color:#fff;line-height:1" x-text="(filtered().length?Math.round(filtered().reduce((a,e)=>a+opct(e),0)/filtered().length):0)+'%'"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">AVG %</div></div>
-                <div style="padding-left:16px"><button @click="fetchAll()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button></div>
-              </div>
-            </div>
-          </div>
-          <!-- ─── END ROLE HEADER BARS ──────────────────────────────────── -->
-
-
-          <!-- ─── SHARED DASHBOARD BODY ─────────────────────────────────── -->
-          <!-- ALL ROLES see this same body. Edit here once = applies to all -->
-          <!-- To restrict a section per role, add x-show="mlevel<=N" on it -->
-
 
           <!-- KPI ROW - 5 interactive tiles -->
           <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px">
@@ -839,15 +751,6 @@ textarea.field{resize:none}
         </div>
 
 
-          </div>
-
-          <!-- ─── END SHARED DASHBOARD BODY ────────────────────────────── -->
-
-
-        </div>
-        <!-- END DASHBOARD ════════════════════════════════════════════════ -->
-
-
         <!-- PIPELINE -->
         <div x-show="v==='pipe'">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px" class="au">
@@ -878,7 +781,7 @@ textarea.field{resize:none}
 
           <div class="cg">
             <template x-for="(e,ei) in filtered()">
-              <div class="emp-card au" :class="{'pri-urgent':e.priority==='urgent','pri-high':e.priority==='high'}" :style="'animation-delay:'+Math.min(ei*.04,.36)+'s'">
+              <div class="emp-card au" :class="{'pri-urgent':e.priority==='urgent','pri-high':e.priority==='high'}" :style="'animation-delay:'+Math.min(ei*.04,.36)+'s;opacity:0'">
 
                 <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px">
                   <!-- Ring -->
@@ -993,7 +896,7 @@ textarea.field{resize:none}
           </div>
           <div class="cg">
             <template x-for="(t,i) in tpls">
-              <div class="card au" :style="'animation-delay:'+i*.05+'s;cursor:pointer;transition:all .15s'" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background='var(--w1)'">
+              <div class="card au" :style="'animation-delay:'+i*.05+'s;opacity:0;cursor:pointer;transition:all .15s'" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background='var(--w1)'">
                 <div style="font-size:26px;margin-bottom:12px">📋</div>
                 <div style="font-size:14px;font-weight:700;margin-bottom:4px" x-text="t"></div>
                 <div style="font-size:12px;color:var(--w5);font-weight:300">Training plan template</div>
@@ -1400,23 +1303,11 @@ function app(){
       this.gas('getPipelineData').then(d=>{this.emps=d||[];this.ld=false;}).catch(()=>this.ld=false);
     },
 
-    demoLogin(role){
-      // ── DEMO ROLE SWITCHER ─────────────────────────────────────
-      // All roles get full V1 dashboard. Access limiting comes later.
-      // To test a role: pass role='l1'|'l2'|'l3'|'l4trainer'|'l4hr'
-      // ──────────────────────────────────────────────────────────
-      const roles = {
-        l1:       {name:'CALO-ADMIN',   role:'TRAINING_ARCHITECT',  level:1, market:'All',    dept:null,                 title:'Training Architect'},
-        l2:       {name:'RTS-GLOBAL',   role:'REGIONAL_SPECIALIST', level:2, market:'All',    dept:null,                 title:'Regional Training Specialist'},
-        l3:       {name:'TC-UAE',       role:'TRAINING_COORD',      level:3, market:'UAE',    dept:null,                 title:'Training Coordinator · UAE'},
-        l4trainer:{name:'TR-OJT-UAE',   role:'TRAINER',             level:4, market:'UAE',    dept:'OJTTraining_Status', title:'OJT Trainer · UAE'},
-        l4hr:     {name:'HR-UAE',       role:'HR',                  level:4, market:'UAE',    dept:'HR_Status',          title:'HR · UAE'},
-      };
-      const r = roles[role] || roles.l1;
-      this.mname=r.name; this.mrole=r.role; this.mlevel=r.level;
-      this.mmarket=r.market; this.mdept=r.dept; this.mtitle=r.title;
-      this.mf = r.market==='All' ? 'All' : r.market;
-      this.loggedIn=true;
+    demoLogin(){
+      // Set admin session
+      this.mname='CALO-ADMIN'; this.mrole='GLOBAL_ADMIN'; this.mlevel=1;
+      this.mmarket='All'; this.mdept=null; this.mtitle='Global Administrator';
+      this.mf='All'; this.loggedIn=true;
       // Load rich demo data
       const mk=(total,done)=>({items:[],total,done});
       this.emps=[
