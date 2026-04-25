@@ -977,7 +977,7 @@ textarea.field{resize:none}
               <div class="kpi-sub">Active across all stages</div>
               <div class="kpi-drill" style="color:#F97316"><span>View pipeline</span><span>→</span></div>
             </div>
-            <div class="kpi-tile" style="--tile-accent:var(--danger);cursor:pointer" @click="mf='All';pf='all';sq='';v='rts_pipe'">
+            <div class="kpi-tile" style="--tile-accent:var(--danger);cursor:pointer" @click="mf='All';pf='all';sq='';dashTile='urgent';v='rts_pipe'">
               <div class="kpi-label">🚨 Needs Attention</div>
               <div class="kpi-num" style="color:var(--danger)" x-text="urgentCount()"></div>
               <div class="kpi-sub">High + urgent priority</div>
@@ -3468,7 +3468,8 @@ function app(){
         const tok = !this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
         return mok&&sok&&tok;
       });
-      if(this.pf==='done')    l=l.filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total);
+      if(this.dashTile==='urgent') l=l.filter(e=>e.priority==='urgent'||e.priority==='high');
+      else if(this.pf==='done')    l=l.filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total);
       else if(this.pf==='active')  l=l.filter(e=>this.stages.some(s=>e[s.k]&&e[s.k].done>0)&&!(e.cert&&e.cert.total>0&&e.cert.done===e.cert.total));
       else if(this.pf==='pending') l=l.filter(e=>this.stages.every(s=>!e[s.k]||e[s.k].done===0));
       return l;
