@@ -138,14 +138,14 @@ textarea.field{resize:none}
 /* ANIMATIONS */
 @keyframes pdot{0%,100%{transform:scale(1)}50%{transform:scale(1.6);opacity:.5}}
 @keyframes pborder{0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,.22)}50%{box-shadow:0 0 0 4px rgba(245,166,35,0)}}
-@keyframes fup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fup{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fin{from{opacity:0}to{opacity:1}}
 @keyframes fsr{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 .au{animation:fup .28s ease forwards}
 .ai{animation:fin .22s ease forwards}
 .ar{animation:fsr .28s ease forwards}
-.d1{animation-delay:.05s;opacity:0}.d2{animation-delay:.1s;opacity:0}.d3{animation-delay:.15s;opacity:0}.d4{animation-delay:.2s;opacity:0}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}
 
 /* MISC */
 .spinner{width:16px;height:16px;border:2px solid var(--w3);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
@@ -975,7 +975,7 @@ textarea.field{resize:none}
 
           <div class="cg">
             <template x-for="(e,ei) in filtered()">
-              <div class="emp-card au" :class="{'pri-urgent':e.priority==='urgent','pri-high':e.priority==='high'}" :style="'animation-delay:'+Math.min(ei*.04,.36)+'s;opacity:0'">
+              <div class="emp-card au" :class="{'pri-urgent':e.priority==='urgent','pri-high':e.priority==='high'}" :style="'animation-delay:'+Math.min(ei*.04,.36)+'s'">
 
                 <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px">
                   <!-- Ring -->
@@ -1090,7 +1090,7 @@ textarea.field{resize:none}
           </div>
           <div class="cg">
             <template x-for="(t,i) in tpls">
-              <div class="card au" :style="'animation-delay:'+i*.05+'s;opacity:0;cursor:pointer;transition:all .15s'" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background='var(--w1)'">
+              <div class="card au" :style="'animation-delay:'+i*.05+'s;cursor:pointer;transition:all .15s'" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background='var(--w1)'">
                 <div style="font-size:26px;margin-bottom:12px">📋</div>
                 <div style="font-size:14px;font-weight:700;margin-bottom:4px" x-text="t"></div>
                 <div style="font-size:12px;color:var(--w5);font-weight:300">Training plan template</div>
