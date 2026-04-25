@@ -825,7 +825,7 @@ textarea.field{resize:none}
               </div>
               <div style="padding-left:16px;display:flex;gap:8px">
                 <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
-                <button @click="hrForm=true" style="background:#fff;border:none;color:var(--green);padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:900;cursor:pointer;font-family:var(--f)">+ New Candidate</button>
+                <button @click="hrNH.c=mmarket;hrForm=true;hrSuccess=false" style="background:#fff;border:none;color:var(--green);padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:900;cursor:pointer;font-family:var(--f)">+ New Candidate</button>
               </div>
             </div>
           </div>
@@ -906,7 +906,7 @@ textarea.field{resize:none}
               <div class="ptitle">Active Pipeline</div>
               <div class="psub" x-text="hrEmps().length+' candidates in '+mmarket"></div>
             </div>
-            <button @click="hrForm=true" class="btn btn-primary btn-sm">+ New Candidate</button>
+            <button @click="hrNH.c=mmarket;hrForm=true;hrSuccess=false" class="btn btn-primary btn-sm">+ New Candidate</button>
           </div>
           <div class="cg">
             <template x-for="(e,ei) in hrEmps()">
@@ -1159,9 +1159,9 @@ textarea.field{resize:none}
             </div>
             <div style="display:flex;gap:8px;margin-top:14px">
               <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre'};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
-              <button @click="hrAddCandidate()" :disabled="!hrNH.n||!hrNH.d||!hrNH.dt||sv" class="btn btn-primary" style="flex:1;justify-content:center">
-                <div x-show="sv" style="display:none" class="spinner spinner-w"></div>
-                <span x-text="sv?'Adding…':'Submit'"></span>
+              <button @click="hrAddCandidate()" :disabled="!hrNH.n||!hrNH.d||!hrNH.dt||hrSaving" class="btn btn-primary" style="flex:1;justify-content:center">
+                <div x-show="hrSaving" style="display:none" class="spinner spinner-w"></div>
+                <span x-text="hrSaving?'Adding…':'Submit'"></span>
               </button>
             </div>
           </div>
@@ -1636,7 +1636,7 @@ function app(){
     loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
-    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),
+    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),
     emps:[],tpls:[],
     branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
     flags:{
@@ -1815,70 +1815,58 @@ function app(){
       );
     },
     hrAddCandidate(){
-      if(!this.hrNH.n||!this.hrNH.d||!this.hrNH.dt)return;
-      this.sv=true;
+      if(!this.hrNH.n||!this.hrNH.d||!this.hrNH.dt) return;
+      if(this.hrSaving) return; // prevent double submit
+      this.hrSaving = true;
 
-      // Parse joining date for month/year filtering
-      const dt = new Date(this.hrNH.dt);
+      const dt  = new Date(this.hrNH.dt + 'T00:00:00'); // force local time not UTC
       const stg = this.hrNH.stage||'pre';
-
-      // Build a blank stage ladder — all tasks at 0
       const blank = (t)=>({done:0,total:t,items:[]});
+      const today = new Date().toISOString().split('T')[0];
 
-      // New employee object — appears instantly in dashboard
+      // Build employee object — added locally for instant feedback
       const newEmp = {
-        row: Date.now(), // temp row ID
-        name: this.hrNH.n.toUpperCase(),
-        role: this.hrNH.d,
-        country: this.hrNH.c||this.mmarket,
-        image: '',
+        row:      Date.now(),
+        name:     this.hrNH.n.toUpperCase().trim(),
+        role:     this.hrNH.d.trim(),
+        country:  this.hrNH.c||this.mmarket,
+        image:    '',
         priority: 'normal',
-        notes: '',
-        month: dt.getMonth(),
-        year: dt.getFullYear(),
+        notes:    '',
+        month:    dt.getMonth(),
+        year:     dt.getFullYear(),
         dateString: this.hrNH.dt,
         pre:   stg==='pre' ? {done:0,total:5,items:[]} : blank(5),
         ori:   stg==='ori' ? {done:0,total:5,items:[]} : blank(5),
         hr:    stg==='hr'  ? {done:0,total:6,items:[]} : blank(6),
-        qual:  blank(4),
-        ojt:   blank(5),
-        assess:blank(5),
-        cert:  blank(3),
-        trainers:{},
-        hrAdded: true // flag so we know HR added this
+        qual:  blank(4), ojt: blank(5), assess: blank(5), cert: blank(3),
+        trainers: {},
+        stageEntries: { pre: stg==='pre'?today:null, ori: stg==='ori'?today:null, hr: stg==='hr'?today:null },
+        stageExits:   { pre:null, ori:null, hr:null }
       };
 
-      // Record entry date for the assigned stage
-      const today = new Date().toISOString().split('T')[0];
-      newEmp.stageEntries = {
-        pre:  stg==='pre' ? today : null,
-        ori:  stg==='ori' ? today : null,
-        hr:   stg==='hr'  ? today : null,
-      };
-      newEmp.stageExits = { pre:null, ori:null, hr:null };
-
-      // Add locally immediately — instant feedback
+      // Add to local array — appears instantly
       this.emps.push(newEmp);
       this.hrSuccess = true;
-      this.sv = false;
+      this.hrSaving  = false;
 
-      // Also reset form fields for next entry (keep form open)
-      const prevCountry = this.hrNH.c;
-      this.hrNH = {n:'',d:'',c:prevCountry,dt:'',stage:'pre'};
+      // Reset form for next entry — keep country and stage
+      const prevC = this.hrNH.c;
+      const prevS = this.hrNH.stage;
+      this.hrNH = {n:'', d:'', c:prevC, dt:'', stage:prevS};
 
-      // Sync to backend — send correct field names matching Code.gs
-      const payload = {
+      // Sync to backend in background
+      this.gas('addNewEmployee', {
         emp: {
-          name:    newEmp.name,
-          role:    newEmp.role,
-          country: newEmp.country,
-          date:    newEmp.dateString,
-          priority:'normal'
+          name:     newEmp.name,
+          role:     newEmp.role,
+          country:  newEmp.country,
+          date:     newEmp.dateString,
+          priority: 'normal'
         }
-      };
-      this.gas('addNewEmployee', payload)
-        .then(r=>{ console.log('addNewEmployee response:', r); this.fetchAll(); })
-        .catch(err=>{ console.error('addNewEmployee failed:', err); });
+      })
+      .then(()=>{ this.fetchAll(); })
+      .catch(err=>{ console.error('HR submit failed:', err); });
     },
     // Calculate elapsed time for a stage
     hrElapsed(e, k){
