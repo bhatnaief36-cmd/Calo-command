@@ -3950,10 +3950,22 @@ function app(){
     l1LoadUsers(){ try{const d=localStorage.getItem('calo_l1_users');if(d)this.l1Users=JSON.parse(d);}catch(e){} },
     l1SaveNewUser(){
       if(!this.l1NewUser.name||!this.l1NewUser.username||!this.l1NewUser.pass)return;
-      this.l1Users.push(Object.assign({},this.l1NewUser));
+      const newU = Object.assign({},this.l1NewUser);
+      this.l1Users.push(newU);
       this.l1SaveUsers();
-      this.l1AuditLog.push({type:'add',action:'User Created',detail:this.l1NewUser.username+' · L'+this.l1NewUser.level+' · '+this.l1NewUser.market,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      this.l1AuditLog.push({type:'add',action:'User Created',detail:newU.username+' · L'+newU.level+' · '+newU.market,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
       this.l1SaveAudit();
+      // Write to Google Sheet Dynamic_Users tab so user can log in
+      this.gas('addDynamicUser',{user:{
+        username: newU.username,
+        pass:     newU.pass,
+        name:     newU.name,
+        level:    newU.level,
+        market:   newU.market,
+        dept:     newU.dept||'',
+        title:    newU.title||'L'+newU.level+' · '+newU.market
+      }}).then(r=>{ console.log('User synced to sheet:', r); })
+         .catch(e=>{ console.warn('Sheet sync failed — user saved locally only:', e); });
       this.l1AdminForm=false;
       this.l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true};
     },
@@ -4015,6 +4027,16 @@ function app(){
       if(!this.rtsNewCoord.name||!this.rtsNewCoord.mp||!this.rtsNewCoord.username||!this.rtsNewCoord.password)return;
       this.rtsCoordinators.push(Object.assign({},this.rtsNewCoord));
       this.rtsSaveCoordinators();
+      // Write to Google Sheet so coordinator can log in
+      this.gas('addDynamicUser',{user:{
+        username: this.rtsNewCoord.username.toUpperCase(),
+        pass:     this.rtsNewCoord.password,
+        name:     this.rtsNewCoord.name,
+        level:    3,
+        market:   this.rtsNewCoord.mp,
+        dept:     '',
+        title:    'Training Coordinator · '+this.rtsNewCoord.mp
+      }}).catch(e=>console.warn('Sheet sync failed:',e));
       this.rtsCoordForm=false;
       this.rtsNewCoord={name:'',mp:'',username:'',password:'',active:true,showPass:false};
     },
@@ -4076,6 +4098,22 @@ function app(){
         this.tcTrainers.splice(this.tcEditIdx, 1, Object.assign({},this.tcNewTrainer));
       } else {
         this.tcTrainers.push(Object.assign({},this.tcNewTrainer));
+        // Write to Google Sheet so trainer can log in (new trainers only, not edits)
+        // Map stage to dept column
+        const deptMap = {
+          'Pre-Boarding':'HR_Status','Orientation':'HR_Status','HR Compliance':'HR_Status',
+          'Quality Std':'Quality_Status','OJT Training':'OJTTraining_Status',
+          'Pre-Floor Assessment':'Assessment_Status','Floor Ready Certification':'Certification_Status'
+        };
+        this.gas('addDynamicUser',{user:{
+          username: this.tcNewTrainer.username.toUpperCase(),
+          pass:     this.tcNewTrainer.password,
+          name:     this.tcNewTrainer.name,
+          level:    4,
+          market:   this.mmarket,
+          dept:     deptMap[this.tcNewTrainer.stage]||this.tcNewTrainer.stage,
+          title:    this.tcNewTrainer.stage+' Trainer · '+this.mmarket
+        }}).catch(e=>console.warn('Sheet sync failed:',e));
       }
       this.tcSaveTrainers();
       this.tcAddTrainerForm=false;
