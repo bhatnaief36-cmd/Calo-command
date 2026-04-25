@@ -261,24 +261,24 @@ textarea.field{resize:none}
     </div>
 
     <nav style="flex:1;overflow-y:auto;padding:6px 0">
-      <div class="nav-group-label" x-show="mlevel<=2">Navigation</div>
-      <div x-show="mlevel<=2" class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+      <div class="nav-group-label" x-show="mlevel===1">Navigation</div>
+      <div x-show="mlevel===1" class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         Dashboard
       </div>
-      <div x-show="mlevel<=2" class="nav-link" :class="v==='pipe'?'on':''" @click="v='pipe';dashTile=null;pf='all'">
+      <div x-show="mlevel===1" class="nav-link" :class="v==='pipe'?'on':''" @click="v='pipe';dashTile=null;pf='all'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         Pipeline
       </div>
-      <div x-show="mlevel<=2" class="nav-link" :class="v==='trainers'?'on':''" @click="v='trainers'">
+      <div x-show="mlevel===1" class="nav-link" :class="v==='trainers'?'on':''" @click="v='trainers'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Trainers
       </div>
-      <div x-show="mlevel<=2" class="nav-link" :class="v==='tpl'?'on':''" @click="v='tpl'">
+      <div x-show="mlevel===1" class="nav-link" :class="v==='tpl'?'on':''" @click="v='tpl'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Templates
       </div>
-      <div x-show="mlevel<=2" class="nav-link" :class="v==='rep'?'on':''" @click="v='rep'">
+      <div x-show="mlevel===1" class="nav-link" :class="v==='rep'?'on':''" @click="v='rep'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         Reports
       </div>
@@ -326,6 +326,24 @@ textarea.field{resize:none}
             <span class="branch-ct" x-text="emps.filter(e=>e.country===b).length"></span>
           </div>
         </template>
+
+        <div class="nav-group-label" style="margin-top:8px">Admin Controls</div>
+        <div class="nav-link" :class="v==='rts_admin'?'on':''" @click="v='rts_admin'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><line x1="19" y1="8" x2="23" y2="8"/><line x1="21" y1="6" x2="21" y2="10"/></svg>
+          Add Coordinator
+        </div>
+        <div class="nav-link" :class="v==='rts_countries'?'on':''" @click="v='rts_countries'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Countries / MPs
+        </div>
+        <div class="nav-link" :class="v==='rts_depts'?'on':''" @click="v='rts_depts'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          Departments
+        </div>
+        <div class="nav-link" :class="v==='rts_creds'?'on':''" @click="v='rts_creds'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          User Credentials
+        </div>
       </div>
       <!-- ── END L2 NAVIGATION ──────────────────────────────────── -->
 
@@ -448,7 +466,7 @@ textarea.field{resize:none}
       </div>
       <!-- ── END HR NAVIGATION ──────────────────────────────────── -->
       <!-- Mountain Peaks (L1) -->
-      <div x-show="mlevel<=2">
+      <div x-show="mlevel===1">
         <div class="nav-group-label" style="margin-top:8px">Mountain Peaks</div>
         <div class="branch-row" :class="mf==='All'?'on':''" @click="mf='All'">
           <span style="font-weight:700">🌍 All Peaks</span>
@@ -889,6 +907,7 @@ textarea.field{resize:none}
                   </div>
                   <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
                   <div style="font-size:11px;font-weight:900;margin-top:3px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
+                  <div style="font-size:9px;color:var(--w5);margin-top:2px;font-weight:300" x-text="e.dateString||''"></div>
                   <div class="seg-bar" style="margin-top:4px;height:3px">
                     <div class="seg-fill" :style="'width:'+opct(e)+'%;background:'+pc(opct(e))"></div>
                   </div>
@@ -1289,6 +1308,188 @@ textarea.field{resize:none}
         </div>
         <!-- END L2 TRAINING MATERIALS -->
 
+
+        <!-- L2 ADD COORDINATOR -->
+        <div x-show="v==='rts_admin' && mlevel===2">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Training Coordinators</div>
+              <div class="psub">Add and manage Training Coordinators per Mountain Peak</div>
+            </div>
+            <button @click="rtsCoordForm=true" class="btn btn-primary btn-sm">+ Add Coordinator</button>
+          </div>
+
+          <!-- Coordinator list -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px">
+            <template x-for="(coord,ci) in rtsCoordinators">
+              <div class="card" style="padding:16px" :style="!coord.active?'opacity:.55':''">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+                  <div style="width:44px;height:44px;border-radius:50%;background:var(--green-l);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">
+                    <span x-text="flag(coord.mp)"></span>
+                  </div>
+                  <div style="flex:1">
+                    <div style="font-size:13px;font-weight:900" x-text="coord.name"></div>
+                    <div style="font-size:11px;color:var(--w5)" x-text="coord.mp+' Mountain Peak'"></div>
+                    <div style="display:flex;align-items:center;gap:4px;margin-top:3px">
+                      <div style="width:6px;height:6px;border-radius:50%" :style="coord.active?'background:var(--green)':'background:var(--w4)'"></div>
+                      <span style="font-size:10px;font-weight:700" :style="coord.active?'color:var(--green)':'color:var(--w5)'" x-text="coord.active?'Active':'Inactive'"></span>
+                    </div>
+                  </div>
+                </div>
+                <div style="background:var(--w2);border-radius:var(--r8);padding:8px 10px;margin-bottom:10px">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px"><span style="color:var(--w5)">Username</span><span style="font-weight:700;font-family:monospace" x-text="coord.username"></span></div>
+                  <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--w5)">Password</span><span style="font-weight:700;font-family:monospace;cursor:pointer" @click="coord.showPass=!coord.showPass" x-text="coord.showPass?coord.password:'••••••••'"></span></div>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <button @click="coord.active=!coord.active;rtsSaveCoordinators()" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" :style="coord.active?'color:var(--danger)':'color:var(--green)'" x-text="coord.active?'Deactivate':'Activate'"></button>
+                  <button @click="rtsCoordinators.splice(ci,1);rtsSaveCoordinators()" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;color:var(--danger)">Remove</button>
+                </div>
+              </div>
+            </template>
+            <div x-show="rtsCoordinators.length===0" class="empty" style="grid-column:1/-1">
+              <div style="font-size:32px;margin-bottom:10px">📋</div>
+              <div style="font-weight:700">No coordinators added yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Click + Add Coordinator to register</div>
+            </div>
+          </div>
+
+          <!-- Add Coordinator Modal -->
+          <div x-show="rtsCoordForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="rtsCoordForm?'display:flex':''">
+            <div class="card" style="width:100%;max-width:460px;padding:28px;border-radius:var(--r16)">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+                <div><div style="font-size:18px;font-weight:900">Add Training Coordinator</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Assign a coordinator to a Mountain Peak</div></div>
+                <button @click="rtsCoordForm=false;rtsNewCoord={name:'',mp:'',username:'',password:'',active:true,showPass:false}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div><div class="f-label">Full Name *</div><input type="text" x-model="rtsNewCoord.name" class="field" placeholder="Coordinator name" style="width:100%;box-sizing:border-box"></div>
+                <div><div class="f-label">Mountain Peak *</div>
+                  <select x-model="rtsNewCoord.mp" class="field" style="width:100%;box-sizing:border-box">
+                    <option value="">Select Mountain Peak</option>
+                    <template x-for="mp in rtsMPs"><option :value="mp.name" x-text="mp.name"></option></template>
+                  </select>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div><div class="f-label">Username *</div><input type="text" x-model="rtsNewCoord.username" class="field" placeholder="e.g. TC-UAE" style="width:100%;box-sizing:border-box;text-transform:uppercase" @input="rtsNewCoord.username=rtsNewCoord.username.toUpperCase()"></div>
+                  <div><div class="f-label">Password *</div><input type="text" x-model="rtsNewCoord.password" class="field" placeholder="e.g. Tc@UAE25" style="width:100%;box-sizing:border-box"></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:20px">
+                <button @click="rtsCoordForm=false;rtsNewCoord={name:'',mp:'',username:'',password:'',active:true,showPass:false}" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                <button @click="rtsSaveNewCoord()" :disabled="!rtsNewCoord.name||!rtsNewCoord.mp||!rtsNewCoord.username||!rtsNewCoord.password" class="btn btn-primary" style="flex:1;justify-content:center">Add Coordinator</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END L2 ADD COORDINATOR -->
+
+
+        <!-- L2 COUNTRIES / MPs -->
+        <div x-show="v==='rts_countries' && mlevel===2">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Countries / Mountain Peaks</div>
+              <div class="psub" x-text="rtsMPs.length+' Mountain Peaks registered'"></div>
+            </div>
+            <button @click="rtsMPForm=true" class="btn btn-primary btn-sm">+ Add Country / MP</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px">
+            <template x-for="(mp,mi) in rtsMPs">
+              <div class="card" style="padding:16px;text-align:center">
+                <div style="font-size:36px;margin-bottom:8px" x-text="mp.flag||flag(mp.name)"></div>
+                <div style="font-size:14px;font-weight:900;color:var(--ch)" x-text="mp.name"></div>
+                <div style="font-size:11px;color:var(--w5);margin-top:4px" x-text="emps.filter(e=>e.country===mp.name).length+' candidates'"></div>
+                <div style="font-size:11px;color:var(--green);margin-top:4px;font-weight:700" x-text="rtsCoordinators.filter(c=>c.mp===mp.name).length+' coordinator(s)'"></div>
+                <button @click="rtsMPs.splice(mi,1);rtsSaveMPs()" class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%;justify-content:center;color:var(--danger)">Remove</button>
+              </div>
+            </template>
+          </div>
+          <!-- Add MP Modal -->
+          <div x-show="rtsMPForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="rtsMPForm?'display:flex':''">
+            <div class="card" style="width:100%;max-width:380px;padding:28px;border-radius:var(--r16)">
+              <div style="font-size:18px;font-weight:900;margin-bottom:20px">Add Country / Mountain Peak</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div><div class="f-label">Country Name *</div><input type="text" x-model="rtsNewMP.name" class="field" placeholder="e.g. Egypt" style="width:100%;box-sizing:border-box"></div>
+                <div><div class="f-label">Flag Emoji</div><input type="text" x-model="rtsNewMP.flag" class="field" placeholder="e.g. 🇪🇬" style="width:100%;box-sizing:border-box"></div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:20px">
+                <button @click="rtsMPForm=false;rtsNewMP={name:'',flag:''}" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                <button @click="rtsSaveMP()" :disabled="!rtsNewMP.name" class="btn btn-primary" style="flex:1;justify-content:center">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END L2 COUNTRIES -->
+
+
+        <!-- L2 DEPARTMENTS -->
+        <div x-show="v==='rts_depts' && mlevel===2">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Departments</div>
+              <div class="psub" x-text="rtsDepts.length+' departments across all Mountain Peaks'"></div>
+            </div>
+            <button @click="rtsDeptForm=true" class="btn btn-primary btn-sm">+ Add Department</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px">
+            <template x-for="(d,di) in rtsDepts">
+              <div class="card" style="padding:16px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <div style="width:40px;height:40px;border-radius:var(--r8);background:var(--green-l);display:flex;align-items:center;justify-content:center;font-size:20px" x-text="d.icon||'🏢'"></div>
+                  <div><div style="font-size:14px;font-weight:900" x-text="d.name"></div><div style="font-size:11px;color:var(--w5)">Global department</div></div>
+                </div>
+                <button @click="rtsDepts.splice(di,1);rtsSaveDepts()" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;color:var(--danger)">Remove</button>
+              </div>
+            </template>
+          </div>
+          <div x-show="rtsDeptForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="rtsDeptForm?'display:flex':''">
+            <div class="card" style="width:100%;max-width:360px;padding:28px;border-radius:var(--r16)">
+              <div style="font-size:18px;font-weight:900;margin-bottom:20px">Add Department</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div><div class="f-label">Department Name *</div><input type="text" x-model="rtsNewDept.name" class="field" placeholder="e.g. Cold Chain, Packaging" style="width:100%;box-sizing:border-box"></div>
+                <div><div class="f-label">Icon (emoji)</div><input type="text" x-model="rtsNewDept.icon" class="field" placeholder="e.g. ❄️ 📦" style="width:100%;box-sizing:border-box"></div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:20px">
+                <button @click="rtsDeptForm=false;rtsNewDept={name:'',icon:''}" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                <button @click="rtsSaveDept()" :disabled="!rtsNewDept.name" class="btn btn-primary" style="flex:1;justify-content:center">Add Department</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END L2 DEPARTMENTS -->
+
+
+        <!-- L2 USER CREDENTIALS -->
+        <div x-show="v==='rts_creds' && mlevel===2">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">User Credentials</div>
+            <div class="psub">All Training Coordinator credentials across Mountain Peaks</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <template x-for="coord in rtsCoordinators">
+              <div class="card" style="padding:14px">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="font-size:24px" x-text="flag(coord.mp)"></div>
+                  <div style="flex:1">
+                    <div style="font-size:13px;font-weight:900" x-text="coord.name"></div>
+                    <div style="font-size:11px;color:var(--w5)" x-text="coord.mp+' · Training Coordinator'"></div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:12px;font-family:monospace;font-weight:700;color:var(--ch)" x-text="coord.username"></div>
+                    <div style="font-size:12px;font-family:monospace;color:var(--w5);cursor:pointer;margin-top:2px" @click="coord.showPass=!coord.showPass" x-text="coord.showPass?coord.password:'Click to reveal'"></div>
+                  </div>
+                  <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0" :style="coord.active?'background:var(--green)':'background:var(--w4)'"></div>
+                </div>
+              </div>
+            </template>
+            <div x-show="rtsCoordinators.length===0" class="empty">
+              <div style="font-size:32px;margin-bottom:10px">🔐</div>
+              <div style="font-weight:700">No coordinators registered yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Add coordinators via the Add Coordinator tab</div>
+            </div>
+          </div>
+        </div>
+        <!-- END L2 USER CREDENTIALS -->
+
         <!-- DASHBOARD: L3 — Training Coordinator (blank — build later) -->
 
         <!-- ════════════════════════════════════════════════════════════ -->
@@ -1392,6 +1593,7 @@ textarea.field{resize:none}
                   <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block;margin:0 auto 5px">
                   <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
                   <div style="font-size:10px;font-weight:900;margin-top:2px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
+                  <div style="font-size:9px;color:var(--w5);margin-top:2px;font-weight:300" x-text="e.dateString||''"></div>
                 </div>
               </template>
               <div x-show="tcEmps().length===0" style="flex:1;text-align:center;padding:24px;color:var(--w5)">No candidates in <span x-text="mmarket"></span> yet</div>
@@ -1787,6 +1989,7 @@ textarea.field{resize:none}
                   <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block;margin:0 auto 5px">
                   <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
                   <div style="font-size:10px;font-weight:900;margin-top:2px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
+                  <div style="font-size:9px;color:var(--w5);margin-top:2px;font-weight:300" x-text="e.dateString||''"></div>
                 </div>
               </template>
               <div x-show="dmEmps().length===0" style="flex:1;text-align:center;padding:24px;color:var(--w5)">No trainees yet — candidates arrive after Quality sign-off</div>
@@ -2260,6 +2463,7 @@ textarea.field{resize:none}
                   <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block;margin:0 auto 5px">
                   <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
                   <div style="font-size:10px;font-weight:900;margin-top:2px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
+                  <div style="font-size:9px;color:var(--w5);margin-top:2px;font-weight:300" x-text="e.dateString||''"></div>
                 </div>
               </template>
               <div x-show="hrEmps().length===0" style="flex:1;text-align:center;padding:24px;color:var(--w5)">No candidates yet — click + New Candidate to add</div>
@@ -3054,7 +3258,10 @@ function app(){
     loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
-    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all'},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
+    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
+    rtsCoordinators:[],rtsNewCoord:{name:'',mp:'',username:'',password:'',active:true,showPass:false},rtsCoordForm:false,
+    rtsMPs:[{name:'UAE',flag:'🇦🇪'},{name:'Qatar',flag:'🇶🇦'},{name:'Kuwait',flag:'🇰🇼'},{name:'Bahrain',flag:'🇧🇭'},{name:'Riyadh',flag:'🇸🇦'},{name:'Jeddah',flag:'🇸🇦'},{name:'Oman',flag:'🇴🇲'},{name:'UK',flag:'🇬🇧'}],rtsNewMP:{name:'',flag:''},rtsMPForm:false,
+    rtsDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],rtsNewDept:{name:'',icon:''},rtsDeptForm:false,tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all'},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
     emps:[],tpls:[],
     branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
     flags:{
@@ -3102,7 +3309,7 @@ function app(){
           this.mf=r.market==='All'?'All':r.market;
           this.loggedIn=true;
           this.loadMaterials();
-          if(r.level===2){this.rtsLoadMaterials();}
+          if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
           if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
           this.fetchAll();
         }
@@ -3158,8 +3365,8 @@ function app(){
             this.saveSession(r);
             this.loggedIn=true;
             this.loadMaterials();
-            if(r.level===2){this.rtsLoadMaterials();}
-            if(r.level===2){this.rtsLoadMaterials();}
+            if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
+            if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
           if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
             this.fetchAll();
           } else {this.lerr='Invalid credentials. Please try again.';}
@@ -3276,6 +3483,36 @@ function app(){
       try { const d=localStorage.getItem('calo_mat_rts'); if(d) this.rtsMaterials=JSON.parse(d); } catch(e){}
     },
     // ── END L2 METHODS ────────────────────────────────────────────
+
+    // ── RTS ADMIN METHODS ─────────────────────────────────────────
+    rtsSaveCoordinators(){ try{localStorage.setItem('calo_rts_coords',JSON.stringify(this.rtsCoordinators));}catch(e){} },
+    rtsLoadCoordinators(){ try{const d=localStorage.getItem('calo_rts_coords');if(d)this.rtsCoordinators=JSON.parse(d);}catch(e){} },
+    rtsSaveNewCoord(){
+      if(!this.rtsNewCoord.name||!this.rtsNewCoord.mp||!this.rtsNewCoord.username||!this.rtsNewCoord.password)return;
+      this.rtsCoordinators.push(Object.assign({},this.rtsNewCoord));
+      this.rtsSaveCoordinators();
+      this.rtsCoordForm=false;
+      this.rtsNewCoord={name:'',mp:'',username:'',password:'',active:true,showPass:false};
+    },
+    rtsSaveMPs(){ try{localStorage.setItem('calo_rts_mps',JSON.stringify(this.rtsMPs));}catch(e){} },
+    rtsLoadMPs(){ try{const d=localStorage.getItem('calo_rts_mps');if(d)this.rtsMPs=JSON.parse(d);}catch(e){} },
+    rtsSaveMP(){
+      if(!this.rtsNewMP.name)return;
+      this.rtsMPs.push(Object.assign({},this.rtsNewMP));
+      this.rtsSaveMPs();
+      this.rtsMPForm=false;
+      this.rtsNewMP={name:'',flag:''};
+    },
+    rtsSaveDepts(){ try{localStorage.setItem('calo_rts_depts',JSON.stringify(this.rtsDepts));}catch(e){} },
+    rtsLoadDepts(){ try{const d=localStorage.getItem('calo_rts_depts');if(d)this.rtsDepts=JSON.parse(d);}catch(e){} },
+    rtsSaveDept(){
+      if(!this.rtsNewDept.name)return;
+      this.rtsDepts.push(Object.assign({},this.rtsNewDept));
+      this.rtsSaveDepts();
+      this.rtsDeptForm=false;
+      this.rtsNewDept={name:'',icon:''};
+    },
+    // ── END RTS ADMIN METHODS ─────────────────────────────────────
     // ── L3 TRAINING COORDINATOR METHODS ─────────────────────────
     tcEmps(){
       return this.emps.filter(e=>{
