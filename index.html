@@ -286,6 +286,40 @@ textarea.field{resize:none}
 
 
 
+
+      <!-- ── L3 TRAINING COORDINATOR NAVIGATION ────────────────── -->
+      <div x-show="mlevel===3">
+        <div class="nav-group-label" style="margin-top:4px">Coordinator Workspace</div>
+        <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-link" :class="v==='tc_pipe'?'on':''" @click="v='tc_pipe'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Pipeline
+        </div>
+        <div class="nav-link" :class="v==='tc_stages'?'on':''" @click="v='tc_stages'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          Stage Overview
+        </div>
+        <div class="nav-link" :class="v==='tc_trainers'?'on':''" @click="v='tc_trainers'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Trainers
+        </div>
+        <div class="nav-link" :class="v==='tc_depts'?'on':''" @click="v='tc_depts'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          Departments
+        </div>
+        <div class="nav-link" :class="v==='tc_materials'?'on':''" @click="v='tc_materials'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Training Materials
+        </div>
+        <div class="nav-link" :class="v==='tc_reports'?'on':''" @click="v='tc_reports'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Reports
+        </div>
+      </div>
+      <!-- ── END L3 NAVIGATION ───────────────────────────────────── -->
       <!-- ── DEPARTMENT MANAGER NAVIGATION ────────────────────── -->
       <div x-show="mlevel===4 && mdept==='DEPT_MANAGER'">
         <div class="nav-group-label" style="margin-top:4px">Dept. Manager Workspace</div>
@@ -830,15 +864,470 @@ textarea.field{resize:none}
 
 
         <!-- DASHBOARD: L3 — Training Coordinator (blank — build later) -->
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- L3 — TRAINING COORDINATOR DASHBOARD                         -->
+        <!-- Condition: v==='dash' && mlevel===3                         -->
+        <!-- Scope: Their MP only. All 7 stages. Admin controls.         -->
+        <!-- ════════════════════════════════════════════════════════════ -->
         <div x-show="v==='dash' && mlevel===3" style="display:flex;flex-direction:column;min-height:100%">
+
+          <!-- TC COMMAND BAR -->
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
-              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Training Coordinator</div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Training Coordinator · <span x-text="mmarket"></span> Mountain Peak</div>
               <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
             </div>
+            <div style="display:flex;gap:0;align-items:center">
+              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="tcEmps().length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TOTAL STAFF</div></div>
+              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="tcEmps().filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">FLOOR READY</div></div>
+              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="tcEmps().filter(e=>stages.some(s=>e[s.k]&&e[s.k].done>0)&&!(e.cert&&e.cert.total>0&&e.cert.done===e.cert.total)).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN TRAINING</div></div>
+              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#FCA5A5;line-height:1" x-text="tcEmps().filter(e=>e.priority==='urgent'||e.priority==='high').length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">ATTENTION</div></div>
+              <div style="padding-left:16px"><button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button></div>
+            </div>
           </div>
-          <!-- L3 CONTENT GOES HERE -->
+
+          <!-- TC KPI TILES — ROW 1 -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
+            <div class="kpi-tile" style="--tile-accent:var(--ch);cursor:pointer" @click="v='tc_pipe'">
+              <div class="kpi-label">👥 Total Candidates</div>
+              <div class="kpi-num" style="color:var(--ch)" x-text="tcEmps().length"></div>
+              <div class="kpi-sub" x-text="mmarket+' Mountain Peak'"></div>
+              <div class="kpi-drill" style="color:var(--w5)"><span>View pipeline</span><span>→</span></div>
+            </div>
+            <div class="kpi-tile" style="--tile-accent:var(--green)">
+              <div class="kpi-label">🏆 Floor Ready</div>
+              <div class="kpi-num" style="color:var(--green)" x-text="tcEmps().filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total).length"></div>
+              <div class="kpi-sub" x-text="tcEmps().length?Math.round(tcEmps().filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total).length/tcEmps().length*100)+'% cert rate':'0%'"></div>
+              <div class="kpi-drill" style="color:var(--green)"><span>Certified</span><span></span></div>
+            </div>
+            <div class="kpi-tile" style="--tile-accent:var(--warn)">
+              <div class="kpi-label">📊 Avg Completion</div>
+              <div class="kpi-num" style="color:var(--warn)" x-text="(tcEmps().length?Math.round(tcEmps().reduce((a,e)=>a+opct(e),0)/tcEmps().length):0)+'%'"></div>
+              <div class="kpi-sub">Across all 7 stages</div>
+              <div class="kpi-drill" style="color:var(--warn)"><span>Overall progress</span><span></span></div>
+            </div>
+          </div>
+
+          <!-- TC KPI TILES — ROW 2 -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+            <div class="kpi-tile" style="--tile-accent:#F97316;cursor:pointer" @click="v='tc_stages'">
+              <div class="kpi-label">🔄 In Training</div>
+              <div class="kpi-num" style="color:#F97316" x-text="tcEmps().filter(e=>stages.some(s=>e[s.k]&&e[s.k].done>0)&&!(e.cert&&e.cert.total>0&&e.cert.done===e.cert.total)).length"></div>
+              <div class="kpi-sub">Active across stages</div>
+              <div class="kpi-drill" style="color:#F97316"><span>Stage overview</span><span>→</span></div>
+            </div>
+            <div class="kpi-tile" style="--tile-accent:var(--danger);cursor:pointer" @click="v='tc_pipe'">
+              <div class="kpi-label">🚨 Needs Attention</div>
+              <div class="kpi-num" style="color:var(--danger)" x-text="tcEmps().filter(e=>e.priority==='urgent'||e.priority==='high').length"></div>
+              <div class="kpi-sub">High + urgent priority</div>
+              <div class="kpi-drill" style="color:var(--danger)"><span>Review now</span><span>→</span></div>
+            </div>
+            <div class="kpi-tile" style="--tile-accent:#A78BFA;cursor:pointer" @click="v='tc_trainers'">
+              <div class="kpi-label">👤 Trainers</div>
+              <div class="kpi-num" style="color:#A78BFA" x-text="tcTrainers.filter(t=>t.active).length"></div>
+              <div class="kpi-sub" x-text="tcTrainers.length+' total registered'"></div>
+              <div class="kpi-drill" style="color:#A78BFA"><span>Manage trainers</span><span>→</span></div>
+            </div>
+          </div>
+
+          <!-- STAGE PROGRESS SUMMARY -->
+          <div class="card" style="padding:18px;margin-bottom:14px">
+            <div class="stitle" style="margin-bottom:14px">Stage Progress Summary</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <template x-for="s in stages">
+                <div style="cursor:pointer" @click="v='tc_stages'">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                    <span style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px"><span x-text="s.i"></span><span x-text="s.label"></span></span>
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <span style="font-size:10px;color:var(--w5)" x-text="tcEmps().filter(e=>e[s.k]&&e[s.k].done>0&&e[s.k].done<e[s.k].total).length+' active'"></span>
+                      <span style="font-size:12px;font-weight:900" :style="'color:'+s.color" x-text="(function(){const emp=tcEmps();if(!emp.length)return'0%';const t=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].total:0),0),d=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].done:0),0);return t>0?Math.round(d/t*100)+'%':'0%'})()"></span>
+                    </div>
+                  </div>
+                  <div style="height:7px;background:var(--w3);border-radius:4px;overflow:hidden">
+                    <div style="height:100%;border-radius:4px;transition:width 1s ease" :style="'width:'+(function(){const emp=tcEmps();if(!emp.length)return 0;const t=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].total:0),0),d=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].done:0),0);return t>0?Math.round(d/t*100):0})()+'%;background:'+s.color"></div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- CANDIDATE STRIP -->
+          <div class="card" style="padding:18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div class="stitle">All Candidates</div>
+              <button @click="v='tc_pipe'" class="btn btn-ghost btn-sm">View Full Pipeline →</button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <template x-for="e in tcEmps()">
+                <div style="text-align:center;cursor:pointer;padding:10px 8px;border-radius:var(--r8);border:1px solid var(--w3);min-width:70px;transition:all .15s;position:relative" @click="v='tc_pipe'" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background=''">
+                  <div x-show="e.priority==='urgent'" style="position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--danger)"></div>
+                  <div x-show="e.priority==='high'" style="position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--warn)"></div>
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block;margin:0 auto 5px">
+                  <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
+                  <div style="font-size:10px;font-weight:900;margin-top:2px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
+                </div>
+              </template>
+              <div x-show="tcEmps().length===0" style="flex:1;text-align:center;padding:24px;color:var(--w5)">No candidates in <span x-text="mmarket"></span> yet</div>
+            </div>
+          </div>
+
         </div>
+        <!-- END L3 DASHBOARD -->
+
+
+        <!-- L3 PIPELINE — all candidates, all 7 stages -->
+        <div x-show="v==='tc_pipe' && mlevel===3">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Pipeline</div>
+              <div class="psub" x-text="tcEmps().length+' candidates · '+mmarket+' Mountain Peak'"></div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <template x-for="f in [{l:'All',v:'all'},{l:'In Progress',v:'active'},{l:'Certified',v:'done'},{l:'Pending',v:'pending'}]">
+                <button @click="pf=f.v" class="btn btn-ghost btn-sm" :style="pf===f.v?'border-color:var(--green);color:var(--green);background:var(--green-l)':''" x-text="f.l"></button>
+              </template>
+            </div>
+          </div>
+          <div class="cg">
+            <template x-for="(e,ei) in tcFiltered()">
+              <div class="emp-card" :class="{'pri-urgent':e.priority==='urgent','pri-high':e.priority==='high'}">
+                <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px">
+                  <div style="position:relative;width:50px;height:50px;flex-shrink:0">
+                    <svg width="50" height="50" class="ring" viewBox="0 0 50 50"><circle class="ring-bg" cx="25" cy="25" r="20"/><circle class="ring-fg" cx="25" cy="25" r="20" :stroke="pc(opct(e))" :stroke-dasharray="125.7" :stroke-dashoffset="125.7*(1-opct(e)/100)"/></svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:900" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></span></div>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="e.name"></div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:1px;font-weight:300" x-text="e.role"></div>
+                    <div style="display:flex;gap:5px;align-items:center;margin-top:5px">
+                      <span class="chip c-green" style="font-size:9px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
+                      <span x-show="e.priority==='urgent'" class="chip" style="font-size:9px;background:rgba(224,83,58,.1);color:var(--danger)">Urgent</span>
+                      <span x-show="e.priority==='high'" class="chip" style="font-size:9px;background:rgba(245,166,35,.1);color:var(--warn)">High</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
+                  <template x-for="s in stages">
+                    <div class="stg" :class="scls(e,s.k)">
+                      <div style="display:flex;align-items:center;justify-content:space-between">
+                        <span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em" :style="'color:'+scol(e,s.k)" x-text="s.short"></span>
+                        <span style="font-size:10px;font-weight:700" :style="'color:'+scol(e,s.k)"><span x-text="e[s.k]?e[s.k].done:0"></span>/<span x-text="e[s.k]?e[s.k].total:'—'"></span></span>
+                      </div>
+                      <div class="pbar" style="margin-top:3px"><div class="pbar-fill" :style="'width:'+spce(e,s.k)+'%'"></div></div>
+                    </div>
+                  </template>
+                </div>
+                <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
+                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
+                  <button @click="omgr(e,stages.find(s=>scls(e,s.k)==='stg-active'||scls(e,s.k)==='stg-part'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Edit Tasks</button>
+                </div>
+              </div>
+            </template>
+            <div x-show="tcFiltered().length===0" class="empty" style="grid-column:1/-1">
+              <div style="font-size:32px;margin-bottom:10px">📋</div>
+              <div style="font-size:15px;font-weight:700">No candidates found</div>
+            </div>
+          </div>
+        </div>
+        <!-- END L3 PIPELINE -->
+
+
+        <!-- L3 STAGE OVERVIEW -->
+        <div x-show="v==='tc_stages' && mlevel===3">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Stage Overview</div>
+            <div class="psub" x-text="'All 7 onboarding stages · '+mmarket+' Mountain Peak'"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <template x-for="s in stages">
+              <div class="card" style="padding:16px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <span style="font-size:24px" x-text="s.i"></span>
+                    <div>
+                      <div style="font-size:14px;font-weight:900;color:var(--ch)" x-text="s.label"></div>
+                      <div style="font-size:11px;color:var(--w5);font-weight:300" x-text="tcEmps().filter(e=>e[s.k]&&e[s.k].done>0&&e[s.k].done<e[s.k].total).length+' active · '+tcEmps().filter(e=>e[s.k]&&e[s.k].total>0&&e[s.k].done===e[s.k].total).length+' completed'"></div>
+                    </div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:22px;font-weight:900" :style="'color:'+s.color" x-text="(function(){const emp=tcEmps();if(!emp.length)return'0%';const t=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].total:0),0),d=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].done:0),0);return t>0?Math.round(d/t*100)+'%':'0%'})()"></div>
+                  </div>
+                </div>
+                <div style="height:8px;background:var(--w3);border-radius:4px;overflow:hidden;margin-bottom:12px">
+                  <div style="height:100%;border-radius:4px;transition:width 1s ease" :style="'width:'+(function(){const emp=tcEmps();if(!emp.length)return 0;const t=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].total:0),0),d=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].done:0),0);return t>0?Math.round(d/t*100):0})()+'%;background:'+s.color"></div>
+                </div>
+                <!-- Candidates in this stage -->
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                  <template x-for="e in tcEmps().filter(e=>e[s.k]&&e[s.k].done>0&&e[s.k].done<e[s.k].total)">
+                    <div style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:var(--w2);border-radius:20px;cursor:pointer" @click="v='tc_pipe'">
+                      <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:18px;height:18px;border-radius:50%;object-fit:cover">
+                      <span style="font-size:11px;font-weight:700" x-text="e.name.split(' ')[0]"></span>
+                      <span style="font-size:10px;font-weight:700" :style="'color:'+s.color" x-text="(e[s.k]?Math.round(e[s.k].done/e[s.k].total*100):0)+'%'"></span>
+                    </div>
+                  </template>
+                  <div x-show="tcEmps().filter(e=>e[s.k]&&e[s.k].done>0&&e[s.k].done<e[s.k].total).length===0" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No active candidates in this stage</div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <!-- END L3 STAGE OVERVIEW -->
+
+
+        <!-- L3 TRAINERS MANAGEMENT -->
+        <div x-show="v==='tc_trainers' && mlevel===3">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Trainers</div>
+              <div class="psub" x-text="tcTrainers.filter(t=>t.active).length+' active · '+tcTrainers.length+' total · '+mmarket+' MP'"></div>
+            </div>
+            <button @click="tcAddTrainerForm=true" class="btn btn-primary btn-sm">+ Add Trainer</button>
+          </div>
+
+          <!-- Trainer Cards Grid -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:20px">
+            <template x-for="(t,ti) in tcTrainers">
+              <div class="card" style="padding:16px" :style="!t.active?'opacity:.5':''">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+                  <img :src="t.photo||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
+                  <div style="flex:1">
+                    <div style="font-size:13px;font-weight:900" x-text="t.name"></div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:2px" x-text="t.stage+' · '+t.dept"></div>
+                    <div style="display:flex;align-items:center;gap:4px;margin-top:4px">
+                      <div style="width:7px;height:7px;border-radius:50%" :style="t.active?'background:var(--green)':'background:var(--w4)'"></div>
+                      <span style="font-size:10px;font-weight:700" :style="t.active?'color:var(--green)':'color:var(--w5)'" x-text="t.active?'Active':'Inactive'"></span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Credentials -->
+                <div style="background:var(--w2);border-radius:var(--r8);padding:8px 10px;margin-bottom:10px;font-size:11px">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="color:var(--w5)">Username</span><span style="font-weight:700;font-family:monospace" x-text="t.username"></span></div>
+                  <div style="display:flex;justify-content:space-between"><span style="color:var(--w5)">Password</span><span style="font-weight:700;font-family:monospace;cursor:pointer" @click="t.showPass=!t.showPass" x-text="t.showPass?t.password:'••••••••'"></span></div>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <button @click="tcEditTrainer(ti)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Edit</button>
+                  <button @click="t.active=!t.active;tcSaveTrainers()" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" :style="t.active?'color:var(--danger)':'color:var(--green)'" x-text="t.active?'Deactivate':'Activate'"></button>
+                </div>
+              </div>
+            </template>
+            <div x-show="tcTrainers.length===0" class="empty" style="grid-column:1/-1">
+              <div style="font-size:32px;margin-bottom:10px">👤</div>
+              <div style="font-weight:700">No trainers yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Click + Add Trainer to register your first trainer</div>
+            </div>
+          </div>
+
+          <!-- Add Trainer Modal -->
+          <div x-show="tcAddTrainerForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="tcAddTrainerForm?'display:flex':''">
+            <div class="card" style="width:100%;max-width:480px;padding:28px;border-radius:var(--r16)">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+                <div><div style="font-size:18px;font-weight:900;color:var(--ch)" x-text="tcEditIdx>=0?'Edit Trainer':'Add Trainer'"></div><div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="mmarket+' Mountain Peak'"></div></div>
+                <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div><div class="f-label">Full Name *</div><input type="text" x-model="tcNewTrainer.name" class="field" placeholder="Trainer name" style="width:100%;box-sizing:border-box"></div>
+                  <div><div class="f-label">Photo URL</div><input type="url" x-model="tcNewTrainer.photo" class="field" placeholder="Photo URL (optional)" style="width:100%;box-sizing:border-box"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div><div class="f-label">Stage *</div>
+                    <select x-model="tcNewTrainer.stage" class="field" style="width:100%;box-sizing:border-box">
+                      <option value="">Select stage</option>
+                      <template x-for="s in stages"><option :value="s.label" x-text="s.i+' '+s.label"></option></template>
+                    </select>
+                  </div>
+                  <div><div class="f-label">Department *</div>
+                    <select x-model="tcNewTrainer.dept" class="field" style="width:100%;box-sizing:border-box">
+                      <option value="">Select dept</option>
+                      <template x-for="d in tcDepts"><option :value="d.name" x-text="d.name"></option></template>
+                    </select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div><div class="f-label">Username *</div><input type="text" x-model="tcNewTrainer.username" class="field" placeholder="e.g. TR-KIT-UAE" style="width:100%;box-sizing:border-box;text-transform:uppercase" @input="tcNewTrainer.username=tcNewTrainer.username.toUpperCase()"></div>
+                  <div><div class="f-label">Password *</div><input type="text" x-model="tcNewTrainer.password" class="field" placeholder="e.g. Tr@kit@UAE" style="width:100%;box-sizing:border-box"></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:20px">
+                <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                <button @click="tcSaveNewTrainer()" :disabled="!tcNewTrainer.name||!tcNewTrainer.stage||!tcNewTrainer.username||!tcNewTrainer.password" class="btn btn-primary" style="flex:1;justify-content:center" x-text="tcEditIdx>=0?'Save Changes':'Add Trainer'">Add Trainer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END L3 TRAINERS -->
+
+
+        <!-- L3 DEPARTMENTS -->
+        <div x-show="v==='tc_depts' && mlevel===3">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Departments</div>
+              <div class="psub" x-text="tcDepts.length+' departments · '+mmarket+' Mountain Peak'"></div>
+            </div>
+            <button @click="tcDeptForm=true" class="btn btn-primary btn-sm">+ Add Department</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px">
+            <template x-for="(d,di) in tcDepts">
+              <div class="card" style="padding:16px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <div style="width:40px;height:40px;border-radius:var(--r8);background:var(--green-l);display:flex;align-items:center;justify-content:center;font-size:20px" x-text="d.icon||'🏢'"></div>
+                  <div>
+                    <div style="font-size:14px;font-weight:900;color:var(--ch)" x-text="d.name"></div>
+                    <div style="font-size:11px;color:var(--w5)" x-text="tcTrainers.filter(t=>t.dept===d.name).length+' trainers assigned'"></div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <button @click="tcDepts.splice(di,1);tcSaveDepts()" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;color:var(--danger)">Remove</button>
+                </div>
+              </div>
+            </template>
+            <div x-show="tcDepts.length===0" style="grid-column:1/-1;text-align:center;padding:32px;color:var(--w5)">
+              <div style="font-size:32px;margin-bottom:10px">🏢</div>
+              <div style="font-weight:700">No departments yet</div>
+            </div>
+          </div>
+
+          <!-- Add Dept Modal -->
+          <div x-show="tcDeptForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="tcDeptForm?'display:flex':''">
+            <div class="card" style="width:100%;max-width:380px;padding:28px;border-radius:var(--r16)">
+              <div style="font-size:18px;font-weight:900;color:var(--ch);margin-bottom:20px">Add Department</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div><div class="f-label">Department Name *</div><input type="text" x-model="tcNewDept.name" class="field" placeholder="e.g. Kitchen, Dispatch, Store" style="width:100%;box-sizing:border-box"></div>
+                <div><div class="f-label">Icon (emoji)</div><input type="text" x-model="tcNewDept.icon" class="field" placeholder="e.g. 🍳 🚚 📦" style="width:100%;box-sizing:border-box"></div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:20px">
+                <button @click="tcDeptForm=false;tcNewDept={name:'',icon:''}" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                <button @click="tcSaveDept()" :disabled="!tcNewDept.name" class="btn btn-primary" style="flex:1;justify-content:center">Add Department</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END L3 DEPARTMENTS -->
+
+
+        <!-- L3 TRAINING MATERIALS -->
+        <div x-show="v==='tc_materials' && mlevel===3">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Training Materials</div>
+            <div class="psub">Add and manage training resources for all stages in <span x-text="mmarket"></span></div>
+          </div>
+          <div class="card" style="padding:20px;margin-bottom:16px">
+            <div class="stitle" style="margin-bottom:14px">Add Training Material</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+              <div><div class="f-label">Material Title *</div><input type="text" x-model="tcMat.title" class="field" placeholder="e.g. Kitchen SOP v2" style="width:100%;box-sizing:border-box"></div>
+              <div><div class="f-label">Stage</div>
+                <select x-model="tcMat.stage" class="field" style="width:100%;box-sizing:border-box">
+                  <option value="all">All Stages</option>
+                  <template x-for="s in stages"><option :value="s.k" x-text="s.label"></option></template>
+                </select>
+              </div>
+              <div><div class="f-label">Type</div>
+                <select x-model="tcMat.type" class="field" style="width:100%;box-sizing:border-box">
+                  <option value="google_slides">📊 Google Slides</option>
+                  <option value="google_doc">📄 Google Doc</option>
+                  <option value="video">🎥 Video</option>
+                  <option value="google_sheet">📋 Google Sheet</option>
+                  <option value="link">🔗 External Link</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-bottom:12px"><div class="f-label">URL / Link *</div><input type="url" x-model="tcMat.url" class="field" placeholder="Paste Google Drive, YouTube or any URL" style="width:100%;box-sizing:border-box"></div>
+            <div style="margin-bottom:16px"><div class="f-label">Description (optional)</div><input type="text" x-model="tcMat.desc" class="field" placeholder="Brief description" style="width:100%;box-sizing:border-box"></div>
+            <button @click="tcAddMaterial()" :disabled="!tcMat.title||!tcMat.url" class="btn btn-primary" style="padding:9px 24px">+ Add Material</button>
+          </div>
+          <div class="card" style="padding:20px">
+            <div class="stitle" style="margin-bottom:14px">Training Library <span style="font-size:11px;font-weight:300;color:var(--w5)" x-text="'('+tcMaterials.length+' items)'"></span></div>
+            <div x-show="tcMaterials.length===0" style="text-align:center;padding:32px;color:var(--w5)">
+              <div style="font-size:32px;margin-bottom:10px">📚</div>
+              <div style="font-weight:700">No materials yet</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <template x-for="(m,i) in tcMaterials">
+                <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--w3);border-radius:var(--r8);transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--w3)'">
+                  <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13px;font-weight:700" x-text="m.title"></div>
+                    <div style="font-size:10px;color:var(--green);font-weight:700;margin-top:2px" x-text="m.stage==='all'?'All Stages':stages.find(s=>s.k===m.stage)?.label||m.stage"></div>
+                    <div style="font-size:11px;color:var(--w5);font-weight:300" x-text="m.desc||''"></div>
+                  </div>
+                  <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
+                  <button @click="tcRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+        <!-- END L3 TRAINING MATERIALS -->
+
+
+        <!-- L3 REPORTS -->
+        <div x-show="v==='tc_reports' && mlevel===3">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Reports</div>
+            <div class="psub" x-text="mmarket+' Mountain Peak · All Stages'"></div>
+          </div>
+          <!-- Stage matrix table -->
+          <div class="card" style="padding:18px;margin-bottom:14px">
+            <div class="stitle" style="margin-bottom:14px">Stage Completion by Candidate</div>
+            <div style="overflow-x:auto">
+              <table style="width:100%;border-collapse:collapse;font-size:11px">
+                <thead>
+                  <tr style="border-bottom:2px solid var(--w3)">
+                    <th style="text-align:left;padding:8px 10px;font-weight:700;color:var(--w6)">Candidate</th>
+                    <template x-for="s in stages"><th style="text-align:center;padding:8px 6px;font-weight:700" :style="'color:'+s.color" x-text="s.short"></th></template>
+                    <th style="text-align:center;padding:8px 6px;font-weight:700;color:var(--ch)">Overall</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="e in tcEmps()">
+                    <tr style="border-bottom:1px solid var(--w3)">
+                      <td style="padding:8px 10px">
+                        <div style="display:flex;align-items:center;gap:8px">
+                          <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:24px;height:24px;border-radius:50%;object-fit:cover">
+                          <div>
+                            <div style="font-weight:700;font-size:12px" x-text="e.name"></div>
+                            <div style="color:var(--w5);font-size:10px;font-weight:300" x-text="e.role"></div>
+                          </div>
+                        </div>
+                      </td>
+                      <template x-for="s in stages">
+                        <td style="text-align:center;padding:8px 6px">
+                          <span style="font-size:11px;font-weight:700;padding:2px 6px;border-radius:20px" :style="e[s.k]&&e[s.k].total>0&&e[s.k].done===e[s.k].total?'background:var(--green-l);color:var(--green-h)':e[s.k]&&e[s.k].done>0?'background:rgba(245,166,35,.1);color:var(--warn)':'background:var(--w2);color:var(--w4)'" x-text="e[s.k]&&e[s.k].total>0?Math.round(e[s.k].done/e[s.k].total*100)+'%':'—'"></span>
+                        </td>
+                      </template>
+                      <td style="text-align:center;padding:8px 6px">
+                        <span style="font-size:12px;font-weight:900" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></span>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Summary stats -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+            <div class="card" style="padding:14px;text-align:center">
+              <div style="font-size:28px;font-weight:900;color:var(--ch)" x-text="tcEmps().length"></div>
+              <div style="font-size:11px;color:var(--w5);font-weight:700;margin-top:4px">Total Candidates</div>
+            </div>
+            <div class="card" style="padding:14px;text-align:center">
+              <div style="font-size:28px;font-weight:900;color:var(--green)" x-text="tcEmps().filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total).length"></div>
+              <div style="font-size:11px;color:var(--w5);font-weight:700;margin-top:4px">Floor Ready</div>
+            </div>
+            <div class="card" style="padding:14px;text-align:center">
+              <div style="font-size:28px;font-weight:900;color:var(--warn)" x-text="(tcEmps().length?Math.round(tcEmps().reduce((a,e)=>a+opct(e),0)/tcEmps().length):0)+'%'"></div>
+              <div style="font-size:11px;color:var(--w5);font-weight:700;margin-top:4px">Avg Completion</div>
+            </div>
+            <div class="card" style="padding:14px;text-align:center">
+              <div style="font-size:28px;font-weight:900;color:var(--danger)" x-text="tcEmps().filter(e=>e.priority==='urgent'||e.priority==='high').length"></div>
+              <div style="font-size:11px;color:var(--w5);font-weight:700;margin-top:4px">Need Attention</div>
+            </div>
+          </div>
+        </div>
+        <!-- END L3 REPORTS -->
+
 
         <!-- DASHBOARD: L4 — Trainer (blank — build later) -->
         <!-- ══════════════════════════════════════════════════════════ -->
@@ -2139,7 +2628,7 @@ function app(){
     loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
-    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
+    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all'},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
     emps:[],tpls:[],
     branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
     flags:{
@@ -2187,6 +2676,7 @@ function app(){
           this.mf=r.market==='All'?'All':r.market;
           this.loggedIn=true;
           this.loadMaterials();
+          if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
           this.fetchAll();
         }
       } catch(e){ localStorage.removeItem('calo_session'); }
@@ -2241,6 +2731,7 @@ function app(){
             this.saveSession(r);
             this.loggedIn=true;
             this.loadMaterials();
+            if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
             this.fetchAll();
           } else {this.lerr='Invalid credentials. Please try again.';}
         })
@@ -2327,6 +2818,84 @@ function app(){
     },
 
 
+
+    // ── L3 TRAINING COORDINATOR METHODS ─────────────────────────
+    tcEmps(){
+      return this.emps.filter(e=>{
+        const mok = e.country===this.mmarket;
+        const tok = !this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
+        return mok&&tok;
+      });
+    },
+    tcFiltered(){
+      let l = this.tcEmps();
+      if(this.pf==='done')    l=l.filter(e=>e.cert&&e.cert.total>0&&e.cert.done===e.cert.total);
+      else if(this.pf==='active')  l=l.filter(e=>this.stages.some(s=>e[s.k]&&e[s.k].done>0)&&!(e.cert&&e.cert.total>0&&e.cert.done===e.cert.total));
+      else if(this.pf==='pending') l=l.filter(e=>this.stages.every(s=>!e[s.k]||e[s.k].done===0));
+      return l;
+    },
+    tcSaveTrainers(){
+      try { localStorage.setItem('calo_trainers_'+this.mmarket, JSON.stringify(this.tcTrainers)); } catch(e){}
+    },
+    tcLoadTrainers(){
+      try {
+        const d = localStorage.getItem('calo_trainers_'+this.mmarket);
+        if(d) this.tcTrainers = JSON.parse(d);
+      } catch(e){}
+    },
+    tcSaveDepts(){
+      try { localStorage.setItem('calo_depts_'+this.mmarket, JSON.stringify(this.tcDepts)); } catch(e){}
+    },
+    tcLoadDepts(){
+      try {
+        const d = localStorage.getItem('calo_depts_'+this.mmarket);
+        if(d) this.tcDepts = JSON.parse(d);
+      } catch(e){}
+    },
+    tcSaveNewTrainer(){
+      if(!this.tcNewTrainer.name||!this.tcNewTrainer.stage||!this.tcNewTrainer.username||!this.tcNewTrainer.password) return;
+      if(this.tcEditIdx>=0){
+        this.tcTrainers.splice(this.tcEditIdx, 1, Object.assign({},this.tcNewTrainer));
+      } else {
+        this.tcTrainers.push(Object.assign({},this.tcNewTrainer));
+      }
+      this.tcSaveTrainers();
+      this.tcAddTrainerForm=false;
+      this.tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};
+      this.tcEditIdx=-1;
+    },
+    tcEditTrainer(i){
+      this.tcEditIdx=i;
+      this.tcNewTrainer=Object.assign({},this.tcTrainers[i]);
+      this.tcAddTrainerForm=true;
+    },
+    tcSaveDept(){
+      if(!this.tcNewDept.name) return;
+      this.tcDepts.push(Object.assign({},this.tcNewDept));
+      this.tcSaveDepts();
+      this.tcDeptForm=false;
+      this.tcNewDept={name:'',icon:''};
+    },
+    tcAddMaterial(){
+      if(!this.tcMat.title||!this.tcMat.url) return;
+      this.tcMaterials.push(Object.assign({},this.tcMat));
+      this.tcMat={title:'',type:'google_slides',url:'',desc:'',stage:'all'};
+      this.tcSaveMaterials();
+    },
+    tcRemoveMaterial(i){
+      this.tcMaterials.splice(i,1);
+      this.tcSaveMaterials();
+    },
+    tcSaveMaterials(){
+      try { localStorage.setItem('calo_mat_tc_'+this.mmarket, JSON.stringify(this.tcMaterials)); } catch(e){}
+    },
+    tcLoadMaterials(){
+      try {
+        const d = localStorage.getItem('calo_mat_tc_'+this.mmarket);
+        if(d) this.tcMaterials = JSON.parse(d);
+      } catch(e){}
+    },
+    // ── END L3 METHODS ───────────────────────────────────────────
     // ── DEPARTMENT MANAGER METHODS ────────────────────────────────
     dmEmps(){
       // Candidates who completed Quality — arrived from Quality sign-off
@@ -2625,7 +3194,7 @@ function app(){
       if(this.mlevel===1)return true;
       if(e.country!==this.mmarket)return false;
       if(this.mlevel===2)return true;
-      if(this.mlevel===3)return['qual','ojt','assess','cert'].includes(k);
+      if(this.mlevel===3)return true;  // L3 Coordinator can edit all stages
       if(this.mlevel===4){
         // HR users (HR_Status) can edit pre-boarding, orientation AND hr compliance
         if(this.mdept==='HR_Status') return ['pre','ori','hr'].includes(k);
