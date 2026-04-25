@@ -465,6 +465,29 @@ textarea.field{resize:none}
 
       </div>
       <!-- ── END HR NAVIGATION ──────────────────────────────────── -->
+
+        <div class="nav-group-label" x-show="mlevel===1" style="margin-top:8px">Executive Suite</div>
+        <div x-show="mlevel===1" class="nav-link" :class="v==='l1_analytics'?'on':''" @click="v='l1_analytics'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Analytics
+        </div>
+        <div x-show="mlevel===1" class="nav-link" :class="v==='l1_admin'?'on':''" @click="v='l1_admin'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+          System Admin
+        </div>
+        <div x-show="mlevel===1" class="nav-link" :class="v==='l1_sla'?'on':''" @click="v='l1_sla'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          SLA Settings
+        </div>
+        <div x-show="mlevel===1" class="nav-link" :class="v==='l1_announce'?'on':''" @click="v='l1_announce'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          Announcements
+        </div>
+        <div x-show="mlevel===1" class="nav-link" :class="v==='l1_audit'?'on':''" @click="v='l1_audit'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Audit Log
+        </div>
+
       <!-- Mountain Peaks (L1) -->
       <div x-show="mlevel===1">
         <div class="nav-group-label" style="margin-top:8px">Mountain Peaks</div>
@@ -924,6 +947,417 @@ textarea.field{resize:none}
         </div>
 
 
+
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- L1 — ANALYTICS                                              -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <div x-show="v==='l1_analytics' && mlevel===1">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Global Analytics</div>
+            <div class="psub">Onboarding performance across all Mountain Peaks</div>
+          </div>
+
+          <!-- GLOBAL KPI ROW -->
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
+            <div class="card" style="padding:16px;text-align:center;border-top:3px solid var(--green)">
+              <div style="font-size:32px;font-weight:900;color:var(--green)" x-text="emps.length"></div>
+              <div style="font-size:11px;color:var(--w5);font-weight:700;margin-top:4px">TOTAL STAFF</div>
+            </div>
+            <div class="card" style="padding:16px;text-align:center;border-top:3px solid #3B82F6">
+              <div style="font-size:32px;font-weight:900;color:#3B82F6" x-text="certCount()"></div>
+              <div style="font-size:11px;color:var(--w5);font-weight:700;margin-top:4px">FLOOR READY</div>
+            </div>
+            <div class="card" style="padding:16px;text-align:center;border-top:3px solid var(--warn)">
+              <div style="font-size:32px;font-weight:900;color:var(--warn)" x-text="activeCount()"></div>
+              <div style="font-size:11px;color:var(--w5);font-weight:700;margin-top:4px">IN TRAINING</div>
+            </div>
+            <div class="card" style="padding:16px;text-align:center;border-top:3px solid var(--danger)">
+              <div style="font-size:32px;font-weight:900;color:var(--danger)" x-text="urgentCount()"></div>
+              <div style="font-size:11px;color:var(--w5);font-weight:700;margin-top:4px">NEEDS ATTENTION</div>
+            </div>
+            <div class="card" style="padding:16px;text-align:center;border-top:3px solid #A78BFA">
+              <div style="font-size:32px;font-weight:900;color:#A78BFA" x-text="avgc()+'%'"></div>
+              <div style="font-size:11px;color:var(--w5);font-weight:700;margin-top:4px">AVG COMPLETION</div>
+            </div>
+          </div>
+
+          <!-- MP PERFORMANCE TABLE -->
+          <div class="card" style="padding:20px;margin-bottom:16px">
+            <div class="stitle" style="margin-bottom:16px">Mountain Peak Performance Breakdown</div>
+            <div style="overflow-x:auto">
+              <table style="width:100%;border-collapse:collapse;font-size:11px">
+                <thead>
+                  <tr style="border-bottom:2px solid var(--w3)">
+                    <th style="text-align:left;padding:10px 12px;font-weight:700;color:var(--w6)">Mountain Peak</th>
+                    <th style="text-align:center;padding:10px 6px;font-weight:700;color:var(--w6)">Staff</th>
+                    <template x-for="s in stages">
+                      <th style="text-align:center;padding:10px 6px;font-weight:700" :style="'color:'+s.color" x-text="s.short"></th>
+                    </template>
+                    <th style="text-align:center;padding:10px 6px;font-weight:700;color:var(--ch)">Overall</th>
+                    <th style="text-align:center;padding:10px 6px;font-weight:700;color:var(--danger)">SLA Breach</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="b in branches">
+                    <tr x-show="emps.some(e=>e.country===b)" style="border-bottom:1px solid var(--w3)">
+                      <td style="padding:10px 12px">
+                        <div style="display:flex;align-items:center;gap:8px">
+                          <span style="font-size:18px" x-text="flag(b)"></span>
+                          <span style="font-weight:700;font-size:12px" x-text="b"></span>
+                        </div>
+                      </td>
+                      <td style="text-align:center;padding:10px 6px;font-weight:700" x-text="emps.filter(e=>e.country===b).length"></td>
+                      <template x-for="s in stages">
+                        <td style="text-align:center;padding:10px 6px">
+                          <span style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px"
+                            :style="(function(){const emp=emps.filter(e=>e.country===b);const t=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].total:0),0),d=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].done:0),0);const pct=t>0?Math.round(d/t*100):0;return pct>=100?'background:var(--green-l);color:var(--green-h)':pct>0?'background:rgba(245,166,35,.12);color:#92400E':'background:var(--w2);color:var(--w4)'})()"
+                            x-text="(function(){const emp=emps.filter(e=>e.country===b);const t=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].total:0),0),d=emp.reduce((a,e)=>a+(e[s.k]?e[s.k].done:0),0);return t>0?Math.round(d/t*100)+'%':'—'})()">
+                          </span>
+                        </td>
+                      </template>
+                      <td style="text-align:center;padding:10px 6px">
+                        <span style="font-size:13px;font-weight:900" :style="'color:'+pc(bpct(b))" x-text="bpct(b)+'%'"></span>
+                      </td>
+                      <td style="text-align:center;padding:10px 6px">
+                        <span x-show="emps.filter(e=>e.country===b&&(e.priority==='urgent'||e.priority==='high')).length>0"
+                          style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(224,83,58,.1);color:var(--danger)"
+                          x-text="emps.filter(e=>e.country===b&&(e.priority==='urgent'||e.priority==='high')).length+' ⚠'">
+                        </span>
+                        <span x-show="emps.filter(e=>e.country===b&&(e.priority==='urgent'||e.priority==='high')).length===0"
+                          style="font-size:11px;color:var(--green);font-weight:700">✓ Clear</span>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- STAGE BOTTLENECK ANALYSIS -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="card" style="padding:18px">
+              <div class="stitle" style="margin-bottom:14px">Stage Bottleneck Analysis</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <template x-for="s in stages.slice().sort((a,b)=>stageActiveCount(b.k)-stageActiveCount(a.k))">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                      <span style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px"><span x-text="s.i"></span><span x-text="s.label"></span></span>
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <span style="font-size:11px;color:var(--w5)" x-text="stageActiveCount(s.k)+' active'"></span>
+                        <span style="font-size:11px;font-weight:900" :style="'color:'+s.color"
+                          x-text="(function(){const t=emps.reduce((a,e)=>a+(e[s.k]?e[s.k].total:0),0),d=emps.reduce((a,e)=>a+(e[s.k]?e[s.k].done:0),0);return t>0?Math.round(d/t*100)+'%':'0%'})()">
+                        </span>
+                      </div>
+                    </div>
+                    <div style="height:8px;background:var(--w3);border-radius:4px;overflow:hidden">
+                      <div style="height:100%;border-radius:4px;transition:width 1s ease"
+                        :style="'width:'+(function(){const t=emps.reduce((a,e)=>a+(e[s.k]?e[s.k].total:0),0),d=emps.reduce((a,e)=>a+(e[s.k]?e[s.k].done:0),0);return t>0?Math.round(d/t*100):0})()+'%;background:'+s.color">
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <div class="card" style="padding:18px">
+              <div class="stitle" style="margin-bottom:14px">MP Ranking by Completion</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <template x-for="(b,bi) in peakRanking()">
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r8);cursor:pointer;transition:all .15s"
+                    :style="bi===0?'background:rgba(0,192,127,.08);border:1px solid var(--green-m)':'background:var(--w2);border:1px solid transparent'"
+                    @click="mf=b.name;dashTile=null;pf='all';v='pipe'">
+                    <div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0"
+                      :style="bi===0?'background:var(--green);color:#fff':bi===1?'background:var(--w4);color:#fff':bi===2?'background:#CD7F32;color:#fff':'background:var(--w3);color:var(--w6)'"
+                      x-text="bi+1">
+                    </div>
+                    <span style="font-size:16px" x-text="flag(b.name)"></span>
+                    <span style="font-size:12px;font-weight:700;flex:1" x-text="b.name"></span>
+                    <div style="width:80px;background:var(--w3);height:6px;border-radius:3px;overflow:hidden">
+                      <div style="height:100%;border-radius:3px" :style="'width:'+b.pct+'%;background:'+(b.pct>=60?'var(--green)':b.pct>=30?'var(--warn)':'var(--danger)')"></div>
+                    </div>
+                    <span style="font-size:12px;font-weight:900;min-width:36px;text-align:right" :style="'color:'+(b.pct>=60?'var(--green)':b.pct>=30?'var(--warn)':'var(--danger)')" x-text="b.pct+'%'"></span>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END L1 ANALYTICS -->
+
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- L1 — SYSTEM ADMIN                                           -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <div x-show="v==='l1_admin' && mlevel===1">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">System Admin</div>
+              <div class="psub">All users across all levels and Mountain Peaks</div>
+            </div>
+            <button @click="l1AdminForm=true" class="btn btn-primary btn-sm">+ Add User</button>
+          </div>
+
+          <!-- User level tabs -->
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <template x-for="tab in [{l:'All Users',v:'all'},{l:'L2 RTS',v:'2'},{l:'L3 Coordinators',v:'3'},{l:'L4 HR',v:'4hr'},{l:'L4 Quality',v:'4qual'},{l:'L4 Dept Manager',v:'4dm'}]">
+              <button @click="l1AdminTab=tab.v" class="btn btn-ghost btn-sm"
+                :style="l1AdminTab===tab.v?'border-color:var(--green);color:var(--green);background:var(--green-l)':''"
+                x-text="tab.l"></button>
+            </template>
+          </div>
+
+          <!-- User list -->
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <template x-for="(u,ui) in l1FilteredUsers()">
+              <div class="card" style="padding:14px" :style="!u.active?'opacity:.55':''">
+                <div style="display:flex;align-items:center;gap:14px">
+                  <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:900;color:#fff"
+                    :style="'background:'+(u.level===2?'#3B82F6':u.level===3?'#A78BFA':u.dept==='HR_Status'?'#F97316':u.dept==='Quality_Status'?'var(--green)':'var(--warn)')">
+                    <span x-text="'L'+u.level"></span>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13px;font-weight:900" x-text="u.name"></div>
+                    <div style="font-size:11px;color:var(--w5)" x-text="u.title"></div>
+                  </div>
+                  <div style="font-size:10px;background:var(--w2);padding:4px 10px;border-radius:20px;font-family:monospace" x-text="u.market"></div>
+                  <div style="text-align:right;min-width:120px">
+                    <div style="font-size:12px;font-weight:700;font-family:monospace;color:var(--ch)" x-text="u.username"></div>
+                    <div style="font-size:11px;font-family:monospace;color:var(--w5);cursor:pointer;margin-top:2px" @click="u.showPass=!u.showPass" x-text="u.showPass?u.pass:'••••••••'"></div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:4px">
+                    <div style="width:8px;height:8px;border-radius:50%" :style="u.active!==false?'background:var(--green)':'background:var(--w4)'"></div>
+                    <span style="font-size:10px;font-weight:700" :style="u.active!==false?'color:var(--green)':'color:var(--w5)'" x-text="u.active!==false?'Active':'Inactive'"></span>
+                  </div>
+                  <button @click="u.active=u.active===false?true:false;l1SaveUsers()" class="btn btn-ghost btn-sm"
+                    :style="u.active!==false?'color:var(--danger)':'color:var(--green)'"
+                    x-text="u.active!==false?'Deactivate':'Activate'">
+                  </button>
+                </div>
+              </div>
+            </template>
+            <div x-show="l1FilteredUsers().length===0" class="empty">
+              <div style="font-size:32px;margin-bottom:10px">👤</div>
+              <div style="font-weight:700">No users found</div>
+            </div>
+          </div>
+
+          <!-- Add User Modal -->
+          <div x-show="l1AdminForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="l1AdminForm?'display:flex':''">
+            <div class="card" style="width:100%;max-width:500px;padding:28px;border-radius:var(--r16)">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+                <div><div style="font-size:18px;font-weight:900">Add System User</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Create access for any level</div></div>
+                <button @click="l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div><div class="f-label">Full Name *</div><input type="text" x-model="l1NewUser.name" class="field" placeholder="User name" style="width:100%;box-sizing:border-box"></div>
+                  <div><div class="f-label">Title</div><input type="text" x-model="l1NewUser.title" class="field" placeholder="e.g. HR Officer · UAE" style="width:100%;box-sizing:border-box"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+                  <div><div class="f-label">Level *</div>
+                    <select x-model.number="l1NewUser.level" class="field" style="width:100%;box-sizing:border-box">
+                      <option value="2">L2 — RTS</option>
+                      <option value="3">L3 — Coordinator</option>
+                      <option value="4">L4 — Trainer/HR/DM</option>
+                    </select>
+                  </div>
+                  <div><div class="f-label">Mountain Peak *</div>
+                    <select x-model="l1NewUser.market" class="field" style="width:100%;box-sizing:border-box">
+                      <template x-for="b in branches"><option :value="b" x-text="b"></option></template>
+                    </select>
+                  </div>
+                  <div><div class="f-label">Department (L4)</div>
+                    <select x-model="l1NewUser.dept" class="field" style="width:100%;box-sizing:border-box">
+                      <option value="">— None —</option>
+                      <option value="HR_Status">HR Officer</option>
+                      <option value="Quality_Status">Quality Trainer</option>
+                      <option value="DEPT_MANAGER">Dept Manager</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div><div class="f-label">Username *</div><input type="text" x-model="l1NewUser.username" class="field" placeholder="e.g. TC-BHR" style="width:100%;box-sizing:border-box;text-transform:uppercase" @input="l1NewUser.username=l1NewUser.username.toUpperCase()"></div>
+                  <div><div class="f-label">Password *</div><input type="text" x-model="l1NewUser.pass" class="field" placeholder="e.g. Tc@BHR25" style="width:100%;box-sizing:border-box"></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:20px">
+                <button @click="l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                <button @click="l1SaveNewUser()" :disabled="!l1NewUser.name||!l1NewUser.username||!l1NewUser.pass" class="btn btn-primary" style="flex:1;justify-content:center">Create User</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END L1 SYSTEM ADMIN -->
+
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- L1 — SLA SETTINGS                                           -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <div x-show="v==='l1_sla' && mlevel===1">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">SLA Settings</div>
+            <div class="psub">Set maximum completion days per stage — breach triggers priority alert</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px">
+            <template x-for="(s,si) in stages">
+              <div class="card" style="padding:18px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+                  <span style="font-size:24px" x-text="s.i"></span>
+                  <div>
+                    <div style="font-size:13px;font-weight:900" x-text="s.label"></div>
+                    <div style="font-size:11px;color:var(--w5)" x-text="stageActiveCount(s.k)+' candidates active'"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="f-label">Max Days Allowed</div>
+                  <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+                    <input type="number" x-model.number="slaRules[s.k]" min="1" max="90" class="field" style="width:80px;box-sizing:border-box;text-align:center">
+                    <span style="font-size:12px;color:var(--w5)">days</span>
+                    <button @click="saveSlaRules()" class="btn btn-ghost btn-sm" style="margin-left:auto">Save</button>
+                  </div>
+                </div>
+                <div style="margin-top:12px;padding:8px 10px;border-radius:var(--r8)" :style="slaRules[s.k]<=3?'background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2)':slaRules[s.k]<=7?'background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2)':'background:var(--green-l);border:1px solid var(--green-m)'">
+                  <span style="font-size:11px;font-weight:700" :style="slaRules[s.k]<=3?'color:var(--danger)':slaRules[s.k]<=7?'color:var(--warn)':'color:var(--green-h)'" x-text="slaRules[s.k]<=3?'⚠ Tight SLA':slaRules[s.k]<=7?'⏳ Moderate SLA':'✓ Comfortable SLA'"></span>
+                </div>
+              </div>
+            </template>
+          </div>
+          <!-- SLA Breach summary -->
+          <div class="card" style="padding:18px">
+            <div class="stitle" style="margin-bottom:14px">Current SLA Configuration</div>
+            <div style="overflow-x:auto">
+              <table style="width:100%;border-collapse:collapse;font-size:12px">
+                <thead>
+                  <tr style="border-bottom:2px solid var(--w3)">
+                    <th style="text-align:left;padding:8px 12px;font-weight:700;color:var(--w6)">Stage</th>
+                    <th style="text-align:center;padding:8px 12px;font-weight:700;color:var(--w6)">Max Days</th>
+                    <th style="text-align:center;padding:8px 12px;font-weight:700;color:var(--w6)">Active Candidates</th>
+                    <th style="text-align:center;padding:8px 12px;font-weight:700;color:var(--w6)">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="s in stages">
+                    <tr style="border-bottom:1px solid var(--w3)">
+                      <td style="padding:8px 12px"><div style="display:flex;align-items:center;gap:8px"><span x-text="s.i"></span><span style="font-weight:700" x-text="s.label"></span></div></td>
+                      <td style="text-align:center;padding:8px 12px;font-weight:700" x-text="slaRules[s.k]+' days'"></td>
+                      <td style="text-align:center;padding:8px 12px" x-text="stageActiveCount(s.k)"></td>
+                      <td style="text-align:center;padding:8px 12px">
+                        <span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px"
+                          :style="slaRules[s.k]<=3?'background:rgba(224,83,58,.1);color:var(--danger)':slaRules[s.k]<=7?'background:rgba(245,166,35,.1);color:var(--warn)':'background:var(--green-l);color:var(--green-h)'"
+                          x-text="slaRules[s.k]<=3?'Tight':slaRules[s.k]<=7?'Moderate':'Comfortable'"></span>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- END L1 SLA SETTINGS -->
+
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- L1 — ANNOUNCEMENTS                                          -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <div x-show="v==='l1_announce' && mlevel===1">
+          <div style="margin-bottom:24px">
+            <div class="ptitle">Announcements</div>
+            <div class="psub">Post system-wide announcements visible to all users on login</div>
+          </div>
+          <!-- Compose -->
+          <div class="card" style="padding:20px;margin-bottom:16px">
+            <div class="stitle" style="margin-bottom:14px">New Announcement</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:grid;grid-template-columns:1fr auto;gap:12px">
+                <div><div class="f-label">Title *</div><input type="text" x-model="l1AnnNew.title" class="field" placeholder="Announcement title" style="width:100%;box-sizing:border-box"></div>
+                <div><div class="f-label">Priority</div>
+                  <select x-model="l1AnnNew.priority" class="field" style="box-sizing:border-box">
+                    <option value="normal">Normal</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+              </div>
+              <div><div class="f-label">Message *</div><textarea x-model="l1AnnNew.body" class="field" rows="3" placeholder="Write your announcement..." style="width:100%;box-sizing:border-box;resize:vertical"></textarea></div>
+              <div><div class="f-label">Audience</div>
+                <select x-model="l1AnnNew.audience" class="field" style="width:240px;box-sizing:border-box">
+                  <option value="all">All Users</option>
+                  <option value="2">L2 — RTS only</option>
+                  <option value="3">L3 — Coordinators only</option>
+                  <option value="4">L4 — Trainers only</option>
+                </select>
+              </div>
+            </div>
+            <button @click="l1PostAnnouncement()" :disabled="!l1AnnNew.title||!l1AnnNew.body" class="btn btn-primary" style="margin-top:16px;padding:9px 24px">📢 Post Announcement</button>
+          </div>
+          <!-- Announcements list -->
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <template x-for="(a,ai) in l1Announcements.slice().reverse()">
+              <div class="card" style="padding:16px" :style="a.priority==='urgent'?'border-left:4px solid var(--danger)':a.priority==='high'?'border-left:4px solid var(--warn)':'border-left:4px solid var(--green)'">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+                  <div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-size:14px;font-weight:900;color:var(--ch)" x-text="a.title"></span>
+                      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px"
+                        :style="a.priority==='urgent'?'background:rgba(224,83,58,.1);color:var(--danger)':a.priority==='high'?'background:rgba(245,166,35,.1);color:var(--warn)':'background:var(--green-l);color:var(--green-h)'"
+                        x-text="a.priority==='urgent'?'🚨 Urgent':a.priority==='high'?'⚠ High':'📢 Normal'"></span>
+                    </div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:4px" x-text="'To: '+(a.audience==='all'?'All Users':a.audience==='2'?'RTS':a.audience==='3'?'Coordinators':'Trainers')+' · '+a.date"></div>
+                  </div>
+                  <button @click="l1Announcements.splice(l1Announcements.length-1-ai,1);l1SaveAnnouncements()" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                </div>
+                <div style="font-size:13px;color:var(--ch);line-height:1.5" x-text="a.body"></div>
+              </div>
+            </template>
+            <div x-show="l1Announcements.length===0" class="empty">
+              <div style="font-size:32px;margin-bottom:10px">📢</div>
+              <div style="font-weight:700">No announcements yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Post your first announcement above</div>
+            </div>
+          </div>
+        </div>
+        <!-- END L1 ANNOUNCEMENTS -->
+
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- L1 — AUDIT LOG                                              -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <div x-show="v==='l1_audit' && mlevel===1">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Audit Log</div>
+              <div class="psub" x-text="l1AuditLog.length+' events recorded'"></div>
+            </div>
+            <button @click="l1AuditLog=[];l1SaveAudit()" class="btn btn-ghost btn-sm" style="color:var(--danger)">Clear Log</button>
+          </div>
+          <div class="card" style="padding:18px">
+            <div style="display:flex;flex-direction:column;gap:0">
+              <template x-for="(log,li) in l1AuditLog.slice().reverse()">
+                <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid var(--w3)">
+                  <div style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px"
+                    :style="log.type==='signoff'?'background:var(--green-l)':log.type==='add'?'background:rgba(59,130,246,.1)':log.type==='remove'?'background:rgba(224,83,58,.1)':'background:var(--w2)'"
+                    x-text="log.type==='signoff'?'✓':log.type==='add'?'+':log.type==='remove'?'✕':'ℹ'">
+                  </div>
+                  <div style="flex:1">
+                    <div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="log.action"></div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:2px" x-text="log.detail"></div>
+                  </div>
+                  <div style="text-align:right;flex-shrink:0">
+                    <div style="font-size:11px;font-weight:700;color:var(--ch)" x-text="log.user"></div>
+                    <div style="font-size:10px;color:var(--w5);margin-top:2px" x-text="log.date"></div>
+                  </div>
+                </div>
+              </template>
+              <div x-show="l1AuditLog.length===0" style="text-align:center;padding:40px;color:var(--w5)">
+                <div style="font-size:32px;margin-bottom:10px">📋</div>
+                <div style="font-weight:700">No audit events yet</div>
+                <div style="font-size:12px;margin-top:4px;font-weight:300">Events are logged as users sign off candidates and make changes</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END L1 AUDIT LOG -->
 
         <!-- ════════════════════════════════════════════════════════════ -->
         <!-- L2 — REGIONAL TRAINING SPECIALIST DASHBOARD                 -->
@@ -3263,6 +3697,10 @@ function app(){
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
+    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],
+    l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
+    l1AuditLog:[],
+    slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
     rtsCoordinators:[],rtsNewCoord:{name:'',mp:'',username:'',password:'',active:true,showPass:false},rtsCoordForm:false,
     rtsMPs:[{name:'UAE',flag:'🇦🇪'},{name:'Qatar',flag:'🇶🇦'},{name:'Kuwait',flag:'🇰🇼'},{name:'Bahrain',flag:'🇧🇭'},{name:'Riyadh',flag:'🇸🇦'},{name:'Jeddah',flag:'🇸🇦'},{name:'Oman',flag:'🇴🇲'},{name:'UK',flag:'🇬🇧'}],rtsNewMP:{name:'',flag:''},rtsMPForm:false,
     rtsDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],rtsNewDept:{name:'',icon:''},rtsDeptForm:false,tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all'},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
@@ -3313,6 +3751,7 @@ function app(){
           this.mf=r.market==='All'?'All':r.market;
           this.loggedIn=true;
           this.loadMaterials();
+          if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
           if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
           this.fetchAll();
@@ -3369,8 +3808,12 @@ function app(){
             this.saveSession(r);
             this.loggedIn=true;
             this.loadMaterials();
-            if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
-            if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
+            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+          if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
+            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+          if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
           if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
             this.fetchAll();
           } else {this.lerr='Invalid credentials. Please try again.';}
@@ -3460,6 +3903,53 @@ function app(){
 
 
 
+
+    // ── L1 EXECUTIVE METHODS ──────────────────────────────────────
+    l1FilteredUsers(){
+      const base = [
+        {name:'RTS-GLOBAL',username:'RTS-GLOBAL',pass:'Rts@Global25',level:2,market:'All',dept:'',title:'Regional Training Specialist',active:true},
+        {name:'TC-UAE',username:'TC-UAE',pass:'Tc@UAE25',level:3,market:'UAE',dept:'',title:'Training Coordinator · UAE',active:true},
+        {name:'TC-QTR',username:'TC-QTR',pass:'Tc@QTR25',level:3,market:'Qatar',dept:'',title:'Training Coordinator · Qatar',active:true},
+        {name:'HR-UAE',username:'HR-UAE',pass:'Hr@UAE25',level:4,market:'UAE',dept:'HR_Status',title:'HR Officer · UAE',active:true},
+        {name:'TR-QUAL-UAE',username:'TR-QUAL-UAE',pass:'Tr@qual@UAE',level:4,market:'UAE',dept:'Quality_Status',title:'Quality Trainer · UAE',active:true},
+        {name:'DM-UAE',username:'DM-UAE',pass:'Dm@UAE25',level:4,market:'UAE',dept:'DEPT_MANAGER',title:'Department Manager · UAE',active:true},
+        ...this.l1Users
+      ];
+      const t = this.l1AdminTab;
+      if(t==='all') return base;
+      if(t==='2')    return base.filter(u=>u.level===2);
+      if(t==='3')    return base.filter(u=>u.level===3);
+      if(t==='4hr')  return base.filter(u=>u.level===4&&u.dept==='HR_Status');
+      if(t==='4qual')return base.filter(u=>u.level===4&&u.dept==='Quality_Status');
+      if(t==='4dm')  return base.filter(u=>u.level===4&&u.dept==='DEPT_MANAGER');
+      return base;
+    },
+    l1SaveUsers(){ try{localStorage.setItem('calo_l1_users',JSON.stringify(this.l1Users));}catch(e){} },
+    l1LoadUsers(){ try{const d=localStorage.getItem('calo_l1_users');if(d)this.l1Users=JSON.parse(d);}catch(e){} },
+    l1SaveNewUser(){
+      if(!this.l1NewUser.name||!this.l1NewUser.username||!this.l1NewUser.pass)return;
+      this.l1Users.push(Object.assign({},this.l1NewUser));
+      this.l1SaveUsers();
+      this.l1AuditLog.push({type:'add',action:'User Created',detail:this.l1NewUser.username+' · L'+this.l1NewUser.level+' · '+this.l1NewUser.market,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      this.l1SaveAudit();
+      this.l1AdminForm=false;
+      this.l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true};
+    },
+    l1PostAnnouncement(){
+      if(!this.l1AnnNew.title||!this.l1AnnNew.body)return;
+      this.l1Announcements.push({...this.l1AnnNew,date:new Date().toLocaleDateString()});
+      this.l1SaveAnnouncements();
+      this.l1AuditLog.push({type:'info',action:'Announcement Posted',detail:this.l1AnnNew.title,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      this.l1SaveAudit();
+      this.l1AnnNew={title:'',body:'',priority:'normal',audience:'all'};
+    },
+    l1SaveAnnouncements(){ try{localStorage.setItem('calo_announcements',JSON.stringify(this.l1Announcements));}catch(e){} },
+    l1LoadAnnouncements(){ try{const d=localStorage.getItem('calo_announcements');if(d)this.l1Announcements=JSON.parse(d);}catch(e){} },
+    l1SaveAudit(){ try{localStorage.setItem('calo_audit',JSON.stringify(this.l1AuditLog));}catch(e){} },
+    l1LoadAudit(){ try{const d=localStorage.getItem('calo_audit');if(d)this.l1AuditLog=JSON.parse(d);}catch(e){} },
+    saveSlaRules(){ try{localStorage.setItem('calo_sla',JSON.stringify(this.slaRules));alert('SLA rules saved.');}catch(e){} },
+    loadSlaRules(){ try{const d=localStorage.getItem('calo_sla');if(d)this.slaRules=JSON.parse(d);}catch(e){} },
+    // ── END L1 EXECUTIVE METHODS ──────────────────────────────────
     // ── L2 REGIONAL TRAINING SPECIALIST METHODS ──────────────────
     rtsFiltered(){
       let l = this.emps.filter(e=>{
@@ -3622,6 +4112,7 @@ function app(){
       if(!confirm('Certify '+e.name+' as Floor Ready?')) return;
       if(e.cert) e.cert.done = e.cert.total;
       this.dofl('Floor Ready!', e.image, e.name, 'Certified and Floor Ready', e.country);
+      this.l1AuditLog.push({type:'signoff',action:'Floor Ready Certified',detail:e.name+' · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       const tasks = (e.cert&&e.cert.items||[]).map(m=>m.name+'|'+(m.link||'#')+'|1').join(';;');
       this.gas('saveFullUpdate',{row:e.row,colLabel:'Certification_Status',taskStr:tasks||'Complete|#|1',trainer:{}})
         .then(()=>this.fetchAll()).catch(()=>this.fetchAll());
@@ -3660,6 +4151,7 @@ function app(){
       if(!confirm('Sign off '+e.name+' from Quality and move to OJT Training?')) return;
       if(e.qual){ e.qual.done = e.qual.total; }
       this.dofl('Quality Signed Off!', e.image, e.name, 'Moved to OJT Training', e.country);
+      this.l1AuditLog.push({type:'signoff',action:'Quality Sign-Off',detail:e.name+' → OJT · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       const tasks = (e.qual&&e.qual.items||[]).map(m=>m.name+'|'+(m.link||'#')+'|1').join(';;');
       this.gas('saveFullUpdate',{row:e.row,colLabel:'Quality_Status',taskStr:tasks||'Complete|#|1',trainer:{}})
         .then(()=>this.fetchAll()).catch(()=>this.fetchAll());
@@ -3789,6 +4281,7 @@ function app(){
       if(e.qual){ e.qual.done = 0; }
       // Flash confirmation
       this.dofl('Signed Off!', e.image, e.name, 'Moved to Quality Training', e.country);
+      this.l1AuditLog.push({type:'signoff',action:'HR Sign-Off',detail:e.name+' → Quality · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       // Sync to backend using saveFullUpdate for each stage
       const saveStage = (k, col) => {
         const tasks = (e[k].items||[]).map(m=>`${m.name}|${m.link||'#'}|1`).join(';;');
