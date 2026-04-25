@@ -970,7 +970,7 @@ textarea.field{resize:none}
             <div class="psub" x-text="hrEmps().filter(e=>e.pre&&e.pre.done<e.pre.total).length+' candidates pending pre-board tasks'"></div>
           </div>
           <div class="cg">
-            <template x-for="e in hrEmps().filter(e=>e.pre&&e.pre.total>0)">
+            <template x-for="e in hrEmps().filter(e=>e.pre&&e.pre.total>0&&e.pre.done<e.pre.total)">
               <div class="card" style="padding:16px">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
                   <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
@@ -1004,7 +1004,7 @@ textarea.field{resize:none}
                 <button @click="omgr(e,stages.find(s=>s.k==='pre'))" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:10px">Open Task Manager</button>
               </div>
             </template>
-            <div x-show="hrEmps().filter(e=>e.pre&&e.pre.total>0).length===0" class="empty" style="grid-column:1/-1">
+            <div x-show="hrEmps().filter(e=>e.pre&&e.pre.total>0&&e.pre.done<e.pre.total).length===0" class="empty" style="grid-column:1/-1">
               <div style="font-size:32px;margin-bottom:10px">📋</div>
               <div style="font-weight:700">No pre-boarding candidates</div>
             </div>
@@ -1022,7 +1022,7 @@ textarea.field{resize:none}
             <div class="psub" x-text="hrEmps().filter(e=>e.ori&&e.ori.total>0).length+' candidates in orientation'"></div>
           </div>
           <div class="cg">
-            <template x-for="e in hrEmps().filter(e=>e.ori&&e.ori.total>0)">
+            <template x-for="e in hrEmps().filter(e=>e.pre&&e.pre.done===e.pre.total&&e.ori&&e.ori.done<e.ori.total)">
               <div class="card" style="padding:16px">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
                   <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
@@ -1046,7 +1046,7 @@ textarea.field{resize:none}
                 <button @click="omgr(e,stages.find(s=>s.k==='ori'))" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:6px">Open Task Manager</button>
               </div>
             </template>
-            <div x-show="hrEmps().filter(e=>e.ori&&e.ori.total>0).length===0" class="empty" style="grid-column:1/-1">
+            <div x-show="hrEmps().filter(e=>e.pre&&e.pre.done===e.pre.total&&e.ori&&e.ori.done<e.ori.total).length===0" class="empty" style="grid-column:1/-1">
               <div style="font-size:32px;margin-bottom:10px">🎯</div>
               <div style="font-weight:700">No orientation candidates</div>
             </div>
@@ -1064,7 +1064,7 @@ textarea.field{resize:none}
             <div class="psub" x-text="hrEmps().filter(e=>e.hr&&e.hr.total>0).length+' candidates in HR compliance'"></div>
           </div>
           <div class="cg">
-            <template x-for="e in hrEmps().filter(e=>e.hr&&e.hr.total>0)">
+            <template x-for="e in hrEmps().filter(e=>e.ori&&e.ori.done===e.ori.total&&e.hr&&e.hr.done<e.hr.total)">
               <div class="card" style="padding:16px">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
                   <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
@@ -1101,7 +1101,7 @@ textarea.field{resize:none}
                 </div>
               </div>
             </template>
-            <div x-show="hrEmps().filter(e=>e.hr&&e.hr.total>0).length===0" class="empty" style="grid-column:1/-1">
+            <div x-show="hrEmps().filter(e=>e.ori&&e.ori.done===e.ori.total&&e.hr&&e.hr.done<e.hr.total).length===0" class="empty" style="grid-column:1/-1">
               <div style="font-size:32px;margin-bottom:10px">📝</div>
               <div style="font-weight:700">No HR compliance candidates</div>
             </div>
@@ -1866,21 +1866,19 @@ function app(){
       const prevCountry = this.hrNH.c;
       this.hrNH = {n:'',d:'',c:prevCountry,dt:'',stage:'pre'};
 
-      // Then sync to backend in background
-      const emp = {
-        name:     newEmp.name,
-        role:     newEmp.role,       // backend reads emp.role not emp.designation
-        country:  newEmp.country,
-        date:     newEmp.dateString, // backend reads emp.date not emp.joiningDate
-        priority: 'normal',
-        startStage: stg
+      // Sync to backend — send correct field names matching Code.gs
+      const payload = {
+        emp: {
+          name:    newEmp.name,
+          role:    newEmp.role,
+          country: newEmp.country,
+          date:    newEmp.dateString,
+          priority:'normal'
+        }
       };
-      this.gas('addNewEmployee',{emp}).then(()=>{
-        this.fetchAll(); // refresh from backend to get real row ID
-      }).catch(()=>{
-        // Keep local entry even if backend fails
-        console.warn('Backend sync failed — candidate kept locally');
-      });
+      this.gas('addNewEmployee', payload)
+        .then(r=>{ console.log('addNewEmployee response:', r); this.fetchAll(); })
+        .catch(err=>{ console.error('addNewEmployee failed:', err); });
     },
     // Calculate elapsed time for a stage
     hrElapsed(e, k){
@@ -1901,22 +1899,31 @@ function app(){
     },
     // HR Signed Off — move candidate to Quality stage
     hrSignOff(e){
-      // Record exit date
+      if(!confirm('Sign off '+e.name+' from HR and move to Quality stage?')) return;
+      // Record exit dates
       const today = new Date().toISOString().split('T')[0];
       if(!e.stageExits) e.stageExits = {};
-      if(e.pre&&!e.stageExits.pre) e.stageExits.pre = today;
-      if(e.ori&&!e.stageExits.ori) e.stageExits.ori = today;
-      if(e.hr&&!e.stageExits.hr)   e.stageExits.hr  = today;
-      // Mark all 3 HR stages as complete — candidate moves to Quality trainer
-      if(e.pre) e.pre.done = e.pre.total;
-      if(e.ori) e.ori.done = e.ori.total;
-      if(e.hr)  e.hr.done  = e.hr.total;
-      // Sync to backend
-      this.gas('updateEmployee',{row:e.row,updates:{
-        PreBoarding_Status: 'signed_off',
-        Orientation_Status: 'signed_off',
-        HR_Status: 'signed_off'
-      }}).then(()=>this.fetchAll()).catch(()=>{});
+      e.stageExits.pre = today;
+      e.stageExits.ori = today;
+      e.stageExits.hr  = today;
+      // Mark all 3 HR stages as complete locally — instant UI update
+      if(e.pre){ e.pre.done = e.pre.total; }
+      if(e.ori){ e.ori.done = e.ori.total; }
+      if(e.hr) { e.hr.done  = e.hr.total;  }
+      // Mark quality as started (1 task started) — candidate enters Quality pipeline
+      if(e.qual){ e.qual.done = 0; }
+      // Flash confirmation
+      this.dofl('Signed Off!', e.image, e.name, 'Moved to Quality Training', e.country);
+      // Sync to backend using saveFullUpdate for each stage
+      const saveStage = (k, col) => {
+        const tasks = (e[k].items||[]).map(m=>`${m.name}|${m.link||'#'}|1`).join(';;');
+        return this.gas('saveFullUpdate',{row:e.row, colLabel:col, taskStr:tasks||'Complete|#|1', trainer:{}});
+      };
+      Promise.all([
+        saveStage('pre','PreBoarding_Status'),
+        saveStage('ori','Orientation_Status'),
+        saveStage('hr','HR_Status'),
+      ]).then(()=>this.fetchAll()).catch(()=>this.fetchAll());
     },
     // HR totals for the selected month/year
     hrTotalHired(){
