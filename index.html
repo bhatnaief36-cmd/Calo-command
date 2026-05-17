@@ -1129,29 +1129,45 @@ textarea.field{resize:none}
           <!-- User list -->
           <div style="display:flex;flex-direction:column;gap:8px">
             <template x-for="(u,ui) in l1FilteredUsers()">
-              <div class="card" style="padding:14px" :style="!u.active?'opacity:.55':''">
-                <div style="display:flex;align-items:center;gap:14px">
+              <div class="card" style="padding:14px" :style="u.active===false?'opacity:.6':''">
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                  <!-- Level badge -->
                   <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:900;color:#fff"
                     :style="'background:'+(u.level===2?'#3B82F6':u.level===3?'#A78BFA':u.dept==='HR_Status'?'#F97316':u.dept==='Quality_Status'?'var(--green)':'var(--warn)')">
                     <span x-text="'L'+u.level"></span>
                   </div>
+                  <!-- Name + title -->
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:13px;font-weight:900" x-text="u.name"></div>
-                    <div style="font-size:11px;color:var(--w5)" x-text="u.title"></div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span style="font-size:13px;font-weight:900" x-text="u.name"></span>
+                      <span x-show="u._dynamic" style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;background:rgba(59,130,246,.1);color:#3B82F6">DYNAMIC</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:1px" x-text="u.title||'L'+u.level+' · '+u.market"></div>
                   </div>
-                  <div style="font-size:10px;background:var(--w2);padding:4px 10px;border-radius:20px;font-family:monospace" x-text="u.market"></div>
-                  <div style="text-align:right;min-width:120px">
+                  <!-- Market -->
+                  <div style="font-size:10px;background:var(--w2);padding:4px 10px;border-radius:20px;font-family:monospace;flex-shrink:0" x-text="u.market"></div>
+                  <!-- Credentials -->
+                  <div style="text-align:right;min-width:130px;flex-shrink:0">
                     <div style="font-size:12px;font-weight:700;font-family:monospace;color:var(--ch)" x-text="u.username"></div>
-                    <div style="font-size:11px;font-family:monospace;color:var(--w5);cursor:pointer;margin-top:2px" @click="u.showPass=!u.showPass" x-text="u.showPass?u.pass:'••••••••'"></div>
+                    <div style="font-size:11px;font-family:monospace;color:var(--w5);cursor:pointer;margin-top:2px" @click="u.showPass=!u.showPass" x-text="u.showPass?u.pass:'Click to reveal'"></div>
                   </div>
-                  <div style="display:flex;align-items:center;gap:4px">
+                  <!-- Status dot -->
+                  <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
                     <div style="width:8px;height:8px;border-radius:50%" :style="u.active!==false?'background:var(--green)':'background:var(--w4)'"></div>
                     <span style="font-size:10px;font-weight:700" :style="u.active!==false?'color:var(--green)':'color:var(--w5)'" x-text="u.active!==false?'Active':'Inactive'"></span>
                   </div>
-                  <button @click="u.active=u.active===false?true:false;l1SaveUsers()" class="btn btn-ghost btn-sm"
-                    :style="u.active!==false?'color:var(--danger)':'color:var(--green)'"
-                    x-text="u.active!==false?'Deactivate':'Activate'">
-                  </button>
+                  <!-- Action buttons -->
+                  <div style="display:flex;gap:6px;flex-shrink:0">
+                    <!-- Deactivate / Activate — works for both hardcoded and dynamic -->
+                    <button @click="l1ToggleUser(u)" class="btn btn-ghost btn-sm"
+                      :style="u.active!==false?'color:var(--danger)':'color:var(--green)'"
+                      x-text="u.active!==false?'Deactivate':'Activate'">
+                    </button>
+                    <!-- Reset Password — only dynamic users -->
+                    <button x-show="u._dynamic" @click="l1ResetPassword(u)" class="btn btn-ghost btn-sm" style="color:#3B82F6">Reset PW</button>
+                    <!-- Delete — only dynamic users -->
+                    <button x-show="u._dynamic" @click="l1DeleteUser(u,ui)" class="btn btn-ghost btn-sm" style="color:var(--danger)">Delete</button>
+                  </div>
                 </div>
               </div>
             </template>
@@ -3716,7 +3732,7 @@ function app(){
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
-    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],
+    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1Overrides:{},
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
@@ -3828,11 +3844,11 @@ function app(){
             this.saveSession(r);
             this.loggedIn=true;
             this.loadMaterials();
-            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+            if(r.level===1){this.l1LoadUsers();this.l1LoadOverrides();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
             this.l1LoadAnnouncements(); // All levels load announcements
           if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
-            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+            if(r.level===1){this.l1LoadUsers();this.l1LoadOverrides();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
             this.l1LoadAnnouncements(); // All levels load announcements
           if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
@@ -3928,15 +3944,20 @@ function app(){
 
     // ── L1 EXECUTIVE METHODS ──────────────────────────────────────
     l1FilteredUsers(){
-      const base = [
-        {name:'RTS-GLOBAL',username:'RTS-GLOBAL',pass:'Rts@Global25',level:2,market:'All',dept:'',title:'Regional Training Specialist',active:true},
-        {name:'TC-UAE',username:'TC-UAE',pass:'Tc@UAE25',level:3,market:'UAE',dept:'',title:'Training Coordinator · UAE',active:true},
-        {name:'TC-QTR',username:'TC-QTR',pass:'Tc@QTR25',level:3,market:'Qatar',dept:'',title:'Training Coordinator · Qatar',active:true},
-        {name:'HR-UAE',username:'HR-UAE',pass:'Hr@UAE25',level:4,market:'UAE',dept:'HR_Status',title:'HR Officer · UAE',active:true},
-        {name:'TR-QUAL-UAE',username:'TR-QUAL-UAE',pass:'Tr@qual@UAE',level:4,market:'UAE',dept:'Quality_Status',title:'Quality Trainer · UAE',active:true},
-        {name:'DM-UAE',username:'DM-UAE',pass:'Dm@UAE25',level:4,market:'UAE',dept:'DEPT_MANAGER',title:'Department Manager · UAE',active:true},
-        ...this.l1Users
-      ];
+      // Hardcoded base users — apply status overrides from l1Overrides
+      const hardcoded = [
+        {name:'RTS-GLOBAL',username:'RTS-GLOBAL',pass:'Rts@Global25',level:2,market:'All',dept:'',title:'Regional Training Specialist'},
+        {name:'TC-UAE',username:'TC-UAE',pass:'Tc@UAE25',level:3,market:'UAE',dept:'',title:'Training Coordinator · UAE'},
+        {name:'TC-QTR',username:'TC-QTR',pass:'Tc@QTR25',level:3,market:'Qatar',dept:'',title:'Training Coordinator · Qatar'},
+        {name:'HR-UAE',username:'HR-UAE',pass:'Hr@UAE25',level:4,market:'UAE',dept:'HR_Status',title:'HR Officer · UAE'},
+        {name:'TR-QUAL-UAE',username:'TR-QUAL-UAE',pass:'Tr@qual@UAE',level:4,market:'UAE',dept:'Quality_Status',title:'Quality Trainer · UAE'},
+        {name:'DM-UAE',username:'DM-UAE',pass:'Dm@UAE25',level:4,market:'UAE',dept:'DEPT_MANAGER',title:'Department Manager · UAE'},
+      ].map(u=>({...u, active: this.l1Overrides[u.username]?.active !== undefined ? this.l1Overrides[u.username].active : true,
+                       pass:   this.l1Overrides[u.username]?.pass   || u.pass,
+                       _dynamic: false}));
+      // Dynamic users — added via System Admin
+      const dynamic = this.l1Users.map(u=>({...u, _dynamic:true}));
+      const base = [...hardcoded, ...dynamic];
       const t = this.l1AdminTab;
       if(t==='all') return base;
       if(t==='2')    return base.filter(u=>u.level===2);
@@ -3947,6 +3968,39 @@ function app(){
       return base;
     },
     l1SaveUsers(){ try{localStorage.setItem('calo_l1_users',JSON.stringify(this.l1Users));}catch(e){} },
+    l1SaveOverrides(){ try{localStorage.setItem('calo_l1_overrides',JSON.stringify(this.l1Overrides));}catch(e){} },
+    l1LoadOverrides(){ try{const d=localStorage.getItem('calo_l1_overrides');if(d)this.l1Overrides=JSON.parse(d);}catch(e){} },
+    l1ToggleUser(u){
+      if(u._dynamic){
+        // Dynamic user — toggle in l1Users array
+        const idx = this.l1Users.findIndex(x=>x.username===u.username);
+        if(idx>=0){ this.l1Users[idx].active = this.l1Users[idx].active===false?true:false; this.l1SaveUsers(); }
+      } else {
+        // Hardcoded user — store override
+        if(!this.l1Overrides[u.username]) this.l1Overrides[u.username]={};
+        this.l1Overrides[u.username].active = u.active!==false?false:true;
+        this.l1SaveOverrides();
+      }
+      this.l1AuditLog.push({type:'info',action:u.active!==false?'User Deactivated':'User Activated',detail:u.username,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      this.l1SaveAudit();
+    },
+    l1ResetPassword(u){
+      const newPass = prompt('Enter new password for '+u.username+':');
+      if(!newPass||newPass.trim()==='') return;
+      const idx = this.l1Users.findIndex(x=>x.username===u.username);
+      if(idx>=0){ this.l1Users[idx].pass = newPass.trim(); this.l1SaveUsers(); }
+      this.l1AuditLog.push({type:'info',action:'Password Reset',detail:u.username,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      this.l1SaveAudit();
+      alert('Password updated for '+u.username+'. Redeploy Code.gs if this user was synced to the sheet.');
+    },
+    l1DeleteUser(u,ui){
+      if(!u._dynamic){ alert('Hardcoded system users cannot be deleted. Use Deactivate instead.'); return; }
+      if(!confirm('Permanently delete '+u.username+'? This cannot be undone.')) return;
+      const idx = this.l1Users.findIndex(x=>x.username===u.username);
+      if(idx>=0){ this.l1Users.splice(idx,1); this.l1SaveUsers(); }
+      this.l1AuditLog.push({type:'remove',action:'User Deleted',detail:u.username+' · L'+u.level+' · '+u.market,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      this.l1SaveAudit();
+    },
     l1LoadUsers(){ try{const d=localStorage.getItem('calo_l1_users');if(d)this.l1Users=JSON.parse(d);}catch(e){} },
     l1SaveNewUser(){
       if(!this.l1NewUser.name||!this.l1NewUser.username||!this.l1NewUser.pass)return;
