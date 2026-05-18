@@ -215,6 +215,12 @@ textarea.field{resize:none}
 /* Mobile nav toggle button — hidden on desktop */
 .mob-nav-toggle{display:none;position:fixed;bottom:20px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--green);color:#fff;border:none;cursor:pointer;z-index:999;box-shadow:0 4px 16px rgba(0,192,127,.4);align-items:center;justify-content:center;font-size:22px;transition:all .2s}
 .mob-nav-toggle:active{transform:scale(.95)}
+@media(max-width:768px){#mob-close{display:flex!important}}
+/* KPI 3-tile row — last child spans full width on mobile when orphaned */
+@media(max-width:768px){
+  .kpi-row-3{grid-template-columns:repeat(2,1fr)!important}
+  .kpi-row-3 .kpi-tile:last-child:nth-child(odd){grid-column:1/-1}
+}
 
 /* Mobile overlay backdrop */
 .mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:899;backdrop-filter:blur(2px)}
@@ -366,14 +372,23 @@ textarea.field{resize:none}
 </div>
 
 
+<!-- HAMBURGER — outside x-cloak so always visible -->
+<button id="mob-toggle" class="mob-nav-toggle" onclick="document.querySelector('.sidebar').classList.toggle('mob-open');document.getElementById('mob-bg').classList.toggle('mob-open')" aria-label="Menu">☰</button>
+<div id="mob-bg" class="mob-overlay" onclick="document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')"></div>
+
 <!-- MAIN APP -->
 <div x-show="loggedIn" x-cloak class="app-shell">
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <div style="padding:18px 18px 14px;border-bottom:1px solid var(--w3)">
-      <div class="logo">CALO</div>
-      <div class="logo-sub">Onboarding Command</div>
+    <div style="padding:14px 18px;border-bottom:1px solid var(--w3);display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="logo">CALO</div>
+        <div class="logo-sub">Onboarding Command</div>
+      </div>
+      <button onclick="document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')"
+        style="background:none;border:1px solid var(--w3);border-radius:var(--r8);width:32px;height:32px;cursor:pointer;font-size:18px;color:var(--w5);display:none;align-items:center;justify-content:center;flex-shrink:0"
+        id="mob-close">✕</button>
     </div>
 
     <div style="padding:12px 14px;border-bottom:1px solid var(--w3);background:var(--w2)">
@@ -393,23 +408,23 @@ textarea.field{resize:none}
 
     <nav style="flex:1;overflow-y:auto;padding:6px 0">
       <div class="nav-group-label" x-show="mlevel===1">Navigation</div>
-      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         Dashboard
       </div>
-      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='pipe'?'on':''" @click="v='pipe';dashTile=null;pf='all'">
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='pipe'?'on':''" @click="v='pipe';dashTile=null;pf='all'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         Pipeline
       </div>
-      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='trainers'?'on':''" @click="v='trainers'">
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='trainers'?'on':''" @click="v='trainers'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Trainers
       </div>
-      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='tpl'?'on':''" @click="v='tpl'">
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tpl'?'on':''" @click="v='tpl'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Templates
       </div>
-      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='rep'?'on':''" @click="v='rep'">
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rep'?'on':''" @click="v='rep'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         Reports
       </div>
@@ -421,27 +436,27 @@ textarea.field{resize:none}
       <!-- ── L2 REGIONAL TRAINING SPECIALIST NAVIGATION ──────── -->
       <div x-show="mlevel===2">
         <div class="nav-group-label" style="margin-top:4px">RTS Workspace</div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='rts_pipe'?'on':''" @click="v='rts_pipe'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_pipe'?'on':''" @click="v='rts_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Pipeline
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='rts_mp'?'on':''" @click="v='rts_mp'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_mp'?'on':''" @click="v='rts_mp'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
           MP Performance
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='rts_trainers'?'on':''" @click="v='rts_trainers'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_trainers'?'on':''" @click="v='rts_trainers'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Trainers Directory
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='rts_reports'?'on':''" @click="v='rts_reports'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_reports'?'on':''" @click="v='rts_reports'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           Reports
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='rts_materials'?'on':''" @click="v='rts_materials'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_materials'?'on':''" @click="v='rts_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
@@ -459,19 +474,19 @@ textarea.field{resize:none}
         </template>
 
         <div class="nav-group-label" style="margin-top:8px">Admin Controls</div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='rts_admin'?'on':''" @click="v='rts_admin'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_admin'?'on':''" @click="v='rts_admin'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><line x1="19" y1="8" x2="23" y2="8"/><line x1="21" y1="6" x2="21" y2="10"/></svg>
           Add Coordinator
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='rts_countries'?'on':''" @click="v='rts_countries'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_countries'?'on':''" @click="v='rts_countries'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           Countries / MPs
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='rts_depts'?'on':''" @click="v='rts_depts'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_depts'?'on':''" @click="v='rts_depts'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
           Departments
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='rts_creds'?'on':''" @click="v='rts_creds'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_creds'?'on':''" @click="v='rts_creds'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           User Credentials
         </div>
@@ -481,31 +496,31 @@ textarea.field{resize:none}
       <!-- ── L3 TRAINING COORDINATOR NAVIGATION ────────────────── -->
       <div x-show="mlevel===3">
         <div class="nav-group-label" style="margin-top:4px">Coordinator Workspace</div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='tc_pipe'?'on':''" @click="v='tc_pipe'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_pipe'?'on':''" @click="v='tc_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Pipeline
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='tc_stages'?'on':''" @click="v='tc_stages'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_stages'?'on':''" @click="v='tc_stages'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           Stage Overview
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='tc_trainers'?'on':''" @click="v='tc_trainers'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_trainers'?'on':''" @click="v='tc_trainers'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Trainers
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='tc_depts'?'on':''" @click="v='tc_depts'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_depts'?'on':''" @click="v='tc_depts'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
           Departments
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='tc_materials'?'on':''" @click="v='tc_materials'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_materials'?'on':''" @click="v='tc_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='tc_reports'?'on':''" @click="v='tc_reports'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_reports'?'on':''" @click="v='tc_reports'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           Reports
         </div>
@@ -514,27 +529,27 @@ textarea.field{resize:none}
       <!-- ── DEPARTMENT MANAGER NAVIGATION ────────────────────── -->
       <div x-show="mlevel===4 && mdept==='DEPT_MANAGER'">
         <div class="nav-group-label" style="margin-top:4px">Dept. Manager Workspace</div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dm_pipe'?'on':''" @click="v='dm_pipe'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dm_pipe'?'on':''" @click="v='dm_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Candidate Progress
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dm_ojt'?'on':''" @click="v='dm_ojt'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dm_ojt'?'on':''" @click="v='dm_ojt'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           OJT Training
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dm_assess'?'on':''" @click="v='dm_assess'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dm_assess'?'on':''" @click="v='dm_assess'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
           Pre-Floor Assessment
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dm_cert'?'on':''" @click="v='dm_cert'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dm_cert'?'on':''" @click="v='dm_cert'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
           Floor Ready Certification
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dm_materials'?'on':''" @click="v='dm_materials'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dm_materials'?'on':''" @click="v='dm_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
@@ -543,19 +558,19 @@ textarea.field{resize:none}
       <!-- ── QUALITY TRAINER NAVIGATION ────────────────────────── -->
       <div x-show="mlevel===4 && mdept==='Quality_Status'">
         <div class="nav-group-label" style="margin-top:4px">Quality Workspace</div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='qual_pipe'?'on':''" @click="v='qual_pipe'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='qual_pipe'?'on':''" @click="v='qual_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Candidate Progress
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='qual_training'?'on':''" @click="v='qual_training'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='qual_training'?'on':''" @click="v='qual_training'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           Quality Training Modules
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='qual_materials'?'on':''" @click="v='qual_materials'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='qual_materials'?'on':''" @click="v='qual_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
@@ -565,31 +580,31 @@ textarea.field{resize:none}
       <div x-show="mlevel===4 && mdept==='HR_Status'">
         <div class="nav-group-label" style="margin-top:4px">HR Workspace</div>
 
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
 
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='hr_pipe'?'on':''" @click="v='hr_pipe'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='hr_pipe'?'on':''" @click="v='hr_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Candidate Progress
         </div>
 
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='hr_preboard'?'on':''" @click="v='hr_preboard'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='hr_preboard'?'on':''" @click="v='hr_preboard'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           Pre-Boarding
         </div>
 
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='hr_orient'?'on':''" @click="v='hr_orient'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='hr_orient'?'on':''" @click="v='hr_orient'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Orientation
         </div>
 
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='hr_compliance'?'on':''" @click="v='hr_compliance'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='hr_compliance'?'on':''" @click="v='hr_compliance'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
           HR Compliance
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='hr_materials'?'on':''" @click="v='hr_materials'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='hr_materials'?'on':''" @click="v='hr_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
@@ -598,23 +613,23 @@ textarea.field{resize:none}
       <!-- ── END HR NAVIGATION ──────────────────────────────────── -->
 
         <div class="nav-group-label" x-show="mlevel===1" style="margin-top:8px">Executive Suite</div>
-        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='l1_analytics'?'on':''" @click="v='l1_analytics'">
+        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_analytics'?'on':''" @click="v='l1_analytics'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           Analytics
         </div>
-        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='l1_admin'?'on':''" @click="v='l1_admin'">
+        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_admin'?'on':''" @click="v='l1_admin'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
           System Admin
         </div>
-        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='l1_sla'?'on':''" @click="v='l1_sla'">
+        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_sla'?'on':''" @click="v='l1_sla'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           SLA Settings
         </div>
-        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='l1_announce'?'on':''" @click="v='l1_announce'">
+        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_announce'?'on':''" @click="v='l1_announce'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           Announcements
         </div>
-        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.querySelector('.mob-overlay').classList.remove('mob-open')}" :class="v==='l1_audit'?'on':''" @click="v='l1_audit'">
+        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_audit'?'on':''" @click="v='l1_audit'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           Audit Log
         </div>
@@ -3011,7 +3026,7 @@ textarea.field{resize:none}
           </div>
 
           <!-- HR KPI TILES — 6 tiles -->
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px" class="kpi-row-3">
             <div class="kpi-tile" style="--tile-accent:var(--ch);cursor:pointer" @click="v='hr_pipe'">
               <div class="kpi-label">👥 Candidate Progress</div>
               <div class="kpi-num" style="color:var(--ch)" x-text="hrEmps().length"></div>
