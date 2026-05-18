@@ -208,7 +208,7 @@ textarea.field{resize:none}
 
 
 /* ═══════════════════════════════════════════════════════════════
-   MOBILE RESPONSIVE — PWA / Add to Home Screen
+   MOBILE RESPONSIVE v2 — PWA / Add to Home Screen
    All rules below are ADDITIVE only — no existing styles changed
    ══════════════════════════════════════════════════════════════ */
 
@@ -221,171 +221,111 @@ textarea.field{resize:none}
 
 @media (max-width: 768px) {
 
-  /* Safe area for iPhone notch */
   html,body{height:100%;height:100dvh}
-
-  /* App shell — stack vertically on mobile */
   .app-shell{flex-direction:column;height:100dvh;overflow:hidden}
 
-  /* Sidebar — slide in from left on mobile */
+  /* Sidebar — hidden off-screen, slides in */
   .sidebar{
-    position:fixed!important;
-    top:0;left:-100%;
-    width:280px!important;
-    height:100dvh!important;
-    z-index:900;
+    position:fixed!important;top:0;left:-100%;
+    width:80vw!important;max-width:300px!important;
+    height:100dvh!important;z-index:900;
     transition:left .25s cubic-bezier(.4,0,.2,1);
-    box-shadow:none;
-    overflow-y:auto!important;
-    overflow-x:hidden;
+    box-shadow:none;overflow-y:auto!important;overflow-x:hidden;
   }
-  .sidebar.mob-open{
-    left:0!important;
-    box-shadow:4px 0 24px rgba(0,0,0,.18);
-  }
-
-  /* Mobile overlay visible when sidebar open */
+  .sidebar.mob-open{left:0!important;box-shadow:4px 0 24px rgba(0,0,0,.2)}
   .mob-overlay.mob-open{display:block}
 
-  /* Topbar — compact on mobile */
-  .topbar{
-    padding:0 14px!important;
-    height:52px!important;
-    flex-shrink:0;
-    position:sticky;
-    top:0;
-    z-index:100;
-  }
+  /* Topbar */
+  .topbar{padding:0 12px!important;height:52px!important;flex-shrink:0;position:sticky;top:0;z-index:100}
+  .search-box{width:110px!important;font-size:12px!important}
 
-  /* Search box — shorter on mobile */
-  .search-box{width:130px!important;font-size:12px!important}
+  /* Main area */
+  .main-area{flex:1!important;height:calc(100dvh - 52px)!important;overflow-y:auto!important;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  .page-wrap{padding:12px 10px!important}
 
-  /* Main area takes remaining space */
-  .main-area{
-    flex:1!important;
-    height:calc(100dvh - 52px)!important;
-    overflow-y:auto!important;
-    overflow-x:hidden;
-    -webkit-overflow-scrolling:touch;
-  }
-
-  /* Page wrap — tighter padding on mobile */
-  .page-wrap{padding:16px 14px!important}
-
-  /* Command bar — stack vertically */
+  /* Command bar — stack on mobile */
   .cmd-bar{
-    flex-direction:column!important;
-    align-items:flex-start!important;
-    gap:12px!important;
-    padding:14px!important;
-    margin:-16px -14px 16px!important;
+    flex-direction:column!important;align-items:flex-start!important;
+    gap:10px!important;padding:14px 12px!important;
+    margin:-12px -10px 14px!important;
   }
-  .cmd-bar > div:last-child{
-    display:flex!important;
-    flex-wrap:wrap!important;
-    gap:8px!important;
-    width:100%!important;
+  /* Stats row in cmd-bar */
+  .cmd-bar > div:nth-child(2){
+    display:flex!important;flex-wrap:wrap!important;
+    gap:0!important;width:100%!important;
+    border-top:1px solid rgba(255,255,255,.15);
+    padding-top:10px!important;
   }
-  .cmd-stat{padding:8px 12px!important}
-
-  /* KPI tiles — 2 columns on mobile */
-  [style*="grid-template-columns:repeat(3,1fr)"],
-  [style*="grid-template-columns:repeat(4,1fr)"],
-  [style*="grid-template-columns:repeat(5,1fr)"],
-  [style*="grid-template-columns:repeat(6,1fr)"]{
-    grid-template-columns:repeat(2,1fr)!important;
-    gap:8px!important;
+  .cmd-stat{
+    padding:6px 10px!important;flex:1 1 auto!important;
+    min-width:60px!important;text-align:center;
+  }
+  /* Buttons in cmd-bar */
+  .cmd-bar > div:nth-child(2) > button,
+  .cmd-bar > div:nth-child(2) > div:last-child{
+    width:100%!important;margin-top:8px;
   }
 
-  /* KPI tile — smaller on mobile */
-  .kpi-tile{padding:14px 12px!important}
-  .kpi-num{font-size:28px!important}
+  /* KPI tiles — 2 columns */
+  .kpi-tile{padding:12px 10px!important}
+  .kpi-num{font-size:26px!important}
+  .kpi-label{font-size:9px!important}
+  .kpi-sub{font-size:10px!important}
+  .kpi-drill{font-size:9px!important}
 
-  /* Candidate grid — 1 column on mobile */
+  /* Override ALL grid layouts to 2 columns */
+  div[style*="grid-template-columns:repeat(3"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  div[style*="grid-template-columns:repeat(4"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  div[style*="grid-template-columns:repeat(5"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  div[style*="grid-template-columns:repeat(6"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  div[style*="grid-template-columns:repeat(7"]{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+
+  /* Two-panel layouts — stack */
+  div[style*="grid-template-columns:1fr 360px"],
+  div[style*="grid-template-columns:1fr 340px"],
+  div[style*="grid-template-columns:2fr 1fr"],
+  div[style*="grid-template-columns:1fr 1fr"]{
+    grid-template-columns:1fr!important;gap:10px!important
+  }
+
+  /* Pipeline cards — 1 column */
   .cg{grid-template-columns:1fr!important;gap:10px!important}
+  .emp-card{padding:12px!important}
 
-  /* Employee cards — full width */
-  .emp-card{padding:14px!important}
+  /* Buttons — bigger touch targets */
+  .btn{min-height:42px;padding:8px 14px;font-size:12px!important}
+  .btn-sm{min-height:38px;padding:6px 12px;font-size:11px!important}
+  .btn-xs{min-height:32px;padding:4px 10px}
 
-  /* Heat map — 2 columns on mobile */
-  [style*="grid-template-columns:repeat(4,1fr)"].heat-grid{
-    grid-template-columns:repeat(2,1fr)!important;
-  }
+  /* Modals — slide up from bottom */
+  .overlay{align-items:flex-end!important;padding:0!important}
+  .modal{border-radius:var(--r16) var(--r16) 0 0!important;max-height:92dvh!important}
 
-  /* Modal — full screen on mobile */
-  [style*="max-width:460px"],[style*="max-width:480px"],[style*="max-width:500px"],
-  [style*="max-width:380px"],[style*="max-width:360px"]{
-    max-width:100%!important;
-    margin:0!important;
-    border-radius:var(--r16) var(--r16) 0 0!important;
-    position:fixed!important;
-    bottom:0!important;
-    left:0!important;
-    right:0!important;
-  }
-  /* Modal overlay — align bottom on mobile */
-  [style*="align-items:center;justify-content:center;padding:20px"]:has([style*="max-width"]){
-    align-items:flex-end!important;
-    padding:0!important;
-  }
+  /* Tables — scroll horizontally */
+  table{min-width:480px}
+  .card{overflow-x:auto}
 
-  /* Tables — horizontal scroll */
-  .card [style*="overflow-x:auto"],
-  [style*="overflow-x:auto"]{
-    overflow-x:auto!important;
-    -webkit-overflow-scrolling:touch;
-  }
-  table{min-width:500px}
+  /* Stage ladder compact */
+  .stg{padding:4px 6px!important}
 
-  /* Topbar right side — compact */
-  [style*="display:flex;align-items:center;gap:10px"]{gap:6px!important}
-
-  /* Hide date display on small screens */
-  .topbar [style*="25 April"]{display:none!important}
-
-  /* Buttons — touch friendly */
-  .btn{min-height:40px;padding:8px 14px}
-  .btn-sm{min-height:36px;padding:6px 12px}
-
-  /* Show mobile nav toggle */
-  .mob-nav-toggle{display:flex!important}
-
-  /* Stage ladder in pipeline cards — compact */
-  .stg{padding:4px 8px!important}
-
-  /* Announcement banner — full width */
-  [style*="border-radius:var(--r12)"][style*="animation:fup"]{
-    border-radius:var(--r8)!important;
-  }
-
-  /* Reports table — scrollable */
-  .card [style*="overflow-x:auto"] table{min-width:600px}
-
-  /* Hide less critical columns on mobile */
-  .mob-hide{display:none!important}
-
-  /* Logo area — compact */
+  /* Logo */
   .logo{font-size:20px!important}
   .logo-sub{display:none}
 
-  /* Sidebar user info at top */
-  [style*="padding:20px 18px;border-bottom:1px solid"]{
-    padding:14px 18px!important;
-  }
+  /* Show hamburger */
+  .mob-nav-toggle{display:flex!important}
+
+  /* Hide less critical topbar items */
+  .topbar span[style*="toLocaleDateString"]{display:none!important}
 }
 
 @media (max-width: 400px) {
-  /* Very small phones */
-  [style*="grid-template-columns:repeat(2,1fr)"],
-  [style*="grid-template-columns:repeat(3,1fr)"],
-  [style*="grid-template-columns:repeat(4,1fr)"],
-  [style*="grid-template-columns:repeat(5,1fr)"]{
-    grid-template-columns:1fr!important;
-  }
-  .search-box{width:100px!important}
+  .search-box{width:90px!important}
+  .cmd-stat{min-width:50px!important;padding:4px 6px!important}
+  div[style*="grid-template-columns:repeat(2"]{grid-template-columns:1fr!important}
 }
 /* ═══════════════════════════════════════════════════════════════
-   END MOBILE RESPONSIVE
+   END MOBILE RESPONSIVE v2
    ══════════════════════════════════════════════════════════════ */
 </style>
 </head>
