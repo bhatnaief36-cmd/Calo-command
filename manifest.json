@@ -1,0 +1,19 @@
+{
+  "name": "Calo Onboarding Command",
+  "short_name": "Calo HQ",
+  "description": "Calo Group Onboarding Management System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#00C07F",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%2300C07F'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["business","productivity"],
+  "lang": "en"
+}
