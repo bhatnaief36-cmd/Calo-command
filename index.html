@@ -1,7 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#00C07F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Calo HQ">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Calo HQ">
+<link rel="manifest" href="/manifest.json">
+<!-- Apple touch icons -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2300C07F'/><text y='.9em' font-size='72' x='12'>🏔</text></svg>">
+
 <title>Calo — Onboarding Command</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.3.0/alpine.js" defer></script>
@@ -196,6 +206,133 @@ textarea.field{resize:none}
 .count-up{animation:count-up .5s ease forwards}
 
 
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE v2 — PWA / Add to Home Screen
+   All rules below are ADDITIVE only — no existing styles changed
+   ══════════════════════════════════════════════════════════════ */
+
+/* Mobile nav toggle button — hidden on desktop */
+.mob-nav-toggle{display:none;position:fixed;bottom:20px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--green);color:#fff;border:none;cursor:pointer;z-index:999;box-shadow:0 4px 16px rgba(0,192,127,.4);align-items:center;justify-content:center;font-size:22px;transition:all .2s}
+.mob-nav-toggle:active{transform:scale(.95)}
+@media(max-width:768px){#mob-close{display:flex!important}}
+/* KPI 3-tile row — last child spans full width on mobile when orphaned */
+@media(max-width:768px){
+  .kpi-row-3{grid-template-columns:repeat(2,1fr)!important}
+  .kpi-row-3 .kpi-tile:last-child:nth-child(odd){grid-column:1/-1}
+}
+
+/* Mobile overlay backdrop */
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:899;backdrop-filter:blur(2px)}
+
+@media (max-width: 768px) {
+
+  html,body{height:100%;height:100dvh}
+  .app-shell{flex-direction:column;height:100dvh;overflow:hidden}
+
+  /* Sidebar — hidden off-screen, slides in */
+  .sidebar{
+    position:fixed!important;top:0;left:-100%;
+    width:80vw!important;max-width:300px!important;
+    height:100dvh!important;z-index:900;
+    transition:left .25s cubic-bezier(.4,0,.2,1);
+    box-shadow:none;overflow-y:auto!important;overflow-x:hidden;
+  }
+  .sidebar.mob-open{left:0!important;box-shadow:4px 0 24px rgba(0,0,0,.2)}
+  .mob-overlay.mob-open{display:block}
+
+  /* Topbar */
+  .topbar{padding:0 12px!important;height:52px!important;flex-shrink:0;position:sticky;top:0;z-index:100}
+  .search-box{width:110px!important;font-size:12px!important}
+
+  /* Main area */
+  .main-area{flex:1!important;height:calc(100dvh - 52px)!important;overflow-y:auto!important;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  .page-wrap{padding:12px 10px!important}
+
+  /* Command bar — stack on mobile */
+  .cmd-bar{
+    flex-direction:column!important;align-items:flex-start!important;
+    gap:10px!important;padding:14px 12px!important;
+    margin:-12px -10px 14px!important;
+  }
+  /* Stats row in cmd-bar */
+  .cmd-bar > div:nth-child(2){
+    display:flex!important;flex-wrap:wrap!important;
+    gap:0!important;width:100%!important;
+    border-top:1px solid rgba(255,255,255,.15);
+    padding-top:10px!important;
+  }
+  .cmd-stat{
+    padding:6px 10px!important;flex:1 1 auto!important;
+    min-width:60px!important;text-align:center;
+  }
+  /* Buttons in cmd-bar */
+  .cmd-bar > div:nth-child(2) > button,
+  .cmd-bar > div:nth-child(2) > div:last-child{
+    width:100%!important;margin-top:8px;
+  }
+
+  /* KPI tiles — 2 columns */
+  .kpi-tile{padding:12px 10px!important}
+  .kpi-num{font-size:26px!important}
+  .kpi-label{font-size:9px!important}
+  .kpi-sub{font-size:10px!important}
+  .kpi-drill{font-size:9px!important}
+
+  /* Override ALL grid layouts to 2 columns */
+  div[style*="grid-template-columns:repeat(3"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  div[style*="grid-template-columns:repeat(4"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  div[style*="grid-template-columns:repeat(5"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  div[style*="grid-template-columns:repeat(6"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  div[style*="grid-template-columns:repeat(7"]{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+
+  /* Two-panel layouts — stack */
+  div[style*="grid-template-columns:1fr 360px"],
+  div[style*="grid-template-columns:1fr 340px"],
+  div[style*="grid-template-columns:2fr 1fr"],
+  div[style*="grid-template-columns:1fr 1fr"]{
+    grid-template-columns:1fr!important;gap:10px!important
+  }
+
+  /* Pipeline cards — 1 column */
+  .cg{grid-template-columns:1fr!important;gap:10px!important}
+  .emp-card{padding:12px!important}
+
+  /* Buttons — bigger touch targets */
+  .btn{min-height:42px;padding:8px 14px;font-size:12px!important}
+  .btn-sm{min-height:38px;padding:6px 12px;font-size:11px!important}
+  .btn-xs{min-height:32px;padding:4px 10px}
+
+  /* Modals — slide up from bottom */
+  .overlay{align-items:flex-end!important;padding:0!important}
+  .modal{border-radius:var(--r16) var(--r16) 0 0!important;max-height:92dvh!important}
+
+  /* Tables — scroll horizontally */
+  table{min-width:480px}
+  .card{overflow-x:auto}
+
+  /* Stage ladder compact */
+  .stg{padding:4px 6px!important}
+
+  /* Logo */
+  .logo{font-size:20px!important}
+  .logo-sub{display:none}
+
+  /* Show hamburger */
+  .mob-nav-toggle{display:flex!important}
+
+  /* Hide less critical topbar items */
+  .topbar span[style*="toLocaleDateString"]{display:none!important}
+}
+
+@media (max-width: 400px) {
+  .search-box{width:90px!important}
+  .cmd-stat{min-width:50px!important;padding:4px 6px!important}
+  div[style*="grid-template-columns:repeat(2"]{grid-template-columns:1fr!important}
+}
+/* ═══════════════════════════════════════════════════════════════
+   END MOBILE RESPONSIVE v2
+   ══════════════════════════════════════════════════════════════ */
 </style>
 </head>
 <body x-data="app()" x-init="init()">
@@ -235,14 +372,23 @@ textarea.field{resize:none}
 </div>
 
 
+<!-- HAMBURGER — outside x-cloak so always visible -->
+<button id="mob-toggle" class="mob-nav-toggle" onclick="document.querySelector('.sidebar').classList.toggle('mob-open');document.getElementById('mob-bg').classList.toggle('mob-open')" aria-label="Menu">☰</button>
+<div id="mob-bg" class="mob-overlay" onclick="document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')"></div>
+
 <!-- MAIN APP -->
 <div x-show="loggedIn" x-cloak class="app-shell">
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <div style="padding:18px 18px 14px;border-bottom:1px solid var(--w3)">
-      <div class="logo">CALO</div>
-      <div class="logo-sub">Onboarding Command</div>
+    <div style="padding:14px 18px;border-bottom:1px solid var(--w3);display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="logo">CALO</div>
+        <div class="logo-sub">Onboarding Command</div>
+      </div>
+      <button onclick="document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')"
+        style="background:none;border:1px solid var(--w3);border-radius:var(--r8);width:32px;height:32px;cursor:pointer;font-size:18px;color:var(--w5);display:none;align-items:center;justify-content:center;flex-shrink:0"
+        id="mob-close">✕</button>
     </div>
 
     <div style="padding:12px 14px;border-bottom:1px solid var(--w3);background:var(--w2)">
@@ -262,23 +408,23 @@ textarea.field{resize:none}
 
     <nav style="flex:1;overflow-y:auto;padding:6px 0">
       <div class="nav-group-label" x-show="mlevel===1">Navigation</div>
-      <div x-show="mlevel===1" class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         Dashboard
       </div>
-      <div x-show="mlevel===1" class="nav-link" :class="v==='pipe'?'on':''" @click="v='pipe';dashTile=null;pf='all'">
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='pipe'?'on':''" @click="v='pipe';dashTile=null;pf='all'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         Pipeline
       </div>
-      <div x-show="mlevel===1" class="nav-link" :class="v==='trainers'?'on':''" @click="v='trainers'">
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='trainers'?'on':''" @click="v='trainers'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Trainers
       </div>
-      <div x-show="mlevel===1" class="nav-link" :class="v==='tpl'?'on':''" @click="v='tpl'">
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tpl'?'on':''" @click="v='tpl'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Templates
       </div>
-      <div x-show="mlevel===1" class="nav-link" :class="v==='rep'?'on':''" @click="v='rep'">
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rep'?'on':''" @click="v='rep'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         Reports
       </div>
@@ -290,27 +436,27 @@ textarea.field{resize:none}
       <!-- ── L2 REGIONAL TRAINING SPECIALIST NAVIGATION ──────── -->
       <div x-show="mlevel===2">
         <div class="nav-group-label" style="margin-top:4px">RTS Workspace</div>
-        <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
-        <div class="nav-link" :class="v==='rts_pipe'?'on':''" @click="v='rts_pipe'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_pipe'?'on':''" @click="v='rts_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Pipeline
         </div>
-        <div class="nav-link" :class="v==='rts_mp'?'on':''" @click="v='rts_mp'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_mp'?'on':''" @click="v='rts_mp'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
           MP Performance
         </div>
-        <div class="nav-link" :class="v==='rts_trainers'?'on':''" @click="v='rts_trainers'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_trainers'?'on':''" @click="v='rts_trainers'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Trainers Directory
         </div>
-        <div class="nav-link" :class="v==='rts_reports'?'on':''" @click="v='rts_reports'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_reports'?'on':''" @click="v='rts_reports'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           Reports
         </div>
-        <div class="nav-link" :class="v==='rts_materials'?'on':''" @click="v='rts_materials'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_materials'?'on':''" @click="v='rts_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
@@ -328,19 +474,19 @@ textarea.field{resize:none}
         </template>
 
         <div class="nav-group-label" style="margin-top:8px">Admin Controls</div>
-        <div class="nav-link" :class="v==='rts_admin'?'on':''" @click="v='rts_admin'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_admin'?'on':''" @click="v='rts_admin'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><line x1="19" y1="8" x2="23" y2="8"/><line x1="21" y1="6" x2="21" y2="10"/></svg>
           Add Coordinator
         </div>
-        <div class="nav-link" :class="v==='rts_countries'?'on':''" @click="v='rts_countries'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_countries'?'on':''" @click="v='rts_countries'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           Countries / MPs
         </div>
-        <div class="nav-link" :class="v==='rts_depts'?'on':''" @click="v='rts_depts'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_depts'?'on':''" @click="v='rts_depts'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
           Departments
         </div>
-        <div class="nav-link" :class="v==='rts_creds'?'on':''" @click="v='rts_creds'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_creds'?'on':''" @click="v='rts_creds'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           User Credentials
         </div>
@@ -350,65 +496,60 @@ textarea.field{resize:none}
       <!-- ── L3 TRAINING COORDINATOR NAVIGATION ────────────────── -->
       <div x-show="mlevel===3">
         <div class="nav-group-label" style="margin-top:4px">Coordinator Workspace</div>
-        <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
-        <div class="nav-link" :class="v==='tc_pipe'?'on':''" @click="v='tc_pipe'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_pipe'?'on':''" @click="v='tc_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Pipeline
         </div>
-        <div class="nav-link" :class="v==='tc_stages'?'on':''" @click="v='tc_stages'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_stages'?'on':''" @click="v='tc_stages'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           Stage Overview
         </div>
-        <div class="nav-link" :class="v==='tc_trainers'?'on':''" @click="v='tc_trainers'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_trainers'?'on':''" @click="v='tc_trainers'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Trainers
         </div>
-        <div class="nav-link" :class="v==='tc_depts'?'on':''" @click="v='tc_depts'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_depts'?'on':''" @click="v='tc_depts'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
           Departments
         </div>
-        <div class="nav-link" :class="v==='tc_materials'?'on':''" @click="v='tc_materials'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_materials'?'on':''" @click="v='tc_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
-        <div class="nav-link" :class="v==='tc_reports'?'on':''" @click="v='tc_reports'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_reports'?'on':''" @click="v='tc_reports'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           Reports
-        </div>
-        <div class="nav-group-label" style="margin-top:8px">Admin</div>
-        <div class="nav-link" :class="v==='tc_admin'?'on':''" @click="v='tc_admin'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><line x1="19" y1="8" x2="23" y2="8"/><line x1="21" y1="6" x2="21" y2="10"/></svg>
-          User Management
         </div>
       </div>
       <!-- ── END L3 NAVIGATION ───────────────────────────────────── -->
       <!-- ── DEPARTMENT MANAGER NAVIGATION ────────────────────── -->
       <div x-show="mlevel===4 && mdept==='DEPT_MANAGER'">
         <div class="nav-group-label" style="margin-top:4px">Dept. Manager Workspace</div>
-        <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
-        <div class="nav-link" :class="v==='dm_pipe'?'on':''" @click="v='dm_pipe'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dm_pipe'?'on':''" @click="v='dm_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Candidate Progress
         </div>
-        <div class="nav-link" :class="v==='dm_ojt'?'on':''" @click="v='dm_ojt'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dm_ojt'?'on':''" @click="v='dm_ojt'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           OJT Training
         </div>
-        <div class="nav-link" :class="v==='dm_assess'?'on':''" @click="v='dm_assess'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dm_assess'?'on':''" @click="v='dm_assess'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
           Pre-Floor Assessment
         </div>
-        <div class="nav-link" :class="v==='dm_cert'?'on':''" @click="v='dm_cert'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dm_cert'?'on':''" @click="v='dm_cert'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
           Floor Ready Certification
         </div>
-        <div class="nav-link" :class="v==='dm_materials'?'on':''" @click="v='dm_materials'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dm_materials'?'on':''" @click="v='dm_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
@@ -417,19 +558,19 @@ textarea.field{resize:none}
       <!-- ── QUALITY TRAINER NAVIGATION ────────────────────────── -->
       <div x-show="mlevel===4 && mdept==='Quality_Status'">
         <div class="nav-group-label" style="margin-top:4px">Quality Workspace</div>
-        <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
-        <div class="nav-link" :class="v==='qual_pipe'?'on':''" @click="v='qual_pipe'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='qual_pipe'?'on':''" @click="v='qual_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Candidate Progress
         </div>
-        <div class="nav-link" :class="v==='qual_training'?'on':''" @click="v='qual_training'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='qual_training'?'on':''" @click="v='qual_training'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           Quality Training Modules
         </div>
-        <div class="nav-link" :class="v==='qual_materials'?'on':''" @click="v='qual_materials'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='qual_materials'?'on':''" @click="v='qual_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
@@ -439,31 +580,31 @@ textarea.field{resize:none}
       <div x-show="mlevel===4 && mdept==='HR_Status'">
         <div class="nav-group-label" style="margin-top:4px">HR Workspace</div>
 
-        <div class="nav-link" :class="v==='dash'?'on':''" @click="v='dash'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='dash'?'on':''" @click="v='dash'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
 
-        <div class="nav-link" :class="v==='hr_pipe'?'on':''" @click="v='hr_pipe'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='hr_pipe'?'on':''" @click="v='hr_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Candidate Progress
         </div>
 
-        <div class="nav-link" :class="v==='hr_preboard'?'on':''" @click="v='hr_preboard'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='hr_preboard'?'on':''" @click="v='hr_preboard'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           Pre-Boarding
         </div>
 
-        <div class="nav-link" :class="v==='hr_orient'?'on':''" @click="v='hr_orient'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='hr_orient'?'on':''" @click="v='hr_orient'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Orientation
         </div>
 
-        <div class="nav-link" :class="v==='hr_compliance'?'on':''" @click="v='hr_compliance'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='hr_compliance'?'on':''" @click="v='hr_compliance'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
           HR Compliance
         </div>
-        <div class="nav-link" :class="v==='hr_materials'?'on':''" @click="v='hr_materials'">
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='hr_materials'?'on':''" @click="v='hr_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
@@ -472,23 +613,23 @@ textarea.field{resize:none}
       <!-- ── END HR NAVIGATION ──────────────────────────────────── -->
 
         <div class="nav-group-label" x-show="mlevel===1" style="margin-top:8px">Executive Suite</div>
-        <div x-show="mlevel===1" class="nav-link" :class="v==='l1_analytics'?'on':''" @click="v='l1_analytics'">
+        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_analytics'?'on':''" @click="v='l1_analytics'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           Analytics
         </div>
-        <div x-show="mlevel===1" class="nav-link" :class="v==='l1_admin'?'on':''" @click="v='l1_admin'">
+        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_admin'?'on':''" @click="v='l1_admin'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
           System Admin
         </div>
-        <div x-show="mlevel===1" class="nav-link" :class="v==='l1_sla'?'on':''" @click="v='l1_sla'">
+        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_sla'?'on':''" @click="v='l1_sla'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           SLA Settings
         </div>
-        <div x-show="mlevel===1" class="nav-link" :class="v==='l1_announce'?'on':''" @click="v='l1_announce'">
+        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_announce'?'on':''" @click="v='l1_announce'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           Announcements
         </div>
-        <div x-show="mlevel===1" class="nav-link" :class="v==='l1_audit'?'on':''" @click="v='l1_audit'">
+        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_audit'?'on':''" @click="v='l1_audit'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           Audit Log
         </div>
@@ -1134,29 +1275,45 @@ textarea.field{resize:none}
           <!-- User list -->
           <div style="display:flex;flex-direction:column;gap:8px">
             <template x-for="(u,ui) in l1FilteredUsers()">
-              <div class="card" style="padding:14px" :style="!u.active?'opacity:.55':''">
-                <div style="display:flex;align-items:center;gap:14px">
+              <div class="card" style="padding:14px" :style="u.active===false?'opacity:.6':''">
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                  <!-- Level badge -->
                   <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:900;color:#fff"
                     :style="'background:'+(u.level===2?'#3B82F6':u.level===3?'#A78BFA':u.dept==='HR_Status'?'#F97316':u.dept==='Quality_Status'?'var(--green)':'var(--warn)')">
                     <span x-text="'L'+u.level"></span>
                   </div>
+                  <!-- Name + title -->
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:13px;font-weight:900" x-text="u.name"></div>
-                    <div style="font-size:11px;color:var(--w5)" x-text="u.title"></div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span style="font-size:13px;font-weight:900" x-text="u.name"></span>
+                      <span x-show="u._dynamic" style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;background:rgba(59,130,246,.1);color:#3B82F6">DYNAMIC</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:1px" x-text="u.title||'L'+u.level+' · '+u.market"></div>
                   </div>
-                  <div style="font-size:10px;background:var(--w2);padding:4px 10px;border-radius:20px;font-family:monospace" x-text="u.market"></div>
-                  <div style="text-align:right;min-width:120px">
+                  <!-- Market -->
+                  <div style="font-size:10px;background:var(--w2);padding:4px 10px;border-radius:20px;font-family:monospace;flex-shrink:0" x-text="u.market"></div>
+                  <!-- Credentials -->
+                  <div style="text-align:right;min-width:130px;flex-shrink:0">
                     <div style="font-size:12px;font-weight:700;font-family:monospace;color:var(--ch)" x-text="u.username"></div>
-                    <div style="font-size:11px;font-family:monospace;color:var(--w5);cursor:pointer;margin-top:2px" @click="u.showPass=!u.showPass" x-text="u.showPass?u.pass:'••••••••'"></div>
+                    <div style="font-size:11px;font-family:monospace;color:var(--w5);cursor:pointer;margin-top:2px" @click="u.showPass=!u.showPass" x-text="u.showPass?u.pass:'Click to reveal'"></div>
                   </div>
-                  <div style="display:flex;align-items:center;gap:4px">
+                  <!-- Status dot -->
+                  <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
                     <div style="width:8px;height:8px;border-radius:50%" :style="u.active!==false?'background:var(--green)':'background:var(--w4)'"></div>
                     <span style="font-size:10px;font-weight:700" :style="u.active!==false?'color:var(--green)':'color:var(--w5)'" x-text="u.active!==false?'Active':'Inactive'"></span>
                   </div>
-                  <button @click="u.active=u.active===false?true:false;l1SaveUsers()" class="btn btn-ghost btn-sm"
-                    :style="u.active!==false?'color:var(--danger)':'color:var(--green)'"
-                    x-text="u.active!==false?'Deactivate':'Activate'">
-                  </button>
+                  <!-- Action buttons -->
+                  <div style="display:flex;gap:6px;flex-shrink:0">
+                    <!-- Deactivate / Activate — works for both hardcoded and dynamic -->
+                    <button @click="l1ToggleUser(u)" class="btn btn-ghost btn-sm"
+                      :style="u.active!==false?'color:var(--danger)':'color:var(--green)'"
+                      x-text="u.active!==false?'Deactivate':'Activate'">
+                    </button>
+                    <!-- Reset Password — only dynamic users -->
+                    <button x-show="u._dynamic" @click="l1ResetPassword(u)" class="btn btn-ghost btn-sm" style="color:#3B82F6">Reset PW</button>
+                    <!-- Delete — only dynamic users -->
+                    <button x-show="u._dynamic" @click="l1DeleteUser(u,ui)" class="btn btn-ghost btn-sm" style="color:var(--danger)">Delete</button>
+                  </div>
                 </div>
               </div>
             </template>
@@ -2064,100 +2221,6 @@ textarea.field{resize:none}
         <!-- END L3 DASHBOARD -->
 
 
-
-        <!-- ════════════════════════════════════════════════════════════ -->
-        <!-- L3 — TRAINER USER MANAGEMENT (Admin Rights)                 -->
-        <!-- ════════════════════════════════════════════════════════════ -->
-        <div x-show="v==='tc_admin' && mlevel===3">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
-            <div>
-              <div class="ptitle">User Management</div>
-              <div class="psub" x-text="'Trainers in '+mmarket+' Mountain Peak'"></div>
-            </div>
-            <div style="display:flex;gap:8px">
-              <button @click="tcBulkUploadOpen=true" class="btn btn-ghost btn-sm">📥 Bulk Upload CSV</button>
-              <button @click="tcAddTrainerForm=true;tcEditIdx=-1;tcNewTrainer={name:'',role:'',stage:'hr_group',dept:'',username:'',password:'',photo:'',active:true,showPass:false}" class="btn btn-primary btn-sm">+ Add Trainer</button>
-            </div>
-          </div>
-
-          <!-- Trainer List with controls -->
-          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
-            <template x-for="(t,ti) in tcTrainers">
-              <div class="card" style="padding:14px" :style="!t.active?'opacity:.55':''">
-                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-                  <img :src="t.photo||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);flex-shrink:0">
-                  <div style="flex:1;min-width:0">
-                    <div style="display:flex;align-items:center;gap:6px">
-                      <span style="font-size:13px;font-weight:900" x-text="t.name"></span>
-                    </div>
-                    <div style="font-size:11px;color:var(--w5);margin-top:1px" x-text="(t.role||t.stage)+' · '+t.dept"></div>
-                  </div>
-                  <div style="text-align:right;min-width:130px">
-                    <div style="font-size:12px;font-weight:700;font-family:monospace;color:var(--ch)" x-text="t.username"></div>
-                    <div style="font-size:11px;font-family:monospace;color:var(--w5);cursor:pointer;margin-top:2px" @click="t.showPass=!t.showPass" x-text="t.showPass?t.password:'Click to reveal'"></div>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:4px">
-                    <div style="width:8px;height:8px;border-radius:50%" :style="t.active?'background:var(--green)':'background:var(--w4)'"></div>
-                    <span style="font-size:10px;font-weight:700" :style="t.active?'color:var(--green)':'color:var(--w5)'" x-text="t.active?'Active':'Inactive'"></span>
-                  </div>
-                  <div style="display:flex;gap:6px">
-                    <button @click="tcEditTrainer(ti)" class="btn btn-ghost btn-sm">Edit</button>
-                    <button @click="t.active=!t.active;tcSaveTrainers()" class="btn btn-ghost btn-sm" :style="t.active?'color:var(--danger)':'color:var(--green)'" x-text="t.active?'Deactivate':'Activate'"></button>
-                    <button @click="tcResetPassword(ti)" class="btn btn-ghost btn-sm" style="color:var(--info)">Reset PW</button>
-                    <button @click="tcDeleteTrainer(ti)" class="btn btn-ghost btn-sm" style="color:var(--danger)">Delete</button>
-                  </div>
-                </div>
-              </div>
-            </template>
-            <div x-show="tcTrainers.length===0" class="empty">
-              <div style="font-size:32px;margin-bottom:10px">👤</div>
-              <div style="font-weight:700">No trainers yet</div>
-              <div style="font-size:12px;margin-top:4px;font-weight:300">Add trainers using the button above or bulk upload CSV</div>
-            </div>
-          </div>
-
-          <!-- Bulk CSV Upload Modal -->
-          <div x-show="tcBulkUploadOpen" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="tcBulkUploadOpen?'display:flex':''">
-            <div class="card" style="width:100%;max-width:580px;padding:28px;border-radius:var(--r16)">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-                <div><div style="font-size:18px;font-weight:900">Bulk Upload Trainers</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Upload a CSV file with trainer details</div></div>
-                <button @click="tcBulkUploadOpen=false;tcBulkCSV=''" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
-              </div>
-              <!-- CSV Format Guide -->
-              <div style="background:var(--w2);border-radius:var(--r8);padding:14px;margin-bottom:16px">
-                <div style="font-size:11px;font-weight:700;color:var(--w6);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Required CSV Format</div>
-                <div style="font-family:monospace;font-size:11px;color:var(--ch);background:var(--w1);padding:10px;border-radius:var(--r4);border:1px solid var(--w3);overflow-x:auto;white-space:nowrap">
-                  name,role,stage_group,department,username,password,photo_url
-                </div>
-                <div style="font-size:10px;color:var(--w5);margin-top:8px">Stage group values: <strong>hr_group</strong> (HR stages), <strong>Quality Std.</strong> (Quality), <strong>dm_group</strong> (DM stages)</div>
-                <div style="font-size:10px;color:var(--w5);margin-top:4px">Example row: Ahmed Ali,Kitchen Trainer,hr_group,Kitchen,TR-KIT-UAE,Tr@kit@UAE,</div>
-              </div>
-              <div style="margin-bottom:16px">
-                <div class="f-label" style="margin-bottom:6px">Upload CSV File</div>
-                <input type="file" accept=".csv" @change="tcReadCSV($event)" class="field" style="padding:6px">
-              </div>
-              <div x-show="tcBulkPreview.length>0" style="margin-bottom:16px">
-                <div style="font-size:11px;font-weight:700;color:var(--w6);margin-bottom:8px" x-text="tcBulkPreview.length+' trainers ready to import'"></div>
-                <div style="max-height:160px;overflow-y:auto;border:1px solid var(--w3);border-radius:var(--r8);padding:8px">
-                  <template x-for="(r,ri) in tcBulkPreview">
-                    <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--w3)">
-                      <span style="font-size:10px;color:var(--w5);min-width:20px" x-text="ri+1+'.'" ></span>
-                      <span style="font-size:11px;font-weight:700" x-text="r.name"></span>
-                      <span style="font-size:10px;color:var(--w5)" x-text="r.dept"></span>
-                      <span style="font-size:10px;font-family:monospace;color:var(--ch);margin-left:auto" x-text="r.username"></span>
-                    </div>
-                  </template>
-                </div>
-              </div>
-              <div style="display:flex;gap:8px">
-                <button @click="tcBulkUploadOpen=false;tcBulkPreview=[];tcBulkCSV=''" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
-                <button @click="tcImportBulk()" :disabled="tcBulkPreview.length===0" class="btn btn-primary" style="flex:1;justify-content:center">Import <span x-text="tcBulkPreview.length"></span> Trainers</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- END L3 USER MANAGEMENT -->
-
         <!-- L3 PIPELINE — all candidates, all 7 stages -->
         <div x-show="v==='tc_pipe' && mlevel===3">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
@@ -2313,12 +2376,10 @@ textarea.field{resize:none}
                   <div><div class="f-label">Photo URL</div><input type="url" x-model="tcNewTrainer.photo" class="field" placeholder="Photo URL (optional)" style="width:100%;box-sizing:border-box"></div>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Role / Stage Group *</div>
+                  <div><div class="f-label">Stage *</div>
                     <select x-model="tcNewTrainer.stage" class="field" style="width:100%;box-sizing:border-box">
-                      <option value="">Select role</option>
-                      <option value="hr_group">👥 HR Officer (Pre-Boarding, Orientation, HR Compliance)</option>
-                      <option value="Quality Std.">⭐ Quality Trainer (Quality Training)</option>
-                      <option value="dm_group">🏆 Dept Manager (OJT, Assessment, Certification)</option>
+                      <option value="">Select stage</option>
+                      <template x-for="s in stages"><option :value="s.label" x-text="s.i+' '+s.label"></option></template>
                     </select>
                   </div>
                   <div><div class="f-label">Department *</div>
@@ -2705,44 +2766,6 @@ textarea.field{resize:none}
         </div>
         <!-- END DM TRAINING MATERIALS -->
 
-
-        <!-- Quality Sign-Off Dept Modal -->
-        <div x-show="qualSignOffModal" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="qualSignOffModal?'display:flex':''">
-          <div class="card" style="width:100%;max-width:440px;padding:28px;border-radius:var(--r16)">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-              <div><div style="font-size:18px;font-weight:900">Sign Off to OJT</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Assign candidate to Department Manager</div></div>
-              <button @click="qualSignOffModal=false;qualSignOffEmp=null" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
-            </div>
-            <div x-show="qualSignOffEmp">
-              <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--w2);border-radius:var(--r8);margin-bottom:16px">
-                <img :src="qualSignOffEmp&&(qualSignOffEmp.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png')" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--green)">
-                <div>
-                  <div style="font-size:13px;font-weight:900" x-text="qualSignOffEmp&&qualSignOffEmp.name"></div>
-                  <div style="font-size:11px;color:var(--w5)" x-text="qualSignOffEmp&&qualSignOffEmp.role"></div>
-                </div>
-              </div>
-              <div style="margin-bottom:16px">
-                <div class="f-label" style="margin-bottom:6px">Candidate Department *</div>
-                <select x-model="qualSignOffDept" class="field" style="width:100%;box-sizing:border-box">
-                  <option value="">Select department for OJT</option>
-                  <template x-for="d in (rtsDepts.length?rtsDepts:tcDepts)">
-                    <option :value="d.name" x-text="(d.icon||'🏢')+' '+d.name"></option>
-                  </template>
-                </select>
-                <div style="font-size:11px;color:var(--w5);margin-top:6px">This assigns the candidate to the correct Department Manager for OJT</div>
-              </div>
-              <div x-show="qualSignOffEmp&&qualSignOffEmp.jdept" style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--green-l);border-radius:var(--r8);margin-bottom:12px">
-                <span style="font-size:12px">💡</span>
-                <span style="font-size:11px;color:var(--green-h)">Joined department on record: <strong x-text="qualSignOffEmp&&qualSignOffEmp.jdept"></strong></span>
-              </div>
-            </div>
-            <div style="display:flex;gap:8px">
-              <button @click="qualSignOffModal=false;qualSignOffEmp=null" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
-              <button @click="qualSignOffConfirm()" :disabled="!qualSignOffDept" class="btn btn-primary" style="flex:1;justify-content:center">✓ Confirm Sign Off</button>
-            </div>
-          </div>
-        </div>
-        <!-- END Quality Sign-Off Modal -->
         <!-- QUALITY TRAINER DASHBOARD                                  -->
         <!-- Condition: mlevel===4 && mdept==='Quality_Status'          -->
         <!-- ══════════════════════════════════════════════════════════ -->
@@ -2839,7 +2862,7 @@ textarea.field{resize:none}
                 </div>
                 <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
                   <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
-                  <button x-show="e.qual&&e.qual.done===e.qual.total" @click="qualSignOffOpen(e)" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → OJT</button>
+                  <button x-show="e.qual&&e.qual.done===e.qual.total" @click="qualSignOff(e)" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → OJT</button>
                 </div>
               </div>
             </template>
@@ -2955,70 +2978,16 @@ textarea.field{resize:none}
         <!-- END TRAINING MATERIALS -->
 
 
-        <!-- TRAINER DASHBOARD — for trainers added by L3 coordinator -->
+        <!-- OTHER TRAINERS (OJT, Assessment, Cert) — blank, build later -->
         <div x-show="v==='dash' && mlevel===4 && mdept!=='HR_Status' && mdept!=='Quality_Status' && mdept!=='DEPT_MANAGER'" style="display:flex;flex-direction:column;min-height:100%">
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
-              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px" x-text="mtitle||'Trainer'"></div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px" x-text="mtitle"></div>
               <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
             </div>
-            <div style="display:flex;gap:0;align-items:center">
-              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="trainerEmps().length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY CANDIDATES</div></div>
-              <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="trainerEmps().filter(e=>trainerActiveCount(e)>0).length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">IN PROGRESS</div></div>
-              <div style="padding-left:16px"><button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld">↻ Refresh</button></div>
-            </div>
           </div>
-          <!-- KPI tiles -->
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
-            <div class="kpi-tile" style="--tile-accent:var(--ch)"><div class="kpi-label">👥 My Candidates</div><div class="kpi-num" style="color:var(--ch)" x-text="trainerEmps().length"></div><div class="kpi-sub" x-text="mmarket+' MP'"></div></div>
-            <div class="kpi-tile" style="--tile-accent:var(--warn)"><div class="kpi-label">🔄 In Progress</div><div class="kpi-num" style="color:var(--warn)" x-text="trainerEmps().filter(e=>trainerActiveCount(e)>0).length"></div><div class="kpi-sub">Active stages</div></div>
-            <div class="kpi-tile" style="--tile-accent:var(--green)"><div class="kpi-label">✅ Completed</div><div class="kpi-num" style="color:var(--green)" x-text="trainerEmps().filter(e=>trainerAllDone(e)).length"></div><div class="kpi-sub">All stages done</div></div>
-          </div>
-          <!-- Candidate cards for this trainer -->
-          <div class="card" style="padding:18px">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-              <div class="stitle" style="margin-bottom:0">My Candidates</div>
-            </div>
-            <div class="cg">
-              <template x-for="e in trainerEmps()">
-                <div class="emp-card">
-                  <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px">
-                    <div style="position:relative;width:50px;height:50px;flex-shrink:0">
-                      <svg width="50" height="50" class="ring" viewBox="0 0 50 50"><circle class="ring-bg" cx="25" cy="25" r="20"/><circle class="ring-fg" cx="25" cy="25" r="20" :stroke="pc(opct(e))" :stroke-dasharray="125.7" :stroke-dashoffset="125.7*(1-opct(e)/100)"/></svg>
-                      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:900" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></span></div>
-                    </div>
-                    <div style="flex:1;min-width:0">
-                      <div style="font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="e.name"></div>
-                      <div style="font-size:11px;color:var(--w5);margin-top:1px;font-weight:300" x-text="e.role"></div>
-                      <span class="chip c-green" style="font-size:9px;margin-top:5px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
-                    </div>
-                  </div>
-                  <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
-                    <template x-for="s in stages">
-                      <div class="stg" :class="scls(e,s.k)">
-                        <div style="display:flex;align-items:center;justify-content:space-between">
-                          <span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em" :style="'color:'+scol(e,s.k)" x-text="s.short"></span>
-                          <span style="font-size:10px;font-weight:700" :style="'color:'+scol(e,s.k)"><span x-text="e[s.k]?e[s.k].done:0"></span>/<span x-text="e[s.k]?e[s.k].total:'—'"></span></span>
-                        </div>
-                        <div class="pbar" style="margin-top:3px"><div class="pbar-fill" :style="'width:'+spce(e,s.k)+'%'"></div></div>
-                      </div>
-                    </template>
-                  </div>
-                  <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
-                    <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
-                    <button @click="omgr(e,stages.find(s=>acc(e,s.k)&&(scls(e,s.k)==='stg-active'||scls(e,s.k)==='stg-part')||scls(e,s.k)==='stg-active'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Task Manager</button>
-                  </div>
-                </div>
-              </template>
-              <div x-show="trainerEmps().length===0" class="empty" style="grid-column:1/-1">
-                <div style="font-size:32px;margin-bottom:10px">👥</div>
-                <div style="font-weight:700">No candidates assigned yet</div>
-                <div style="font-size:12px;margin-top:4px;font-weight:300">Candidates appear here based on your assigned stages</div>
-              </div>
-            </div>
-          </div>
+          <!-- OJT / ASSESSMENT / CERT TRAINER CONTENT — build later -->
         </div>
-        <!-- END TRAINER DASHBOARD -->
 
 
         <!-- ══════════════════════════════════════════════════════ -->
@@ -3057,7 +3026,7 @@ textarea.field{resize:none}
           </div>
 
           <!-- HR KPI TILES — 6 tiles -->
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px" class="kpi-row-3">
             <div class="kpi-tile" style="--tile-accent:var(--ch);cursor:pointer" @click="v='hr_pipe'">
               <div class="kpi-label">👥 Candidate Progress</div>
               <div class="kpi-num" style="color:var(--ch)" x-text="hrEmps().length"></div>
@@ -3340,62 +3309,39 @@ textarea.field{resize:none}
         <!-- ══════════════════════════════════════════════════════ -->
         <!-- HR ENTRY FORM MODAL                                    -->
         <!-- ══════════════════════════════════════════════════════ -->
-        <div x-show="hrForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto"
+        <div x-show="hrForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px"
           :style="hrForm?'display:flex':''">
-          <div class="card" style="width:100%;max-width:520px;padding:28px;border-radius:var(--r16);max-height:90vh;overflow-y:auto">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div class="card" style="width:100%;max-width:460px;padding:28px;border-radius:var(--r16)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
               <div>
                 <div style="font-size:18px;font-weight:900;color:var(--ch)">New Candidate</div>
                 <div style="font-size:12px;color:var(--w5);margin-top:3px">Add a new hire to your onboarding pipeline</div>
               </div>
-              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre',jdept:'',jsection:'',imageFile:''};hrSuccess=false" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:''}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
             </div>
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <!-- Profile Image — dual option -->
+            <div style="display:flex;flex-direction:column;gap:14px">
               <div>
-                <div class="f-label">Candidate Photo</div>
-                <div style="display:flex;gap:8px;margin-top:5px">
-                  <label class="btn btn-ghost btn-sm" style="cursor:pointer;flex:1;justify-content:center">
-                    📁 Upload File
-                    <input type="file" accept="image/*" @change="hrUploadPhoto($event)" class="hidden">
-                  </label>
-                  <span style="display:flex;align-items:center;font-size:11px;color:var(--w5)">or</span>
-                  <input type="url" x-model="hrNH.imageUrl" class="field" placeholder="Paste any image URL (Google Drive, Slack…)" style="flex:2;font-size:11px" @input="hrNH.imageFile=''">
-                </div>
-                <div x-show="hrNH.imageFile||hrNH.imageUrl" style="margin-top:8px;text-align:center">
-                  <img :src="hrNH.imageFile||hrNH.imageUrl" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--green)">
-                </div>
+                <div class="f-label">Full Name *</div>
+                <input type="text" x-model="hrNH.n" class="field" placeholder="Enter candidate full name" style="width:100%;box-sizing:border-box">
               </div>
-              <!-- Name + Designation -->
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                <div><div class="f-label">Full Name *</div><input type="text" x-model="hrNH.n" class="field" placeholder="Candidate full name" style="width:100%;box-sizing:border-box"></div>
-                <div><div class="f-label">Designation *</div><input type="text" x-model="hrNH.d" class="field" placeholder="Job title / role" style="width:100%;box-sizing:border-box"></div>
+              <div>
+                <div class="f-label">Designation *</div>
+                <input type="text" x-model="hrNH.d" class="field" placeholder="Job title / role" style="width:100%;box-sizing:border-box">
               </div>
-              <!-- Country + Date -->
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                <div><div class="f-label">Country</div>
-                  <select x-model="hrNH.c" class="field" style="width:100%;box-sizing:border-box">
-                    <template x-for="b in branches"><option :value="b" x-text="b"></option></template>
-                  </select>
-                </div>
-                <div><div class="f-label">Joining Date *</div>
-                  <input type="date" x-model="hrNH.dt" class="field" :max="(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})()" style="width:100%;box-sizing:border-box">
-                </div>
+              <div>
+                <div class="f-label">Country</div>
+                <select x-model="hrNH.c" class="field" style="width:100%;box-sizing:border-box">
+                  <template x-for="b in branches">
+                    <option :value="b" x-text="b"></option>
+                  </template>
+                </select>
               </div>
-              <!-- Joining Department + Section -->
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                <div><div class="f-label">Joining Department</div>
-                  <select x-model="hrNH.jdept" class="field" style="width:100%;box-sizing:border-box">
-                    <option value="">Select department</option>
-                    <template x-for="d in (rtsDepts.length?rtsDepts:tcDepts)"><option :value="d.name" x-text="(d.icon||'🏢')+' '+d.name"></option></template>
-                  </select>
-                </div>
-                <div><div class="f-label">Joining Section</div>
-                  <input type="text" x-model="hrNH.jsection" class="field" placeholder="e.g. Cold Chain, Packing…" style="width:100%;box-sizing:border-box">
-                </div>
+              <div>
+                <div class="f-label">Joining Date *</div>
+                <input type="date" x-model="hrNH.dt" class="field" :max="(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})()" style="width:100%;box-sizing:border-box">
               </div>
-              <!-- Starting Stage -->
-              <div><div class="f-label">Assign Starting Stage *</div>
+              <div>
+                <div class="f-label">Assign Starting Stage *</div>
                 <select x-model="hrNH.stage" class="field" style="width:100%;box-sizing:border-box">
                   <option value="pre">📋 Pre-Boarding</option>
                   <option value="ori">🎯 Orientation</option>
@@ -3403,11 +3349,12 @@ textarea.field{resize:none}
                 </select>
               </div>
             </div>
-            <div x-show="hrSuccess" style="display:none;background:#E6F9F3;border:1px solid var(--green-m);border-radius:var(--r8);padding:10px 14px;margin-top:12px;font-size:12px;font-weight:700;color:var(--green-h);text-align:center" :style="hrSuccess?'display:block':''">
+            <!-- Success flash -->
+            <div x-show="hrSuccess" style="display:none;background:#E6F9F3;border:1px solid var(--green-m);border-radius:var(--r8);padding:10px 14px;margin-top:14px;font-size:12px;font-weight:700;color:var(--green-h);text-align:center" :style="hrSuccess?'display:block':''">
               ✅ Candidate added successfully!
             </div>
             <div style="display:flex;gap:8px;margin-top:14px">
-              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre',jdept:'',jsection:'',imageFile:''};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
+              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre'};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
               <button @click="hrAddCandidate()" :disabled="!hrNH.n||!hrNH.d||!hrNH.dt||hrSaving" class="btn btn-primary" style="flex:1;justify-content:center">
                 <div x-show="hrSaving" style="display:none" class="spinner spinner-w"></div>
                 <span x-text="hrSaving?'Adding…':'Submit'"></span>
@@ -3728,26 +3675,13 @@ textarea.field{resize:none}
       </div>
     </div>
 
-    <div x-show="acc(se,as?.k)" style="padding:10px 24px;border-bottom:1px solid var(--w3);background:var(--w2);display:flex;gap:8px;flex-wrap:wrap">
-      <select x-model="stpl" class="field" style="flex:1;min-width:120px;padding:7px 10px;font-size:12px">
+    <div x-show="acc(se,as?.k)" style="padding:10px 24px;border-bottom:1px solid var(--w3);background:var(--w2);display:flex;gap:8px">
+      <select x-model="stpl" class="field" style="flex:1;padding:7px 10px;font-size:12px">
         <option value="">— Import template —</option>
         <template x-for="t in tpls"><option :value="t" x-text="t"></option></template>
       </select>
       <button @click="itpl()" class="btn btn-primary btn-sm">Import</button>
       <button @click="at_()" class="btn btn-ghost btn-sm">+ Task</button>
-    </div>
-    <!-- Trainer note + date -->
-    <div x-show="acc(se,as?.k)" style="padding:10px 24px;border-bottom:1px solid var(--w3);background:var(--green-l)">
-      <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end">
-        <div>
-          <div class="f-label" style="margin-bottom:4px">Trainer Notes (visible in candidate profile)</div>
-          <input type="text" x-model="trainerNote" class="field" placeholder="Add observation, feedback or note for this candidate…" style="width:100%;box-sizing:border-box;font-size:12px">
-        </div>
-        <div>
-          <div class="f-label" style="margin-bottom:4px">Stage Date</div>
-          <input type="date" x-model="stageDate" class="field" style="box-sizing:border-box;font-size:12px">
-        </div>
-      </div>
     </div>
 
     <div class="mb scroll-y" style="max-height:calc(90vh - 330px);display:flex;flex-direction:column;gap:6px">
@@ -3825,51 +3759,18 @@ textarea.field{resize:none}
       <div class="stitle">Lifecycle Stages</div>
       <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
         <template x-for="s in stages">
-          <div style="border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);overflow:hidden">
-            <!-- Stage header — clickable to expand -->
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer" @click="de._expandedStage===s.k?de._expandedStage=null:de._expandedStage=s.k">
-              <span style="font-size:16px" x-text="s.i"></span>
-              <div style="flex:1">
-                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                  <span style="font-size:12px;font-weight:700" x-text="s.label"></span>
-                  <div style="display:flex;align-items:center;gap:8px">
-                    <span style="font-size:12px;font-weight:900" :style="spce(de,s.k)===100?'color:var(--green)':'color:var(--warn)'">
-                      <span x-text="de?.[s.k]?.done||0"></span>/<span x-text="de?.[s.k]?.total||0"></span>
-                    </span>
-                    <span style="font-size:10px;color:var(--w5)" x-text="de?._expandedStage===s.k?'▲':'▼'"></span>
-                  </div>
-                </div>
-                <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,s.k)+'%'"></div></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3)">
+            <span style="font-size:16px" x-text="s.i"></span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:700" x-text="s.label"></span>
+                <span style="font-size:12px;font-weight:900;color:var(--green)">
+                  <span x-text="de?.[s.k]?.done||0"></span>/<span x-text="de?.[s.k]?.total||0"></span>
+                </span>
               </div>
-              <span x-show="de?.trainers?.[s.k]?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.[s.k]?.name"></span>
+              <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,s.k)+'%'"></div></div>
             </div>
-            <!-- Expanded: show tasks + trainer note + stage date -->
-            <div x-show="de._expandedStage===s.k" style="border-top:1px solid var(--w3);padding:10px 12px;background:var(--w1)">
-              <!-- Tasks list -->
-              <div x-show="de[s.k]&&de[s.k].items&&de[s.k].items.length>0">
-                <div style="font-size:10px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Completed Modules</div>
-                <template x-for="task in (de[s.k]&&de[s.k].items||[])">
-                  <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--w3)">
-                    <div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green)':'background:var(--w3)'">
-                      <svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-                    <span style="font-size:11px;" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch)'" x-text="task.name"></span>
-                    <a x-show="task.link&&task.link!=='#'" :href="task.link" target="_blank" style="margin-left:auto;font-size:10px;color:var(--green);font-weight:700;text-decoration:none">View →</a>
-                  </div>
-                </template>
-              </div>
-              <div x-show="!de[s.k]||!de[s.k].items||de[s.k].items.length===0" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks recorded yet</div>
-              <!-- Trainer note -->
-              <div x-show="de.trainerNotes&&de.trainerNotes[s.k]" style="margin-top:8px;padding:8px 10px;background:var(--green-l);border-radius:var(--r4);border-left:3px solid var(--green)">
-                <div style="font-size:9px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Trainer Note</div>
-                <div style="font-size:12px;color:var(--ch)" x-text="de.trainerNotes&&de.trainerNotes[s.k]&&de.trainerNotes[s.k].text"></div>
-                <div style="font-size:10px;color:var(--w5);margin-top:3px" x-text="(de.trainerNotes&&de.trainerNotes[s.k]&&de.trainerNotes[s.k].by)||''"></div>
-              </div>
-              <!-- Stage date -->
-              <div x-show="de.stageDates&&de.stageDates[s.k]" style="margin-top:6px;font-size:10px;color:var(--w5)">
-                📅 Stage date: <span x-text="de.stageDates&&de.stageDates[s.k]"></span>
-              </div>
-            </div>
+            <span x-show="de?.trainers?.[s.k]?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.[s.k]?.name"></span>
           </div>
         </template>
       </div>
@@ -3976,8 +3877,8 @@ function app(){
     loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
-    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',jdept:'',jsection:'',imageFile:'',imageUrl:''},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
-    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],
+    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
+    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1Overrides:{},
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
@@ -4089,11 +3990,11 @@ function app(){
             this.saveSession(r);
             this.loggedIn=true;
             this.loadMaterials();
-            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+            if(r.level===1){this.l1LoadUsers();this.l1LoadOverrides();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
             this.l1LoadAnnouncements(); // All levels load announcements
           if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
-            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+            if(r.level===1){this.l1LoadUsers();this.l1LoadOverrides();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
             this.l1LoadAnnouncements(); // All levels load announcements
           if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
@@ -4189,15 +4090,20 @@ function app(){
 
     // ── L1 EXECUTIVE METHODS ──────────────────────────────────────
     l1FilteredUsers(){
-      const base = [
-        {name:'RTS-GLOBAL',username:'RTS-GLOBAL',pass:'Rts@Global25',level:2,market:'All',dept:'',title:'Regional Training Specialist',active:true},
-        {name:'TC-UAE',username:'TC-UAE',pass:'Tc@UAE25',level:3,market:'UAE',dept:'',title:'Training Coordinator · UAE',active:true},
-        {name:'TC-QTR',username:'TC-QTR',pass:'Tc@QTR25',level:3,market:'Qatar',dept:'',title:'Training Coordinator · Qatar',active:true},
-        {name:'HR-UAE',username:'HR-UAE',pass:'Hr@UAE25',level:4,market:'UAE',dept:'HR_Status',title:'HR Officer · UAE',active:true},
-        {name:'TR-QUAL-UAE',username:'TR-QUAL-UAE',pass:'Tr@qual@UAE',level:4,market:'UAE',dept:'Quality_Status',title:'Quality Trainer · UAE',active:true},
-        {name:'DM-UAE',username:'DM-UAE',pass:'Dm@UAE25',level:4,market:'UAE',dept:'DEPT_MANAGER',title:'Department Manager · UAE',active:true},
-        ...this.l1Users
-      ];
+      // Hardcoded base users — apply status overrides from l1Overrides
+      const hardcoded = [
+        {name:'RTS-GLOBAL',username:'RTS-GLOBAL',pass:'Rts@Global25',level:2,market:'All',dept:'',title:'Regional Training Specialist'},
+        {name:'TC-UAE',username:'TC-UAE',pass:'Tc@UAE25',level:3,market:'UAE',dept:'',title:'Training Coordinator · UAE'},
+        {name:'TC-QTR',username:'TC-QTR',pass:'Tc@QTR25',level:3,market:'Qatar',dept:'',title:'Training Coordinator · Qatar'},
+        {name:'HR-UAE',username:'HR-UAE',pass:'Hr@UAE25',level:4,market:'UAE',dept:'HR_Status',title:'HR Officer · UAE'},
+        {name:'TR-QUAL-UAE',username:'TR-QUAL-UAE',pass:'Tr@qual@UAE',level:4,market:'UAE',dept:'Quality_Status',title:'Quality Trainer · UAE'},
+        {name:'DM-UAE',username:'DM-UAE',pass:'Dm@UAE25',level:4,market:'UAE',dept:'DEPT_MANAGER',title:'Department Manager · UAE'},
+      ].map(u=>({...u, active: this.l1Overrides[u.username]?.active !== undefined ? this.l1Overrides[u.username].active : true,
+                       pass:   this.l1Overrides[u.username]?.pass   || u.pass,
+                       _dynamic: false}));
+      // Dynamic users — added via System Admin
+      const dynamic = this.l1Users.map(u=>({...u, _dynamic:true}));
+      const base = [...hardcoded, ...dynamic];
       const t = this.l1AdminTab;
       if(t==='all') return base;
       if(t==='2')    return base.filter(u=>u.level===2);
@@ -4208,6 +4114,39 @@ function app(){
       return base;
     },
     l1SaveUsers(){ try{localStorage.setItem('calo_l1_users',JSON.stringify(this.l1Users));}catch(e){} },
+    l1SaveOverrides(){ try{localStorage.setItem('calo_l1_overrides',JSON.stringify(this.l1Overrides));}catch(e){} },
+    l1LoadOverrides(){ try{const d=localStorage.getItem('calo_l1_overrides');if(d)this.l1Overrides=JSON.parse(d);}catch(e){} },
+    l1ToggleUser(u){
+      if(u._dynamic){
+        // Dynamic user — toggle in l1Users array
+        const idx = this.l1Users.findIndex(x=>x.username===u.username);
+        if(idx>=0){ this.l1Users[idx].active = this.l1Users[idx].active===false?true:false; this.l1SaveUsers(); }
+      } else {
+        // Hardcoded user — store override
+        if(!this.l1Overrides[u.username]) this.l1Overrides[u.username]={};
+        this.l1Overrides[u.username].active = u.active!==false?false:true;
+        this.l1SaveOverrides();
+      }
+      this.l1AuditLog.push({type:'info',action:u.active!==false?'User Deactivated':'User Activated',detail:u.username,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      this.l1SaveAudit();
+    },
+    l1ResetPassword(u){
+      const newPass = prompt('Enter new password for '+u.username+':');
+      if(!newPass||newPass.trim()==='') return;
+      const idx = this.l1Users.findIndex(x=>x.username===u.username);
+      if(idx>=0){ this.l1Users[idx].pass = newPass.trim(); this.l1SaveUsers(); }
+      this.l1AuditLog.push({type:'info',action:'Password Reset',detail:u.username,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      this.l1SaveAudit();
+      alert('Password updated for '+u.username+'. Redeploy Code.gs if this user was synced to the sheet.');
+    },
+    l1DeleteUser(u,ui){
+      if(!u._dynamic){ alert('Hardcoded system users cannot be deleted. Use Deactivate instead.'); return; }
+      if(!confirm('Permanently delete '+u.username+'? This cannot be undone.')) return;
+      const idx = this.l1Users.findIndex(x=>x.username===u.username);
+      if(idx>=0){ this.l1Users.splice(idx,1); this.l1SaveUsers(); }
+      this.l1AuditLog.push({type:'remove',action:'User Deleted',detail:u.username+' · L'+u.level+' · '+u.market,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      this.l1SaveAudit();
+    },
     l1LoadUsers(){ try{const d=localStorage.getItem('calo_l1_users');if(d)this.l1Users=JSON.parse(d);}catch(e){} },
     l1SaveNewUser(){
       if(!this.l1NewUser.name||!this.l1NewUser.username||!this.l1NewUser.pass)return;
@@ -4252,111 +4191,6 @@ function app(){
     saveSlaRules(){ try{localStorage.setItem('calo_sla',JSON.stringify(this.slaRules));alert('SLA rules saved.');}catch(e){} },
     loadSlaRules(){ try{const d=localStorage.getItem('calo_sla');if(d)this.slaRules=JSON.parse(d);}catch(e){} },
     // ── END L1 EXECUTIVE METHODS ──────────────────────────────────
-
-    // ── NEW METHODS FOR UPGRADES ──────────────────────────────────
-
-    // MOD 2: HR photo upload from file
-    hrUploadPhoto(e){
-      const f=e.target.files[0];
-      if(!f)return;
-      const r=new FileReader();
-      r.onloadend=()=>{ this.hrNH.imageFile=r.result; this.hrNH.imageUrl=''; };
-      r.readAsDataURL(f);
-    },
-
-    // MOD 4: Quality sign-off with dept selection
-    qualSignOffOpen(e){
-      this.qualSignOffEmp=e;
-      this.qualSignOffDept=e.jdept||'';
-      this.qualSignOffModal=true;
-    },
-    qualSignOffConfirm(){
-      const e=this.qualSignOffEmp;
-      if(!e||!this.qualSignOffDept)return;
-      if(!confirm('Sign off '+e.name+' from Quality and assign to '+this.qualSignOffDept+' Department Manager?'))return;
-      if(e.qual){e.qual.done=e.qual.total;}
-      // Store assigned dept on candidate
-      const idx=this.emps.findIndex(x=>x.row===e.row);
-      if(idx>=0){this.emps[idx].ojt_dept=this.qualSignOffDept;this.emps[idx].jdept=this.qualSignOffDept;}
-      this.dofl('Quality Signed Off!',e.image,e.name,'Moved to '+this.qualSignOffDept+' OJT · '+e.country,e.country);
-      this.l1AuditLog.push({type:'signoff',action:'Quality Sign-Off',detail:e.name+' → '+this.qualSignOffDept+' OJT · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});
-      this.l1SaveAudit();
-      const tasks=(e.qual&&e.qual.items||[]).map(m=>m.name+'|'+(m.link||'#')+'|1').join(';;');
-      this.gas('saveFullUpdate',{row:e.row,colLabel:'Quality_Status',taskStr:tasks||'Complete|#|1',trainer:{}})
-        .then(()=>this.fetchAll()).catch(()=>this.fetchAll());
-      this.qualSignOffModal=false;
-      this.qualSignOffEmp=null;
-      this.qualSignOffDept='';
-    },
-
-    // MOD 1B: L3 bulk CSV upload
-    tcReadCSV(event){
-      const f=event.target.files[0];
-      if(!f)return;
-      const r=new FileReader();
-      r.onloadend=()=>{
-        const lines=r.result.split('\n').filter(l=>l.trim());
-        this.tcBulkPreview=[];
-        for(let i=1;i<lines.length;i++){
-          const cols=lines[i].split(',').map(s=>s.trim());
-          if(cols.length>=6&&cols[0]){
-            this.tcBulkPreview.push({
-              name:cols[0],role:cols[1]||'Trainer',stage:cols[2]||'hr_group',
-              dept:cols[3]||'',username:cols[4].toUpperCase(),password:cols[5],
-              photo:cols[6]||'',active:true,showPass:false
-            });
-          }
-        }
-      };
-      r.readAsText(f);
-    },
-    tcImportBulk(){
-      this.tcBulkPreview.forEach(t=>{
-        this.tcTrainers.push(Object.assign({},t));
-        this.gas('addDynamicUser',{user:{
-          username:t.username,pass:t.password,name:t.name,
-          level:4,market:this.mmarket,
-          dept:t.stage==='hr_group'?'HR_Status':t.stage==='dm_group'?'DEPT_MANAGER':t.stage==='Quality Std.'?'Quality_Status':t.stage,
-          title:(t.role||t.stage)+' · '+this.mmarket
-        }}).catch(e=>console.warn('Sheet sync failed:',e));
-      });
-      this.tcSaveTrainers();
-      const count=this.tcBulkPreview.length;
-      this.tcBulkPreview=[];
-      this.tcBulkUploadOpen=false;
-      this.dofl(count+' Trainers Added!','','Bulk import complete · '+this.mmarket,'',this.mmarket);
-    },
-
-    // MOD 1B: L3 admin — delete + reset password
-    tcDeleteTrainer(i){
-      if(!confirm('Delete '+this.tcTrainers[i].name+'? This cannot be undone.'))return;
-      this.tcTrainers.splice(i,1);
-      this.tcSaveTrainers();
-    },
-    tcResetPassword(i){
-      const newPass=prompt('New password for '+this.tcTrainers[i].username+':');
-      if(!newPass||!newPass.trim())return;
-      this.tcTrainers[i].password=newPass.trim();
-      this.tcSaveTrainers();
-      alert('Password updated. Redeploy Code.gs if trainer was synced to sheet.');
-    },
-
-    // MOD 5: Trainer dashboard methods
-    trainerEmps(){
-      return this.emps.filter(e=>{
-        const mok=e.country===this.mmarket;
-        const tok=!this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
-        return mok&&tok;
-      });
-    },
-    trainerActiveCount(e){
-      return this.stages.filter(s=>e[s.k]&&e[s.k].done>0&&e[s.k].done<e[s.k].total).length;
-    },
-    trainerAllDone(e){
-      return this.stages.every(s=>!e[s.k]||e[s.k].done===e[s.k].total);
-    },
-
-    // ── END NEW METHODS ───────────────────────────────────────────
     // ── L2 REGIONAL TRAINING SPECIALIST METHODS ──────────────────
     rtsFiltered(){
       let l = this.emps.filter(e=>{
@@ -4467,12 +4301,10 @@ function app(){
         // Write to Google Sheet so trainer can log in (new trainers only, not edits)
         // Map stage to dept column
         const deptMap = {
-          'hr_group':'HR_Status','dm_group':'DEPT_MANAGER',
           'Pre-Boarding':'HR_Status','Orientation':'HR_Status','HR Compliance':'HR_Status',
-          'Quality Std.':'Quality_Status','OJT Training':'OJTTraining_Status',
+          'Quality Std':'Quality_Status','OJT Training':'OJTTraining_Status',
           'Pre-Floor Assessment':'Assessment_Status','Floor Ready Certification':'Certification_Status'
         };
-        const stageTitle = this.tcNewTrainer.stage==='hr_group'?'HR Trainer':this.tcNewTrainer.stage==='dm_group'?'Dept Manager Trainer':this.tcNewTrainer.stage+' Trainer';
         this.gas('addDynamicUser',{user:{
           username: this.tcNewTrainer.username.toUpperCase(),
           pass:     this.tcNewTrainer.password,
@@ -4480,7 +4312,7 @@ function app(){
           level:    4,
           market:   this.mmarket,
           dept:     deptMap[this.tcNewTrainer.stage]||this.tcNewTrainer.stage,
-          title:    stageTitle+' · '+this.mmarket
+          title:    this.tcNewTrainer.stage+' Trainer · '+this.mmarket
         }}).catch(e=>console.warn('Sheet sync failed:',e));
       }
       this.tcSaveTrainers();
@@ -4638,9 +4470,7 @@ function app(){
         name:     this.hrNH.n.toUpperCase().trim(),
         role:     this.hrNH.d.trim(),
         country:  this.hrNH.c||this.mmarket,
-        image:    this.hrNH.imageFile||this.hrNH.imageUrl||'',
-        jdept:    this.hrNH.jdept||'',
-        jsection: this.hrNH.jsection||'',
+        image:    '',
         priority: 'normal',
         notes:    '',
         month:    dt.getMonth(),
@@ -4663,7 +4493,7 @@ function app(){
       // Reset form for next entry — keep country and stage
       const prevC = this.hrNH.c;
       const prevS = this.hrNH.stage;
-      this.hrNH = {n:'', d:'', c:prevC, dt:'', stage:prevS, jdept:'', jsection:'', imageFile:'', imageUrl:''};
+      this.hrNH = {n:'', d:'', c:prevC, dt:'', stage:prevS};
 
       // Sync to backend in background
       this.gas('addNewEmployee', {
@@ -4838,8 +4668,6 @@ function app(){
       this.se=e;this.as=s;
       this.mods=JSON.parse(JSON.stringify(e[s.k].items||[]));
       this.at=JSON.parse(JSON.stringify(e.trainers?.[s.k]||{name:'',img:''}));
-      this.trainerNote = e.trainerNotes&&e.trainerNotes[s.k] ? e.trainerNotes[s.k].text : '';
-      this.stageDate   = e.stageDates&&e.stageDates[s.k] ? e.stageDates[s.k] : '';
       this.stpl='';this.sm_=true;
     },
     md(){return this.mods.filter(m=>m.done).length;},
@@ -4850,14 +4678,6 @@ function app(){
     save_(){
       this.sv=true;
       const str=this.mods.map(m=>`${m.name}|${m.link||'#'}|${m.done?'1':'0'}`).join(';;');
-      // Save trainer note and stage date to employee record
-      if(!this.se.trainerNotes) this.se.trainerNotes={};
-      if(!this.se.stageDates) this.se.stageDates={};
-      if(this.trainerNote) this.se.trainerNotes[this.as.k] = {text:this.trainerNote, by:this.mname, date:this.stageDate||new Date().toLocaleDateString()};
-      if(this.stageDate)   this.se.stageDates[this.as.k]   = this.stageDate;
-      // Update in emps array
-      const idx = this.emps.findIndex(e=>e.row===this.se.row);
-      if(idx>=0){ this.emps[idx].trainerNotes = this.se.trainerNotes; this.emps[idx].stageDates = this.se.stageDates; }
       this.gas('saveFullUpdate',{row:this.se.row,colLabel:this.as.col,taskStr:str,trainer:this.at})
         .then(()=>{
           this.sv=false;this.sm_=false;this.fetchAll();
@@ -4917,5 +4737,23 @@ function app(){
   };
 }
 </script>
+
+<script>
+// PWA Service Worker Registration
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('/sw.js')
+      .then(r=>console.log('SW registered'))
+      .catch(e=>console.log('SW failed:', e));
+  });
+}
+// Add to home screen prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  deferredPrompt = e;
+});
+</script>
+
 </body>
 </html>
