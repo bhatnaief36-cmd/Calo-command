@@ -7,11 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Calo HQ">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="application-name" content="Calo HQ">
 <link rel="manifest" href="/manifest.json">
-<!-- Apple touch icons -->
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2300C07F'/><text y='.9em' font-size='72' x='12'>🏔</text></svg>">
-
 <title>Calo — Onboarding Command</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.3.0/alpine.js" defer></script>
@@ -207,132 +203,56 @@ textarea.field{resize:none}
 
 
 
-/* ═══════════════════════════════════════════════════════════════
-   MOBILE RESPONSIVE v2 — PWA / Add to Home Screen
-   All rules below are ADDITIVE only — no existing styles changed
-   ══════════════════════════════════════════════════════════════ */
-
-/* Mobile nav toggle button — hidden on desktop */
+/* ═══ MOBILE RESPONSIVE ═══════════════════════════════════════ */
 .mob-nav-toggle{display:none;position:fixed;bottom:20px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--green);color:#fff;border:none;cursor:pointer;z-index:999;box-shadow:0 4px 16px rgba(0,192,127,.4);align-items:center;justify-content:center;font-size:22px;transition:all .2s}
 .mob-nav-toggle:active{transform:scale(.95)}
 @media(max-width:768px){#mob-close{display:flex!important}}
-/* KPI 3-tile row — last child spans full width on mobile when orphaned */
-@media(max-width:768px){
-  .kpi-row-3{grid-template-columns:repeat(2,1fr)!important}
-  .kpi-row-3 .kpi-tile:last-child:nth-child(odd){grid-column:1/-1}
-}
-
-/* Mobile overlay backdrop */
+@media(max-width:768px){.kpi-row-3{grid-template-columns:repeat(2,1fr)!important}.kpi-row-3 .kpi-tile:last-child:nth-child(odd){grid-column:1/-1}}
 .mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:899;backdrop-filter:blur(2px)}
 
 @media (max-width: 768px) {
-
   html,body{height:100%;height:100dvh}
   .app-shell{flex-direction:column;height:100dvh;overflow:hidden}
-
-  /* Sidebar — hidden off-screen, slides in */
-  .sidebar{
-    position:fixed!important;top:0;left:-100%;
-    width:80vw!important;max-width:300px!important;
-    height:100dvh!important;z-index:900;
-    transition:left .25s cubic-bezier(.4,0,.2,1);
-    box-shadow:none;overflow-y:auto!important;overflow-x:hidden;
-  }
+  .sidebar{position:fixed!important;top:0;left:-100%;width:80vw!important;max-width:300px!important;height:100dvh!important;z-index:900;transition:left .25s cubic-bezier(.4,0,.2,1);box-shadow:none;overflow-y:auto!important;overflow-x:hidden}
   .sidebar.mob-open{left:0!important;box-shadow:4px 0 24px rgba(0,0,0,.2)}
   .mob-overlay.mob-open{display:block}
-
-  /* Topbar */
   .topbar{padding:0 12px!important;height:52px!important;flex-shrink:0;position:sticky;top:0;z-index:100}
   .search-box{width:110px!important;font-size:12px!important}
-
-  /* Main area */
   .main-area{flex:1!important;height:calc(100dvh - 52px)!important;overflow-y:auto!important;overflow-x:hidden;-webkit-overflow-scrolling:touch}
   .page-wrap{padding:12px 10px!important}
-
-  /* Command bar — stack on mobile */
-  .cmd-bar{
-    flex-direction:column!important;align-items:flex-start!important;
-    gap:10px!important;padding:14px 12px!important;
-    margin:-12px -10px 14px!important;
-  }
-  /* Stats row in cmd-bar */
-  .cmd-bar > div:nth-child(2){
-    display:flex!important;flex-wrap:wrap!important;
-    gap:0!important;width:100%!important;
-    border-top:1px solid rgba(255,255,255,.15);
-    padding-top:10px!important;
-  }
-  .cmd-stat{
-    padding:6px 10px!important;flex:1 1 auto!important;
-    min-width:60px!important;text-align:center;
-  }
-  /* Buttons in cmd-bar */
-  .cmd-bar > div:nth-child(2) > button,
-  .cmd-bar > div:nth-child(2) > div:last-child{
-    width:100%!important;margin-top:8px;
-  }
-
-  /* KPI tiles — 2 columns */
+  .cmd-bar{flex-direction:column!important;align-items:flex-start!important;gap:10px!important;padding:14px 12px!important;margin:-12px -10px 14px!important}
+  .cmd-bar > div:nth-child(2){display:flex!important;flex-wrap:wrap!important;gap:0!important;width:100%!important;border-top:1px solid rgba(255,255,255,.15);padding-top:10px!important}
+  .cmd-stat{padding:6px 10px!important;flex:1 1 auto!important;min-width:60px!important;text-align:center}
   .kpi-tile{padding:12px 10px!important}
   .kpi-num{font-size:26px!important}
   .kpi-label{font-size:9px!important}
   .kpi-sub{font-size:10px!important}
   .kpi-drill{font-size:9px!important}
-
-  /* Override ALL grid layouts to 2 columns */
   div[style*="grid-template-columns:repeat(3"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
   div[style*="grid-template-columns:repeat(4"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
   div[style*="grid-template-columns:repeat(5"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
   div[style*="grid-template-columns:repeat(6"]{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
   div[style*="grid-template-columns:repeat(7"]{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
-
-  /* Two-panel layouts — stack */
-  div[style*="grid-template-columns:1fr 360px"],
-  div[style*="grid-template-columns:1fr 340px"],
-  div[style*="grid-template-columns:2fr 1fr"],
-  div[style*="grid-template-columns:1fr 1fr"]{
-    grid-template-columns:1fr!important;gap:10px!important
-  }
-
-  /* Pipeline cards — 1 column */
+  div[style*="grid-template-columns:1fr 360px"],div[style*="grid-template-columns:1fr 340px"],div[style*="grid-template-columns:2fr 1fr"],div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important;gap:10px!important}
   .cg{grid-template-columns:1fr!important;gap:10px!important}
   .emp-card{padding:12px!important}
-
-  /* Buttons — bigger touch targets */
   .btn{min-height:42px;padding:8px 14px;font-size:12px!important}
   .btn-sm{min-height:38px;padding:6px 12px;font-size:11px!important}
-  .btn-xs{min-height:32px;padding:4px 10px}
-
-  /* Modals — slide up from bottom */
   .overlay{align-items:flex-end!important;padding:0!important}
   .modal{border-radius:var(--r16) var(--r16) 0 0!important;max-height:92dvh!important}
-
-  /* Tables — scroll horizontally */
   table{min-width:480px}
   .card{overflow-x:auto}
-
-  /* Stage ladder compact */
   .stg{padding:4px 6px!important}
-
-  /* Logo */
   .logo{font-size:20px!important}
   .logo-sub{display:none}
-
-  /* Show hamburger */
   .mob-nav-toggle{display:flex!important}
-
-  /* Hide less critical topbar items */
-  .topbar span[style*="toLocaleDateString"]{display:none!important}
 }
-
 @media (max-width: 400px) {
   .search-box{width:90px!important}
   .cmd-stat{min-width:50px!important;padding:4px 6px!important}
   div[style*="grid-template-columns:repeat(2"]{grid-template-columns:1fr!important}
 }
-/* ═══════════════════════════════════════════════════════════════
-   END MOBILE RESPONSIVE v2
-   ══════════════════════════════════════════════════════════════ */
+/* ═══ END MOBILE RESPONSIVE ════════════════════════════════════ */
 </style>
 </head>
 <body x-data="app()" x-init="init()">
@@ -386,9 +306,7 @@ textarea.field{resize:none}
         <div class="logo">CALO</div>
         <div class="logo-sub">Onboarding Command</div>
       </div>
-      <button onclick="document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')"
-        style="background:none;border:1px solid var(--w3);border-radius:var(--r8);width:32px;height:32px;cursor:pointer;font-size:18px;color:var(--w5);display:none;align-items:center;justify-content:center;flex-shrink:0"
-        id="mob-close">✕</button>
+      <button id="mob-close" onclick="document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')" style="background:none;border:1px solid var(--w3);border-radius:var(--r8);width:32px;height:32px;cursor:pointer;font-size:18px;color:var(--w5);display:none;align-items:center;justify-content:center;flex-shrink:0">✕</button>
     </div>
 
     <div style="padding:12px 14px;border-bottom:1px solid var(--w3);background:var(--w2)">
@@ -523,6 +441,11 @@ textarea.field{resize:none}
         <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_reports'?'on':''" @click="v='tc_reports'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           Reports
+        </div>
+        <div class="nav-group-label" style="margin-top:8px">Admin</div>
+        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_admin'?'on':''" @click="v='tc_admin'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><line x1="19" y1="8" x2="23" y2="8"/><line x1="21" y1="6" x2="21" y2="10"/></svg>
+          User Management
         </div>
       </div>
       <!-- ── END L3 NAVIGATION ───────────────────────────────────── -->
@@ -1275,45 +1198,29 @@ textarea.field{resize:none}
           <!-- User list -->
           <div style="display:flex;flex-direction:column;gap:8px">
             <template x-for="(u,ui) in l1FilteredUsers()">
-              <div class="card" style="padding:14px" :style="u.active===false?'opacity:.6':''">
-                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-                  <!-- Level badge -->
+              <div class="card" style="padding:14px" :style="!u.active?'opacity:.55':''">
+                <div style="display:flex;align-items:center;gap:14px">
                   <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:900;color:#fff"
                     :style="'background:'+(u.level===2?'#3B82F6':u.level===3?'#A78BFA':u.dept==='HR_Status'?'#F97316':u.dept==='Quality_Status'?'var(--green)':'var(--warn)')">
                     <span x-text="'L'+u.level"></span>
                   </div>
-                  <!-- Name + title -->
                   <div style="flex:1;min-width:0">
-                    <div style="display:flex;align-items:center;gap:6px">
-                      <span style="font-size:13px;font-weight:900" x-text="u.name"></span>
-                      <span x-show="u._dynamic" style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;background:rgba(59,130,246,.1);color:#3B82F6">DYNAMIC</span>
-                    </div>
-                    <div style="font-size:11px;color:var(--w5);margin-top:1px" x-text="u.title||'L'+u.level+' · '+u.market"></div>
+                    <div style="font-size:13px;font-weight:900" x-text="u.name"></div>
+                    <div style="font-size:11px;color:var(--w5)" x-text="u.title"></div>
                   </div>
-                  <!-- Market -->
-                  <div style="font-size:10px;background:var(--w2);padding:4px 10px;border-radius:20px;font-family:monospace;flex-shrink:0" x-text="u.market"></div>
-                  <!-- Credentials -->
-                  <div style="text-align:right;min-width:130px;flex-shrink:0">
+                  <div style="font-size:10px;background:var(--w2);padding:4px 10px;border-radius:20px;font-family:monospace" x-text="u.market"></div>
+                  <div style="text-align:right;min-width:120px">
                     <div style="font-size:12px;font-weight:700;font-family:monospace;color:var(--ch)" x-text="u.username"></div>
-                    <div style="font-size:11px;font-family:monospace;color:var(--w5);cursor:pointer;margin-top:2px" @click="u.showPass=!u.showPass" x-text="u.showPass?u.pass:'Click to reveal'"></div>
+                    <div style="font-size:11px;font-family:monospace;color:var(--w5);cursor:pointer;margin-top:2px" @click="u.showPass=!u.showPass" x-text="u.showPass?u.pass:'••••••••'"></div>
                   </div>
-                  <!-- Status dot -->
-                  <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+                  <div style="display:flex;align-items:center;gap:4px">
                     <div style="width:8px;height:8px;border-radius:50%" :style="u.active!==false?'background:var(--green)':'background:var(--w4)'"></div>
                     <span style="font-size:10px;font-weight:700" :style="u.active!==false?'color:var(--green)':'color:var(--w5)'" x-text="u.active!==false?'Active':'Inactive'"></span>
                   </div>
-                  <!-- Action buttons -->
-                  <div style="display:flex;gap:6px;flex-shrink:0">
-                    <!-- Deactivate / Activate — works for both hardcoded and dynamic -->
-                    <button @click="l1ToggleUser(u)" class="btn btn-ghost btn-sm"
-                      :style="u.active!==false?'color:var(--danger)':'color:var(--green)'"
-                      x-text="u.active!==false?'Deactivate':'Activate'">
-                    </button>
-                    <!-- Reset Password — only dynamic users -->
-                    <button x-show="u._dynamic" @click="l1ResetPassword(u)" class="btn btn-ghost btn-sm" style="color:#3B82F6">Reset PW</button>
-                    <!-- Delete — only dynamic users -->
-                    <button x-show="u._dynamic" @click="l1DeleteUser(u,ui)" class="btn btn-ghost btn-sm" style="color:var(--danger)">Delete</button>
-                  </div>
+                  <button @click="u.active=u.active===false?true:false;l1SaveUsers()" class="btn btn-ghost btn-sm"
+                    :style="u.active!==false?'color:var(--danger)':'color:var(--green)'"
+                    x-text="u.active!==false?'Deactivate':'Activate'">
+                  </button>
                 </div>
               </div>
             </template>
@@ -2221,6 +2128,95 @@ textarea.field{resize:none}
         <!-- END L3 DASHBOARD -->
 
 
+
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- L3 — USER MANAGEMENT (Admin Rights for Coordinators)        -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <div x-show="v==='tc_admin' && mlevel===3">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">User Management</div>
+              <div class="psub" x-text="'Trainers in '+mmarket+' Mountain Peak'"></div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button @click="tcBulkOpen=true" class="btn btn-ghost btn-sm">📥 Bulk Upload CSV</button>
+              <button @click="tcAddTrainerForm=true;tcEditIdx=-1;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false}" class="btn btn-primary btn-sm">+ Add Trainer</button>
+            </div>
+          </div>
+
+          <!-- Trainer List with full admin controls -->
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+            <template x-for="(t,ti) in tcTrainers">
+              <div class="card" style="padding:14px" :style="!t.active?'opacity:.55':''">
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                  <img :src="t.photo||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);flex-shrink:0">
+                  <div style="flex:1;min-width:140px">
+                    <div style="font-size:13px;font-weight:900" x-text="t.name"></div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:1px" x-text="t.stage+' · '+t.dept"></div>
+                  </div>
+                  <div style="text-align:right;min-width:130px">
+                    <div style="font-size:12px;font-weight:700;font-family:monospace;color:var(--ch)" x-text="t.username"></div>
+                    <div style="font-size:11px;font-family:monospace;color:var(--w5);cursor:pointer;margin-top:2px" @click="t.showPass=!t.showPass" x-text="t.showPass?t.password:'Click to reveal'"></div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:4px">
+                    <div style="width:8px;height:8px;border-radius:50%" :style="t.active?'background:var(--green)':'background:var(--w4)'"></div>
+                    <span style="font-size:10px;font-weight:700" :style="t.active?'color:var(--green)':'color:var(--w5)'" x-text="t.active?'Active':'Inactive'"></span>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button @click="tcEditTrainer(ti)" class="btn btn-ghost btn-sm">Edit</button>
+                    <button @click="t.active=!t.active;tcSaveTrainers()" class="btn btn-ghost btn-sm" :style="t.active?'color:var(--danger)':'color:var(--green)'" x-text="t.active?'Deactivate':'Activate'"></button>
+                    <button @click="tcResetPW(ti)" class="btn btn-ghost btn-sm" style="color:var(--info)">Reset PW</button>
+                    <button @click="tcDeleteTrainer(ti)" class="btn btn-ghost btn-sm" style="color:var(--danger)">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </template>
+            <div x-show="tcTrainers.length===0" class="empty">
+              <div style="font-size:32px;margin-bottom:10px">👤</div>
+              <div style="font-weight:700">No trainers yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Add trainers using the button above or bulk upload CSV</div>
+            </div>
+          </div>
+
+          <!-- Bulk CSV Upload Modal -->
+          <div x-show="tcBulkOpen" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="tcBulkOpen?'display:flex':''">
+            <div class="card" style="width:100%;max-width:560px;padding:28px;border-radius:var(--r16)">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+                <div><div style="font-size:18px;font-weight:900">Bulk Upload Trainers</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Upload a CSV file with trainer details</div></div>
+                <button @click="tcBulkOpen=false;tcBulkPreview=[]" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+              </div>
+              <div style="background:var(--w2);border-radius:var(--r8);padding:14px;margin-bottom:16px">
+                <div style="font-size:11px;font-weight:700;color:var(--w6);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Required CSV Format</div>
+                <div style="font-family:monospace;font-size:11px;color:var(--ch);background:var(--w1);padding:10px;border-radius:var(--r4);border:1px solid var(--w3);overflow-x:auto;white-space:nowrap">name,stage,department,username,password,photo_url</div>
+                <div style="font-size:10px;color:var(--w5);margin-top:8px">Stage values: use the exact stage label from your trainer form (e.g. Pre-Boarding, Quality Std., OJT Training)</div>
+                <div style="font-size:10px;color:var(--w5);margin-top:4px">Example: Ahmed Ali,Pre-Boarding,Kitchen,TR-KIT-UAE,Tr@kit@UAE,</div>
+              </div>
+              <div style="margin-bottom:16px">
+                <div class="f-label" style="margin-bottom:6px">Upload CSV File</div>
+                <input type="file" accept=".csv" @change="tcReadCSV($event)" class="field" style="padding:6px">
+              </div>
+              <div x-show="tcBulkPreview.length>0" style="margin-bottom:16px">
+                <div style="font-size:11px;font-weight:700;color:var(--w6);margin-bottom:8px" x-text="tcBulkPreview.length+' trainers ready to import'"></div>
+                <div style="max-height:160px;overflow-y:auto;border:1px solid var(--w3);border-radius:var(--r8);padding:8px">
+                  <template x-for="(r,ri) in tcBulkPreview">
+                    <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--w3)">
+                      <span style="font-size:10px;color:var(--w5);min-width:20px" x-text="ri+1+'.'"></span>
+                      <span style="font-size:11px;font-weight:700" x-text="r.name"></span>
+                      <span style="font-size:10px;color:var(--w5)" x-text="r.stage+' · '+r.dept"></span>
+                      <span style="font-size:10px;font-family:monospace;color:var(--ch);margin-left:auto" x-text="r.username"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button @click="tcBulkOpen=false;tcBulkPreview=[]" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                <button @click="tcImportBulk()" :disabled="tcBulkPreview.length===0" class="btn btn-primary" style="flex:1;justify-content:center">Import <span x-text="tcBulkPreview.length"></span> Trainers</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END L3 USER MANAGEMENT -->
+
         <!-- L3 PIPELINE — all candidates, all 7 stages -->
         <div x-show="v==='tc_pipe' && mlevel===3">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
@@ -3026,7 +3022,7 @@ textarea.field{resize:none}
           </div>
 
           <!-- HR KPI TILES — 6 tiles -->
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px" class="kpi-row-3">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
             <div class="kpi-tile" style="--tile-accent:var(--ch);cursor:pointer" @click="v='hr_pipe'">
               <div class="kpi-label">👥 Candidate Progress</div>
               <div class="kpi-num" style="color:var(--ch)" x-text="hrEmps().length"></div>
@@ -3878,13 +3874,13 @@ function app(){
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
-    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1Overrides:{},
+    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
     rtsCoordinators:[],rtsNewCoord:{name:'',mp:'',username:'',password:'',active:true,showPass:false},rtsCoordForm:false,
     rtsMPs:[{name:'UAE',flag:'🇦🇪'},{name:'Qatar',flag:'🇶🇦'},{name:'Kuwait',flag:'🇰🇼'},{name:'Bahrain',flag:'🇧🇭'},{name:'Riyadh',flag:'🇸🇦'},{name:'Jeddah',flag:'🇸🇦'},{name:'Oman',flag:'🇴🇲'},{name:'UK',flag:'🇬🇧'}],rtsNewMP:{name:'',flag:''},rtsMPForm:false,
-    rtsDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],rtsNewDept:{name:'',icon:''},rtsDeptForm:false,tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all'},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
+    rtsDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],rtsNewDept:{name:'',icon:''},rtsDeptForm:false,tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all'},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,tcBulkOpen:false,tcBulkPreview:[],qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
     emps:[],tpls:[],
     branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
     flags:{
@@ -3990,11 +3986,11 @@ function app(){
             this.saveSession(r);
             this.loggedIn=true;
             this.loadMaterials();
-            if(r.level===1){this.l1LoadUsers();this.l1LoadOverrides();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
             this.l1LoadAnnouncements(); // All levels load announcements
           if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
-            if(r.level===1){this.l1LoadUsers();this.l1LoadOverrides();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
+            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
             this.l1LoadAnnouncements(); // All levels load announcements
           if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
@@ -4090,20 +4086,15 @@ function app(){
 
     // ── L1 EXECUTIVE METHODS ──────────────────────────────────────
     l1FilteredUsers(){
-      // Hardcoded base users — apply status overrides from l1Overrides
-      const hardcoded = [
-        {name:'RTS-GLOBAL',username:'RTS-GLOBAL',pass:'Rts@Global25',level:2,market:'All',dept:'',title:'Regional Training Specialist'},
-        {name:'TC-UAE',username:'TC-UAE',pass:'Tc@UAE25',level:3,market:'UAE',dept:'',title:'Training Coordinator · UAE'},
-        {name:'TC-QTR',username:'TC-QTR',pass:'Tc@QTR25',level:3,market:'Qatar',dept:'',title:'Training Coordinator · Qatar'},
-        {name:'HR-UAE',username:'HR-UAE',pass:'Hr@UAE25',level:4,market:'UAE',dept:'HR_Status',title:'HR Officer · UAE'},
-        {name:'TR-QUAL-UAE',username:'TR-QUAL-UAE',pass:'Tr@qual@UAE',level:4,market:'UAE',dept:'Quality_Status',title:'Quality Trainer · UAE'},
-        {name:'DM-UAE',username:'DM-UAE',pass:'Dm@UAE25',level:4,market:'UAE',dept:'DEPT_MANAGER',title:'Department Manager · UAE'},
-      ].map(u=>({...u, active: this.l1Overrides[u.username]?.active !== undefined ? this.l1Overrides[u.username].active : true,
-                       pass:   this.l1Overrides[u.username]?.pass   || u.pass,
-                       _dynamic: false}));
-      // Dynamic users — added via System Admin
-      const dynamic = this.l1Users.map(u=>({...u, _dynamic:true}));
-      const base = [...hardcoded, ...dynamic];
+      const base = [
+        {name:'RTS-GLOBAL',username:'RTS-GLOBAL',pass:'Rts@Global25',level:2,market:'All',dept:'',title:'Regional Training Specialist',active:true},
+        {name:'TC-UAE',username:'TC-UAE',pass:'Tc@UAE25',level:3,market:'UAE',dept:'',title:'Training Coordinator · UAE',active:true},
+        {name:'TC-QTR',username:'TC-QTR',pass:'Tc@QTR25',level:3,market:'Qatar',dept:'',title:'Training Coordinator · Qatar',active:true},
+        {name:'HR-UAE',username:'HR-UAE',pass:'Hr@UAE25',level:4,market:'UAE',dept:'HR_Status',title:'HR Officer · UAE',active:true},
+        {name:'TR-QUAL-UAE',username:'TR-QUAL-UAE',pass:'Tr@qual@UAE',level:4,market:'UAE',dept:'Quality_Status',title:'Quality Trainer · UAE',active:true},
+        {name:'DM-UAE',username:'DM-UAE',pass:'Dm@UAE25',level:4,market:'UAE',dept:'DEPT_MANAGER',title:'Department Manager · UAE',active:true},
+        ...this.l1Users
+      ];
       const t = this.l1AdminTab;
       if(t==='all') return base;
       if(t==='2')    return base.filter(u=>u.level===2);
@@ -4114,39 +4105,6 @@ function app(){
       return base;
     },
     l1SaveUsers(){ try{localStorage.setItem('calo_l1_users',JSON.stringify(this.l1Users));}catch(e){} },
-    l1SaveOverrides(){ try{localStorage.setItem('calo_l1_overrides',JSON.stringify(this.l1Overrides));}catch(e){} },
-    l1LoadOverrides(){ try{const d=localStorage.getItem('calo_l1_overrides');if(d)this.l1Overrides=JSON.parse(d);}catch(e){} },
-    l1ToggleUser(u){
-      if(u._dynamic){
-        // Dynamic user — toggle in l1Users array
-        const idx = this.l1Users.findIndex(x=>x.username===u.username);
-        if(idx>=0){ this.l1Users[idx].active = this.l1Users[idx].active===false?true:false; this.l1SaveUsers(); }
-      } else {
-        // Hardcoded user — store override
-        if(!this.l1Overrides[u.username]) this.l1Overrides[u.username]={};
-        this.l1Overrides[u.username].active = u.active!==false?false:true;
-        this.l1SaveOverrides();
-      }
-      this.l1AuditLog.push({type:'info',action:u.active!==false?'User Deactivated':'User Activated',detail:u.username,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
-      this.l1SaveAudit();
-    },
-    l1ResetPassword(u){
-      const newPass = prompt('Enter new password for '+u.username+':');
-      if(!newPass||newPass.trim()==='') return;
-      const idx = this.l1Users.findIndex(x=>x.username===u.username);
-      if(idx>=0){ this.l1Users[idx].pass = newPass.trim(); this.l1SaveUsers(); }
-      this.l1AuditLog.push({type:'info',action:'Password Reset',detail:u.username,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
-      this.l1SaveAudit();
-      alert('Password updated for '+u.username+'. Redeploy Code.gs if this user was synced to the sheet.');
-    },
-    l1DeleteUser(u,ui){
-      if(!u._dynamic){ alert('Hardcoded system users cannot be deleted. Use Deactivate instead.'); return; }
-      if(!confirm('Permanently delete '+u.username+'? This cannot be undone.')) return;
-      const idx = this.l1Users.findIndex(x=>x.username===u.username);
-      if(idx>=0){ this.l1Users.splice(idx,1); this.l1SaveUsers(); }
-      this.l1AuditLog.push({type:'remove',action:'User Deleted',detail:u.username+' · L'+u.level+' · '+u.market,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
-      this.l1SaveAudit();
-    },
     l1LoadUsers(){ try{const d=localStorage.getItem('calo_l1_users');if(d)this.l1Users=JSON.parse(d);}catch(e){} },
     l1SaveNewUser(){
       if(!this.l1NewUser.name||!this.l1NewUser.username||!this.l1NewUser.pass)return;
@@ -4351,6 +4309,56 @@ function app(){
         if(d) this.tcMaterials = JSON.parse(d);
       } catch(e){}
     },
+
+    // ── L3 ADMIN METHODS (Mod 1) ──────────────────────────────────
+    tcDeleteTrainer(i){
+      if(!confirm('Delete '+this.tcTrainers[i].name+'? This cannot be undone.'))return;
+      this.tcTrainers.splice(i,1);
+      this.tcSaveTrainers();
+    },
+    tcResetPW(i){
+      const newPass=prompt('New password for '+this.tcTrainers[i].username+':');
+      if(!newPass||!newPass.trim())return;
+      this.tcTrainers[i].password=newPass.trim();
+      this.tcSaveTrainers();
+      alert('Password updated for '+this.tcTrainers[i].username);
+    },
+    tcReadCSV(event){
+      const f=event.target.files[0];
+      if(!f)return;
+      const r=new FileReader();
+      r.onloadend=()=>{
+        const lines=r.result.split('\n').filter(l=>l.trim());
+        this.tcBulkPreview=[];
+        for(let i=1;i<lines.length;i++){
+          const cols=lines[i].split(',').map(s=>s.trim());
+          if(cols.length>=5&&cols[0]){
+            this.tcBulkPreview.push({
+              name:cols[0],stage:cols[1]||'',dept:cols[2]||'',
+              username:cols[3].toUpperCase(),password:cols[4],
+              photo:cols[5]||'',active:true,showPass:false
+            });
+          }
+        }
+      };
+      r.readAsText(f);
+    },
+    tcImportBulk(){
+      const deptMap={'Pre-Boarding':'HR_Status','Orientation':'HR_Status','HR Compliance':'HR_Status','Quality Std.':'Quality_Status','OJT Training':'OJTTraining_Status','Pre-Floor Assessment':'Assessment_Status','Floor Ready Certification':'Certification_Status'};
+      this.tcBulkPreview.forEach(t=>{
+        this.tcTrainers.push(Object.assign({},t));
+        this.gas('addDynamicUser',{user:{
+          username:t.username,pass:t.password,name:t.name,level:4,market:this.mmarket,
+          dept:deptMap[t.stage]||t.stage,title:t.stage+' Trainer · '+this.mmarket
+        }}).catch(e=>console.warn('Sheet sync failed:',e));
+      });
+      this.tcSaveTrainers();
+      const count=this.tcBulkPreview.length;
+      this.tcBulkPreview=[];
+      this.tcBulkOpen=false;
+      this.dofl(count+' Trainers Added!','','Bulk import complete',''+this.mmarket,this.mmarket);
+    },
+    // ── END L3 ADMIN METHODS ──────────────────────────────────────
     // ── END L3 METHODS ───────────────────────────────────────────
     // ── DEPARTMENT MANAGER METHODS ────────────────────────────────
     dmEmps(){
@@ -4739,20 +4747,13 @@ function app(){
 </script>
 
 <script>
-// PWA Service Worker Registration
 if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
+  window.addEventListener('load',()=>{
     navigator.serviceWorker.register('/sw.js')
       .then(r=>console.log('SW registered'))
-      .catch(e=>console.log('SW failed:', e));
+      .catch(e=>console.log('SW failed:',e));
   });
 }
-// Add to home screen prompt
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', e=>{
-  e.preventDefault();
-  deferredPrompt = e;
-});
 </script>
 
 </body>
