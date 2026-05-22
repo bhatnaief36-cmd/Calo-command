@@ -1340,47 +1340,78 @@ textarea.field{resize:none}
           <!-- Add User Modal -->
           <div x-show="l1AdminForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000" :style="l1AdminForm?'display:block':''">
             <div class="card" style="position:absolute;top:70px;right:24px;width:500px;max-width:calc(100vw - 48px);padding:28px;border-radius:var(--r16)">
+              <!-- Header -->
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-                <div><div style="font-size:18px;font-weight:900">Add System User</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Create access for any level</div></div>
-                <button @click="l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+                <div>
+                  <div style="font-size:18px;font-weight:900" x-text="l1CreatedUser?'User Created':'Add System User'"></div>
+                  <div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="l1CreatedUser?'Share login instructions below':'Create access for any level'"></div>
+                </div>
+                <button @click="l1AdminForm=false;l1CreatedUser=null;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
               </div>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Full Name *</div><input type="text" x-model="l1NewUser.name" class="field" placeholder="User name" style="width:100%;box-sizing:border-box"></div>
-                  <div><div class="f-label">Title</div><input type="text" x-model="l1NewUser.title" class="field" placeholder="e.g. HR Officer · UAE" style="width:100%;box-sizing:border-box"></div>
+
+              <!-- Form (hidden after creation) -->
+              <div x-show="!l1CreatedUser">
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div><div class="f-label">Full Name *</div><input type="text" x-model="l1NewUser.name" class="field" placeholder="User name" style="width:100%;box-sizing:border-box"></div>
+                    <div><div class="f-label">Title</div><input type="text" x-model="l1NewUser.title" class="field" placeholder="e.g. HR Officer · UAE" style="width:100%;box-sizing:border-box"></div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+                    <div><div class="f-label">Level *</div>
+                      <select x-model.number="l1NewUser.level" class="field" style="width:100%;box-sizing:border-box">
+                        <option value="2">L2 — RTS</option>
+                        <option value="3">L3 — Coordinator</option>
+                        <option value="4">L4 — Trainer/HR/DM</option>
+                      </select>
+                    </div>
+                    <div><div class="f-label">Mountain Peak *</div>
+                      <select x-model="l1NewUser.market" class="field" style="width:100%;box-sizing:border-box">
+                        <template x-for="b in branches"><option :value="b" x-text="b"></option></template>
+                      </select>
+                    </div>
+                    <div>
+                      <div class="f-label" x-text="l1NewUser.level==4?'Department *':'Department'"></div>
+                      <select x-model="l1NewUser.dept" class="field" style="width:100%;box-sizing:border-box" :disabled="l1NewUser.level!=4" @change="l1NewUser.level!=4&&(l1NewUser.dept='')">
+                        <option value="">— None —</option>
+                        <option value="HR_Status">HR Officer</option>
+                        <option value="Quality_Status">Quality Trainer</option>
+                        <option value="DEPT_MANAGER">Dept Manager</option>
+                      </select>
+                      <div x-show="l1NewUser.level!=4" style="font-size:10px;color:var(--w5);margin-top:3px">Not required for L2/L3</div>
+                    </div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div><div class="f-label">Username *</div><input type="text" x-model="l1NewUser.username" class="field" placeholder="e.g. naief@calo.app" style="width:100%;box-sizing:border-box" autocomplete="off"></div>
+                    <div><div class="f-label">Password *</div><input type="text" x-model="l1NewUser.pass" class="field" placeholder="e.g. Tc@BHR25" style="width:100%;box-sizing:border-box"></div>
+                  </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-                  <div><div class="f-label">Level *</div>
-                    <select x-model.number="l1NewUser.level" class="field" style="width:100%;box-sizing:border-box">
-                      <option value="2">L2 — RTS</option>
-                      <option value="3">L3 — Coordinator</option>
-                      <option value="4">L4 — Trainer/HR/DM</option>
-                    </select>
-                  </div>
-                  <div><div class="f-label">Mountain Peak *</div>
-                    <select x-model="l1NewUser.market" class="field" style="width:100%;box-sizing:border-box">
-                      <template x-for="b in branches"><option :value="b" x-text="b"></option></template>
-                    </select>
-                  </div>
-                  <div>
-                    <div class="f-label" x-text="l1NewUser.level==4?'Department *':'Department'"></div>
-                    <select x-model="l1NewUser.dept" class="field" style="width:100%;box-sizing:border-box" :disabled="l1NewUser.level!=4" @change="l1NewUser.level!=4&&(l1NewUser.dept='')">
-                      <option value="">— None —</option>
-                      <option value="HR_Status">HR Officer</option>
-                      <option value="Quality_Status">Quality Trainer</option>
-                      <option value="DEPT_MANAGER">Dept Manager</option>
-                    </select>
-                    <div x-show="l1NewUser.level!=4" style="font-size:10px;color:var(--w5);margin-top:3px">Not required for L2/L3</div>
-                  </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Username *</div><input type="text" x-model="l1NewUser.username" class="field" placeholder="e.g. naief@calo.app" style="width:100%;box-sizing:border-box" autocomplete="off"></div>
-                  <div><div class="f-label">Password *</div><input type="text" x-model="l1NewUser.pass" class="field" placeholder="e.g. Tc@BHR25" style="width:100%;box-sizing:border-box"></div>
+                <div style="display:flex;gap:8px;margin-top:20px">
+                  <button @click="l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                  <button @click="l1SaveNewUser()" :disabled="!l1NewUser.name||!l1NewUser.username||!l1NewUser.pass" class="btn btn-primary" style="flex:1;justify-content:center">Create User</button>
                 </div>
               </div>
-              <div style="display:flex;gap:8px;margin-top:20px">
-                <button @click="l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
-                <button @click="l1SaveNewUser()" :disabled="!l1NewUser.name||!l1NewUser.username||!l1NewUser.pass" class="btn btn-primary" style="flex:1;justify-content:center">Create User</button>
+
+              <!-- Login Instructions card (shown after creation) -->
+              <div x-show="l1CreatedUser" style="display:none">
+                <div style="background:rgba(56,189,118,.07);border:1px solid rgba(56,189,118,.25);border-radius:var(--r8);padding:16px;margin-bottom:16px">
+                  <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.06em;margin-bottom:12px">SHARE THESE INSTRUCTIONS WITH THE USER</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--ch);line-height:1.6">
+                    <div>🌐 <strong>App:</strong> https://calo-command.vercel.app</div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div>1️⃣ <strong>Click card:</strong> <span x-text="l1CreatedUser&&({2:'RTS',3:'Training Coord.',4:'Trainer / Officer'}[l1CreatedUser.level]||'Global Admin')"></span></div>
+                    <div x-show="l1CreatedUser&&(l1CreatedUser.level===3||l1CreatedUser.level===4)">2️⃣ <strong>Select market:</strong> <span x-text="l1CreatedUser&&l1CreatedUser.market"></span></div>
+                    <div x-show="l1CreatedUser&&l1CreatedUser.level===4&&l1CreatedUser.dept">3️⃣ <strong>Select department:</strong> <span x-text="l1CreatedUser&&({'HR_Status':'HR Officer','Quality_Status':'Quality Trainer','DEPT_MANAGER':'Department Manager'}[l1CreatedUser.dept]||'')"></span></div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div>🪪 <strong>Employee ID:</strong> <code style="background:var(--w2);padding:2px 6px;border-radius:4px;font-size:12px" x-text="l1CreatedUser&&l1CreatedUser.username"></code></div>
+                    <div>🔑 <strong>Password:</strong> <code style="background:var(--w2);padding:2px 6px;border-radius:4px;font-size:12px" x-text="l1CreatedUser&&l1CreatedUser.pass"></code></div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div style="font-size:11px;color:var(--w5)">🔐 They only need to sign in once — session is saved on their device.</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button @click="copyText(loginInstr(l1CreatedUser))" class="btn btn-ghost" style="flex:1;justify-content:center">📋 Copy Instructions</button>
+                  <button @click="l1CreatedUser=null;l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" class="btn btn-primary" style="flex:1;justify-content:center">Done</button>
+                </div>
               </div>
             </div>
           </div>
@@ -2330,44 +2361,75 @@ textarea.field{resize:none}
           </div>
 
           <!-- Add / Edit Trainer Modal -->
-          <div x-show="tcAddTrainerForm" style="display:none" class="overlay" @click.self="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1">
+          <div x-show="tcAddTrainerForm" style="display:none" class="overlay" @click.self="tcAddTrainerForm=false;tcCreatedTrainer=null;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1">
             <div class="card" style="width:100%;max-width:480px;padding:28px;border-radius:var(--r16)">
+              <!-- Header -->
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-                <div><div style="font-size:18px;font-weight:900;color:var(--ch)" x-text="tcEditIdx>=0?'Edit Trainer':'Add Trainer'"></div><div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="mmarket+' Mountain Peak'"></div></div>
-                <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+                <div>
+                  <div style="font-size:18px;font-weight:900;color:var(--ch)" x-text="tcCreatedTrainer?'Trainer Created':(tcEditIdx>=0?'Edit Trainer':'Add Trainer')"></div>
+                  <div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="tcCreatedTrainer?'Share login instructions below':mmarket+' Mountain Peak'"></div>
+                </div>
+                <button @click="tcAddTrainerForm=false;tcCreatedTrainer=null;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
               </div>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Full Name *</div><input type="text" x-model="tcNewTrainer.name" class="field" placeholder="Trainer name" style="width:100%;box-sizing:border-box"></div>
-                  <div><div class="f-label">Photo URL</div><input type="url" x-model="tcNewTrainer.photo" class="field" placeholder="Photo URL (optional)" style="width:100%;box-sizing:border-box"></div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Role *</div>
-                    <select x-model="tcNewTrainer.stage" class="field" style="width:100%;box-sizing:border-box">
-                      <option value="">Select role</option>
-                      <option value="HR Officer">👤 HR Officer (Pre-Board · Orientation · HR Compliance)</option>
-                      <option value="Quality Trainer">⭐ Quality Trainer (Quality Standards)</option>
-                      <option value="Department Manager">🔧 Dept Manager (OJT · Assessment · Certification)</option>
-                    </select>
+
+              <!-- Form (hidden after creation) -->
+              <div x-show="!tcCreatedTrainer">
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div><div class="f-label">Full Name *</div><input type="text" x-model="tcNewTrainer.name" class="field" placeholder="Trainer name" style="width:100%;box-sizing:border-box"></div>
+                    <div><div class="f-label">Photo URL</div><input type="url" x-model="tcNewTrainer.photo" class="field" placeholder="Photo URL (optional)" style="width:100%;box-sizing:border-box"></div>
                   </div>
-                  <div><div class="f-label">Department *</div>
-                    <select x-model="tcNewTrainer.dept" class="field" style="width:100%;box-sizing:border-box">
-                      <option value="">Select dept</option>
-                      <template x-for="d in tcDepts"><option :value="d.name" x-text="d.name"></option></template>
-                    </select>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div><div class="f-label">Role *</div>
+                      <select x-model="tcNewTrainer.stage" class="field" style="width:100%;box-sizing:border-box">
+                        <option value="">Select role</option>
+                        <option value="HR Officer">👤 HR Officer (Pre-Board · Orientation · HR Compliance)</option>
+                        <option value="Quality Trainer">⭐ Quality Trainer (Quality Standards)</option>
+                        <option value="Department Manager">🔧 Dept Manager (OJT · Assessment · Certification)</option>
+                      </select>
+                    </div>
+                    <div><div class="f-label">Department *</div>
+                      <select x-model="tcNewTrainer.dept" class="field" style="width:100%;box-sizing:border-box">
+                        <option value="">Select dept</option>
+                        <template x-for="d in tcDepts"><option :value="d.name" x-text="d.name"></option></template>
+                      </select>
+                    </div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div><div class="f-label">Username *</div><input type="text" x-model="tcNewTrainer.username" class="field" placeholder="e.g. tr-hr-uae" style="width:100%;box-sizing:border-box"></div>
+                    <div><div class="f-label">Password *</div><input type="text" x-model="tcNewTrainer.password" class="field" placeholder="e.g. Tr@hr@UAE" style="width:100%;box-sizing:border-box"></div>
+                  </div>
+                  <div x-show="tcEditIdx<0" style="padding:10px;background:var(--w2);border-radius:var(--r8);font-size:11px;color:var(--w5)">
+                    This trainer will receive login access to their dashboard and appear in the Global Trainers Directory.
                   </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Username *</div><input type="text" x-model="tcNewTrainer.username" class="field" placeholder="e.g. tr-hr-uae" style="width:100%;box-sizing:border-box"></div>
-                  <div><div class="f-label">Password *</div><input type="text" x-model="tcNewTrainer.password" class="field" placeholder="e.g. Tr@hr@UAE" style="width:100%;box-sizing:border-box"></div>
-                </div>
-                <div x-show="tcEditIdx<0" style="padding:10px;background:var(--w2);border-radius:var(--r8);font-size:11px;color:var(--w5)">
-                  This trainer will receive login access to their dashboard and appear in the Global Trainers Directory.
+                <div style="display:flex;gap:8px;margin-top:20px">
+                  <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                  <button @click="tcSaveNewTrainer()" :disabled="!tcNewTrainer.name||!tcNewTrainer.stage||!tcNewTrainer.username||!tcNewTrainer.password" class="btn btn-primary" style="flex:1;justify-content:center" x-text="tcEditIdx>=0?'Save Changes':'Add Trainer'"></button>
                 </div>
               </div>
-              <div style="display:flex;gap:8px;margin-top:20px">
-                <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
-                <button @click="tcSaveNewTrainer()" :disabled="!tcNewTrainer.name||!tcNewTrainer.stage||!tcNewTrainer.username||!tcNewTrainer.password" class="btn btn-primary" style="flex:1;justify-content:center" x-text="tcEditIdx>=0?'Save Changes':'Add Trainer'"></button>
+
+              <!-- Login Instructions card (shown after creation) -->
+              <div x-show="tcCreatedTrainer" style="display:none">
+                <div style="background:rgba(56,189,118,.07);border:1px solid rgba(56,189,118,.25);border-radius:var(--r8);padding:16px;margin-bottom:16px">
+                  <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.06em;margin-bottom:12px">SHARE THESE INSTRUCTIONS WITH THE TRAINER</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--ch);line-height:1.6">
+                    <div>🌐 <strong>App:</strong> https://calo-command.vercel.app</div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div>1️⃣ <strong>Click card:</strong> Trainer / Officer</div>
+                    <div>2️⃣ <strong>Select market:</strong> <span x-text="tcCreatedTrainer&&tcCreatedTrainer.market"></span></div>
+                    <div>3️⃣ <strong>Select department:</strong> <span x-text="tcCreatedTrainer&&tcCreatedTrainer.deptLabel"></span></div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div>🪪 <strong>Employee ID:</strong> <code style="background:var(--w2);padding:2px 6px;border-radius:4px;font-size:12px" x-text="tcCreatedTrainer&&tcCreatedTrainer.username"></code></div>
+                    <div>🔑 <strong>Password:</strong> <code style="background:var(--w2);padding:2px 6px;border-radius:4px;font-size:12px" x-text="tcCreatedTrainer&&tcCreatedTrainer.password"></code></div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div style="font-size:11px;color:var(--w5)">🔐 They only need to sign in once — session is saved on their device.</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button @click="copyText(loginInstrTrainer(tcCreatedTrainer))" class="btn btn-ghost" style="flex:1;justify-content:center">📋 Copy Instructions</button>
+                  <button @click="tcCreatedTrainer=null;tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" class="btn btn-primary" style="flex:1;justify-content:center">Done</button>
+                </div>
               </div>
             </div>
           </div>
@@ -4192,7 +4254,7 @@ textarea.field{resize:none}
 <script>
 function app(){
   return {
-    loggedIn:false,lf:{u:'',p:''},selLevel:null,loginCountry:'',loginDept:'',hint:0,lerr:'',ll:false,
+    loggedIn:false,lf:{u:'',p:''},selLevel:null,loginCountry:'',loginDept:'',hint:0,lerr:'',ll:false,l1CreatedUser:null,tcCreatedTrainer:null,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:''},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
@@ -4282,6 +4344,35 @@ function app(){
       try { localStorage.setItem('calo_session', JSON.stringify(r)); } catch(e){}
     },
 
+    loginInstr(u){
+      if(!u) return '';
+      const card={2:'RTS',3:'Training Coord.',4:'Trainer / Officer'}[u.level]||'Global Admin';
+      const deptLabel={'HR_Status':'HR Officer','Quality_Status':'Quality Trainer','DEPT_MANAGER':'Department Manager'}[u.dept]||'';
+      let t='Calo Onboarding — Login Instructions\n';
+      t+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+      t+='App: https://calo-command.vercel.app\n\n';
+      t+='Step 1 — Click the "'+card+'" card\n';
+      if(u.level===3||u.level===4) t+='Step 2 — Select Market: '+u.market+'\n';
+      if(u.level===4&&deptLabel)   t+='Step 3 — Select Department: '+deptLabel+'\n';
+      t+='\nEmployee ID : '+u.username+'\n';
+      t+='Password    : '+u.pass+'\n\n';
+      t+='You only need to sign in once — your session stays saved on this device.';
+      return t;
+    },
+    loginInstrTrainer(u){
+      if(!u) return '';
+      let t='Calo Onboarding — Login Instructions\n';
+      t+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+      t+='App: https://calo-command.vercel.app\n\n';
+      t+='Step 1 — Click the "Trainer / Officer" card\n';
+      t+='Step 2 — Select Market: '+u.market+'\n';
+      t+='Step 3 — Select Department: '+u.deptLabel+'\n';
+      t+='\nEmployee ID : '+u.username+'\n';
+      t+='Password    : '+u.password+'\n\n';
+      t+='You only need to sign in once — your session stays saved on this device.';
+      return t;
+    },
+    copyText(t){ navigator.clipboard.writeText(t).then(()=>this.dofl('Copied','','','Login instructions copied to clipboard','')).catch(()=>{}); },
     clearSession(){
       try { localStorage.removeItem('calo_session'); } catch(e){}
       this.loggedIn=false;this.selLevel=null;this.loginCountry='';this.loginDept='';
@@ -4441,10 +4532,9 @@ function app(){
         title:    newU.title||'L'+newU.level+' · '+newU.market
       }}).then(()=>{
         this.l1LoadUsers();
-        // Cache to localStorage as backup
         try{localStorage.setItem('calo_l1_users_cache',JSON.stringify(this.l1Users));}catch(e){}
       }).catch(e=>{console.warn('Sheet sync failed:',e);alert('Failed to save user to Google Sheets. Check your connection.');});
-      this.l1AdminForm=false;
+      this.l1CreatedUser = Object.assign({},newU);
       this.l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true};
     },
     l1DeleteUser(username){
@@ -4641,6 +4731,7 @@ function app(){
           'OJT Training':'DEPT_MANAGER','Assessment':'DEPT_MANAGER','Certification':'DEPT_MANAGER',
           'Pre-Floor Assessment':'DEPT_MANAGER','Floor Ready Certification':'DEPT_MANAGER'
         };
+        const deptLabel = {'HR Officer':'HR Officer','Quality Trainer':'Quality Trainer','Department Manager':'Department Manager'}[this.tcNewTrainer.stage]||this.tcNewTrainer.stage;
         this.gas('addDynamicUser',{user:{
           username: this.tcNewTrainer.username.trim(),
           pass:     this.tcNewTrainer.password,
@@ -4650,10 +4741,11 @@ function app(){
           dept:     deptMap[this.tcNewTrainer.stage]||this.tcNewTrainer.stage,
           title:    this.tcNewTrainer.name+' · '+this.tcNewTrainer.stage+' · '+this.mmarket
         }}).catch(e=>console.warn('Sheet sync failed:',e));
+        this.tcCreatedTrainer={name:this.tcNewTrainer.name,username:this.tcNewTrainer.username.trim(),password:this.tcNewTrainer.password,market:this.mmarket,deptLabel};
       }
       // Save trainer profile to Trainers sheet
       this.gas('saveTrainer',{trainer:Object.assign({},this.tcNewTrainer,{market:this.mmarket}),market:this.mmarket}).catch(e=>console.warn('saveTrainer failed:',e));
-      this.tcAddTrainerForm=false;
+      if(this.tcEditIdx>=0){ this.tcAddTrainerForm=false; }
       this.tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};
       this.tcEditIdx=-1;
     },
