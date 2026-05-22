@@ -426,10 +426,6 @@ textarea.field{resize:none}
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           Stage Overview
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_trainers'?'on':''" @click="v='tc_trainers'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Trainers
-        </div>
         <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_depts'?'on':''" @click="v='tc_depts'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
           Departments
@@ -444,8 +440,8 @@ textarea.field{resize:none}
         </div>
         <div class="nav-group-label" style="margin-top:8px">Admin</div>
         <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_admin'?'on':''" @click="v='tc_admin'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><line x1="19" y1="8" x2="23" y2="8"/><line x1="21" y1="6" x2="21" y2="10"/></svg>
-          User Management
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Trainer Management
         </div>
       </div>
       <!-- ── END L3 NAVIGATION ───────────────────────────────────── -->
@@ -542,7 +538,7 @@ textarea.field{resize:none}
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .2s" :style="l1ExecOpen?'transform:rotate(180deg)':''"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div x-show="l1ExecOpen" style="display:none" :style="l1ExecOpen?'display:block':''">
-            <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='trainers'?'on':''" @click="v='trainers'">
+            <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='trainers'?'on':''" @click="v='trainers';l1LoadUsers()">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               Trainers Directory
             </div>
@@ -2108,7 +2104,7 @@ textarea.field{resize:none}
               <div class="kpi-sub">High + urgent priority</div>
               <div class="kpi-drill" style="color:var(--danger)"><span>Review now</span><span>→</span></div>
             </div>
-            <div class="kpi-tile" style="--tile-accent:#A78BFA;cursor:pointer" @click="v='tc_trainers'">
+            <div class="kpi-tile" style="--tile-accent:#A78BFA;cursor:pointer" @click="v='tc_admin'">
               <div class="kpi-label">👤 Trainers</div>
               <div class="kpi-num" style="color:#A78BFA" x-text="tcTrainers.filter(t=>t.active).length"></div>
               <div class="kpi-sub" x-text="tcTrainers.length+' total registered'"></div>
@@ -2169,8 +2165,8 @@ textarea.field{resize:none}
         <div x-show="v==='tc_admin' && mlevel===3">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
             <div>
-              <div class="ptitle">User Management</div>
-              <div class="psub" x-text="'Trainers in '+mmarket+' Mountain Peak'"></div>
+              <div class="ptitle">Trainer Management</div>
+              <div class="psub" x-text="tcTrainers.filter(t=>t.active).length+' active · '+tcTrainers.length+' total · '+mmarket+' MP'"></div>
             </div>
             <div style="display:flex;gap:8px">
               <button @click="tcBulkOpen=true" class="btn btn-ghost btn-sm">📥 Bulk Upload CSV</button>
@@ -2248,8 +2244,51 @@ textarea.field{resize:none}
               </div>
             </div>
           </div>
+
+          <!-- Add / Edit Trainer Modal -->
+          <div x-show="tcAddTrainerForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="tcAddTrainerForm?'display:flex':''">
+            <div class="card" style="width:100%;max-width:480px;padding:28px;border-radius:var(--r16)">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+                <div><div style="font-size:18px;font-weight:900;color:var(--ch)" x-text="tcEditIdx>=0?'Edit Trainer':'Add Trainer'"></div><div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="mmarket+' Mountain Peak'"></div></div>
+                <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div><div class="f-label">Full Name *</div><input type="text" x-model="tcNewTrainer.name" class="field" placeholder="Trainer name" style="width:100%;box-sizing:border-box"></div>
+                  <div><div class="f-label">Photo URL</div><input type="url" x-model="tcNewTrainer.photo" class="field" placeholder="Photo URL (optional)" style="width:100%;box-sizing:border-box"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div><div class="f-label">Role *</div>
+                    <select x-model="tcNewTrainer.stage" class="field" style="width:100%;box-sizing:border-box">
+                      <option value="">Select role</option>
+                      <option value="HR Officer">👤 HR Officer (Pre-Board · Orientation · HR Compliance)</option>
+                      <option value="Quality Trainer">⭐ Quality Trainer (Quality Standards)</option>
+                      <option value="Department Manager">🔧 Dept Manager (OJT · Assessment · Certification)</option>
+                    </select>
+                  </div>
+                  <div><div class="f-label">Department *</div>
+                    <select x-model="tcNewTrainer.dept" class="field" style="width:100%;box-sizing:border-box">
+                      <option value="">Select dept</option>
+                      <template x-for="d in tcDepts"><option :value="d.name" x-text="d.name"></option></template>
+                    </select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div><div class="f-label">Username *</div><input type="text" x-model="tcNewTrainer.username" class="field" placeholder="e.g. tr-hr-uae" style="width:100%;box-sizing:border-box"></div>
+                  <div><div class="f-label">Password *</div><input type="text" x-model="tcNewTrainer.password" class="field" placeholder="e.g. Tr@hr@UAE" style="width:100%;box-sizing:border-box"></div>
+                </div>
+                <div x-show="tcEditIdx<0" style="padding:10px;background:var(--w2);border-radius:var(--r8);font-size:11px;color:var(--w5)">
+                  This trainer will receive login access to their dashboard and appear in the Global Trainers Directory.
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:20px">
+                <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                <button @click="tcSaveNewTrainer()" :disabled="!tcNewTrainer.name||!tcNewTrainer.stage||!tcNewTrainer.username||!tcNewTrainer.password" class="btn btn-primary" style="flex:1;justify-content:center" x-text="tcEditIdx>=0?'Save Changes':'Add Trainer'"></button>
+              </div>
+            </div>
+          </div>
         </div>
-        <!-- END L3 USER MANAGEMENT -->
+        <!-- END L3 TRAINER MANAGEMENT -->
 
         <!-- L3 PIPELINE — all candidates, all 7 stages -->
         <div x-show="v==='tc_pipe' && mlevel===3">
@@ -2348,93 +2387,6 @@ textarea.field{resize:none}
           </div>
         </div>
         <!-- END L3 STAGE OVERVIEW -->
-
-
-        <!-- L3 TRAINERS MANAGEMENT -->
-        <div x-show="v==='tc_trainers' && mlevel===3">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
-            <div>
-              <div class="ptitle">Trainers</div>
-              <div class="psub" x-text="tcTrainers.filter(t=>t.active).length+' active · '+tcTrainers.length+' total · '+mmarket+' MP'"></div>
-            </div>
-            <button @click="tcAddTrainerForm=true" class="btn btn-primary btn-sm">+ Add Trainer</button>
-          </div>
-
-          <!-- Trainer Cards Grid -->
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:20px">
-            <template x-for="(t,ti) in tcTrainers">
-              <div class="card" style="padding:16px" :style="!t.active?'opacity:.5':''">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-                  <img :src="t.photo||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--w3)">
-                  <div style="flex:1">
-                    <div style="font-size:13px;font-weight:900" x-text="t.name"></div>
-                    <div style="font-size:11px;color:var(--w5);margin-top:2px" x-text="t.stage+' · '+t.dept"></div>
-                    <div style="display:flex;align-items:center;gap:4px;margin-top:4px">
-                      <div style="width:7px;height:7px;border-radius:50%" :style="t.active?'background:var(--green)':'background:var(--w4)'"></div>
-                      <span style="font-size:10px;font-weight:700" :style="t.active?'color:var(--green)':'color:var(--w5)'" x-text="t.active?'Active':'Inactive'"></span>
-                    </div>
-                  </div>
-                </div>
-                <!-- Credentials -->
-                <div style="background:var(--w2);border-radius:var(--r8);padding:8px 10px;margin-bottom:10px;font-size:11px">
-                  <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="color:var(--w5)">Username</span><span style="font-weight:700;font-family:monospace" x-text="t.username"></span></div>
-                  <div style="display:flex;justify-content:space-between"><span style="color:var(--w5)">Password</span><span style="font-weight:700;font-family:monospace;cursor:pointer" @click="t.showPass=!t.showPass" x-text="t.showPass?t.password:'••••••••'"></span></div>
-                </div>
-                <div style="display:flex;gap:6px">
-                  <button @click="tcEditTrainer(ti)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Edit</button>
-                  <button @click="t.active=!t.active;tcSaveTrainers()" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" :style="t.active?'color:var(--danger)':'color:var(--green)'" x-text="t.active?'Deactivate':'Activate'"></button>
-                </div>
-              </div>
-            </template>
-            <div x-show="tcTrainers.length===0" class="empty" style="grid-column:1/-1">
-              <div style="font-size:32px;margin-bottom:10px">👤</div>
-              <div style="font-weight:700">No trainers yet</div>
-              <div style="font-size:12px;margin-top:4px;font-weight:300">Click + Add Trainer to register your first trainer</div>
-            </div>
-          </div>
-
-          <!-- Add Trainer Modal -->
-          <div x-show="tcAddTrainerForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="tcAddTrainerForm?'display:flex':''">
-            <div class="card" style="width:100%;max-width:480px;padding:28px;border-radius:var(--r16)">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-                <div><div style="font-size:18px;font-weight:900;color:var(--ch)" x-text="tcEditIdx>=0?'Edit Trainer':'Add Trainer'"></div><div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="mmarket+' Mountain Peak'"></div></div>
-                <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
-              </div>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Full Name *</div><input type="text" x-model="tcNewTrainer.name" class="field" placeholder="Trainer name" style="width:100%;box-sizing:border-box"></div>
-                  <div><div class="f-label">Photo URL</div><input type="url" x-model="tcNewTrainer.photo" class="field" placeholder="Photo URL (optional)" style="width:100%;box-sizing:border-box"></div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Stage *</div>
-                    <select x-model="tcNewTrainer.stage" class="field" style="width:100%;box-sizing:border-box">
-                      <option value="">Select role</option>
-                      <option value="HR Officer">👤 HR Officer (Pre-Board · Orientation · HR Compliance)</option>
-                      <option value="Quality Trainer">⭐ Quality Trainer (Quality Standards)</option>
-                      <option value="Department Manager">🔧 Dept Manager (OJT · Assessment · Certification)</option>
-                    </select>
-                  </div>
-                  <div><div class="f-label">Department *</div>
-                    <select x-model="tcNewTrainer.dept" class="field" style="width:100%;box-sizing:border-box">
-                      <option value="">Select dept</option>
-                      <template x-for="d in tcDepts"><option :value="d.name" x-text="d.name"></option></template>
-                    </select>
-                  </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Username *</div><input type="text" x-model="tcNewTrainer.username" class="field" placeholder="e.g. TR-KIT-UAE" style="width:100%;box-sizing:border-box;text-transform:uppercase" @input="tcNewTrainer.username=tcNewTrainer.username.toUpperCase()"></div>
-                  <div><div class="f-label">Password *</div><input type="text" x-model="tcNewTrainer.password" class="field" placeholder="e.g. Tr@kit@UAE" style="width:100%;box-sizing:border-box"></div>
-                </div>
-              </div>
-              <div style="display:flex;gap:8px;margin-top:20px">
-                <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
-                <button @click="tcSaveNewTrainer()" :disabled="!tcNewTrainer.name||!tcNewTrainer.stage||!tcNewTrainer.username||!tcNewTrainer.password" class="btn btn-primary" style="flex:1;justify-content:center" x-text="tcEditIdx>=0?'Save Changes':'Add Trainer'">Add Trainer</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- END L3 TRAINERS -->
-
 
         <!-- L3 DEPARTMENTS -->
         <div x-show="v==='tc_depts' && mlevel===3">
@@ -3587,40 +3539,88 @@ textarea.field{resize:none}
         <div x-show="v==='trainers'">
           <div style="margin-bottom:24px" class="au">
             <div class="ptitle">Trainer Directory</div>
-            <div class="psub">Stage trainers by Mountain Peak</div>
+            <div class="psub">HR Officers · Quality Trainers · Dept Managers by Mountain Peak</div>
           </div>
-          <div style="display:flex;flex-direction:column;gap:28px">
+          <div x-show="l1UsersLoading" style="text-align:center;padding:40px;color:var(--w5)">Loading trainer data...</div>
+          <div x-show="!l1UsersLoading" style="display:flex;flex-direction:column;gap:20px">
             <template x-for="b in (mlevel===1?branches:[mmarket])">
-              <div class="au">
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <div class="card" style="padding:20px">
+                <!-- MP header -->
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
                   <span style="font-size:26px;line-height:1" x-text="flag(b)"></span>
                   <span style="font-size:15px;font-weight:900" x-text="b"></span>
-                  <span class="chip c-green" style="font-size:10px" x-text="emps.filter(e=>e.country===b).length+' employees'"></span>
+                  <span class="chip c-green" style="font-size:10px" x-text="l1Users.filter(u=>u.market===b&&parseInt(u.level)===4).length+' trainers'"></span>
                   <span class="chip c-grey" style="font-size:9px;letter-spacing:.06em">MP</span>
+                  <span class="chip" style="font-size:9px;background:rgba(74,144,226,.1);color:#4A90E2" x-text="emps.filter(e=>e.country===b).length+' candidates'"></span>
                 </div>
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(192px,1fr));gap:10px">
-                  <template x-for="s in stages">
-                    <div class="trainer-card">
-                      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-                        <span style="font-size:18px" x-text="s.i"></span>
-                        <div>
-                          <div style="font-size:12px;font-weight:700" x-text="s.label"></div>
-                          <div style="font-size:10px;color:var(--w5);font-weight:300" x-text="s.short"></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div x-show="gtr(b,s.k).name" style="display:flex;align-items:center;gap:8px">
-                          <img :src="gtr(b,s.k).img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--w3)">
-                          <div>
-                            <div style="font-size:12px;font-weight:700" x-text="gtr(b,s.k).name"></div>
-                            <div style="display:flex;align-items:center;gap:4px"><div class="dot-g" style="width:5px;height:5px"></div><span style="font-size:10px;color:var(--w5);font-weight:300">Active</span></div>
-                          </div>
-                        </div>
-                        <div x-show="!gtr(b,s.k).name" style="font-size:11px;color:var(--w5);font-style:italic;font-weight:300">Not assigned</div>
-                      </div>
-                      <div style="font-size:10px;color:var(--w5);margin-top:8px;font-weight:300" x-text="emps.filter(e=>e.country===b&&spce(e,s.k)>0&&spce(e,s.k)<100).length+' in training'"></div>
+
+                <!-- HR Officers row -->
+                <div style="margin-bottom:12px;padding:14px;background:var(--w2);border-radius:var(--r8)">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                    <span style="font-size:16px">👤</span>
+                    <div style="flex:1">
+                      <div style="font-size:12px;font-weight:900;color:var(--ch)">HR Officers</div>
+                      <div style="font-size:10px;color:var(--w5);font-weight:300">Pre-Boarding · Orientation · HR Compliance</div>
                     </div>
-                  </template>
+                    <span class="chip" style="font-size:10px;background:rgba(74,144,226,.12);color:#4A90E2" x-text="l1Users.filter(u=>u.market===b&&parseInt(u.level)===4&&u.dept==='HR_Status').length+' assigned'"></span>
+                  </div>
+                  <div x-show="l1Users.filter(u=>u.market===b&&parseInt(u.level)===4&&u.dept==='HR_Status').length===0" style="font-size:11px;color:var(--w5);font-style:italic;padding:2px 0">No HR Officers assigned</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px">
+                    <template x-for="u in l1Users.filter(u=>u.market===b&&parseInt(u.level)===4&&u.dept==='HR_Status')">
+                      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--w1);border-radius:20px;border:1px solid var(--w3)">
+                        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0" :style="(u.active==='true'||u.active===true)?'background:var(--green)':'background:var(--w4)'"></div>
+                        <span style="font-size:12px;font-weight:700" x-text="u.name"></span>
+                        <span style="font-size:10px;color:var(--w5);font-family:monospace" x-text="u.username"></span>
+                        <span x-show="u.active==='false'||u.active===false" style="font-size:9px;color:var(--danger);font-weight:700">Inactive</span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+                <!-- Quality Trainers row -->
+                <div style="margin-bottom:12px;padding:14px;background:var(--w2);border-radius:var(--r8)">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                    <span style="font-size:16px">⭐</span>
+                    <div style="flex:1">
+                      <div style="font-size:12px;font-weight:900;color:var(--ch)">Quality Trainers</div>
+                      <div style="font-size:10px;color:var(--w5);font-weight:300">Quality Standards</div>
+                    </div>
+                    <span class="chip" style="font-size:10px;background:rgba(245,166,35,.12);color:var(--warn)" x-text="l1Users.filter(u=>u.market===b&&parseInt(u.level)===4&&u.dept==='Quality_Status').length+' assigned'"></span>
+                  </div>
+                  <div x-show="l1Users.filter(u=>u.market===b&&parseInt(u.level)===4&&u.dept==='Quality_Status').length===0" style="font-size:11px;color:var(--w5);font-style:italic;padding:2px 0">No Quality Trainers assigned</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px">
+                    <template x-for="u in l1Users.filter(u=>u.market===b&&parseInt(u.level)===4&&u.dept==='Quality_Status')">
+                      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--w1);border-radius:20px;border:1px solid var(--w3)">
+                        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0" :style="(u.active==='true'||u.active===true)?'background:var(--green)':'background:var(--w4)'"></div>
+                        <span style="font-size:12px;font-weight:700" x-text="u.name"></span>
+                        <span style="font-size:10px;color:var(--w5);font-family:monospace" x-text="u.username"></span>
+                        <span x-show="u.active==='false'||u.active===false" style="font-size:9px;color:var(--danger);font-weight:700">Inactive</span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+                <!-- Dept Managers row -->
+                <div style="padding:14px;background:var(--w2);border-radius:var(--r8)">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                    <span style="font-size:16px">🔧</span>
+                    <div style="flex:1">
+                      <div style="font-size:12px;font-weight:900;color:var(--ch)">Department Managers</div>
+                      <div style="font-size:10px;color:var(--w5);font-weight:300">OJT Training · Assessment · Certification</div>
+                    </div>
+                    <span class="chip c-green" style="font-size:10px" x-text="l1Users.filter(u=>u.market===b&&parseInt(u.level)===4&&u.dept==='DEPT_MANAGER').length+' assigned'"></span>
+                  </div>
+                  <div x-show="l1Users.filter(u=>u.market===b&&parseInt(u.level)===4&&u.dept==='DEPT_MANAGER').length===0" style="font-size:11px;color:var(--w5);font-style:italic;padding:2px 0">No Dept Managers assigned</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px">
+                    <template x-for="u in l1Users.filter(u=>u.market===b&&parseInt(u.level)===4&&u.dept==='DEPT_MANAGER')">
+                      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--w1);border-radius:20px;border:1px solid var(--w3)">
+                        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0" :style="(u.active==='true'||u.active===true)?'background:var(--green)':'background:var(--w4)'"></div>
+                        <span style="font-size:12px;font-weight:700" x-text="u.name"></span>
+                        <span style="font-size:10px;color:var(--w5);font-family:monospace" x-text="u.username"></span>
+                        <span x-show="u.active==='false'||u.active===false" style="font-size:9px;color:var(--danger);font-weight:700">Inactive</span>
+                      </div>
+                    </template>
+                  </div>
                 </div>
               </div>
             </template>
@@ -4411,7 +4411,7 @@ function app(){
           'Pre-Floor Assessment':'DEPT_MANAGER','Floor Ready Certification':'DEPT_MANAGER'
         };
         this.gas('addDynamicUser',{user:{
-          username: this.tcNewTrainer.username.toUpperCase(),
+          username: this.tcNewTrainer.username.trim(),
           pass:     this.tcNewTrainer.password,
           name:     this.tcNewTrainer.name,
           level:    4,
@@ -4459,16 +4459,21 @@ function app(){
 
     // ── L3 ADMIN METHODS (Mod 1) ──────────────────────────────────
     tcDeleteTrainer(i){
-      if(!confirm('Delete '+this.tcTrainers[i].name+'? This cannot be undone.'))return;
+      const t = this.tcTrainers[i];
+      if(!confirm('Delete '+t.name+'? This removes their login access. Cannot be undone.'))return;
+      this.gas('deleteUser',{username:t.username}).catch(e=>console.warn('Sheet delete failed:',e));
       this.tcTrainers.splice(i,1);
       this.tcSaveTrainers();
     },
     tcResetPW(i){
-      const newPass=prompt('New password for '+this.tcTrainers[i].username+':');
+      const t = this.tcTrainers[i];
+      const newPass=prompt('New password for '+t.username+':');
       if(!newPass||!newPass.trim())return;
-      this.tcTrainers[i].password=newPass.trim();
+      const trimmed = newPass.trim();
+      this.tcTrainers[i].password=trimmed;
       this.tcSaveTrainers();
-      alert('Password updated for '+this.tcTrainers[i].username);
+      this.gas('updateUserPassword',{username:t.username,newPassword:trimmed}).catch(e=>console.warn('Sheet PW update failed:',e));
+      alert('Password updated for '+t.username);
     },
     tcReadCSV(event){
       const f=event.target.files[0];
