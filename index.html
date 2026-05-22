@@ -332,19 +332,19 @@ textarea.field{resize:none}
       </div>
       <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='pipe'?'on':''" @click="v='pipe';dashTile=null;pf='all'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        Pipeline
-      </div>
-      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='trainers'?'on':''" @click="v='trainers'">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Trainers
-      </div>
-      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tpl'?'on':''" @click="v='tpl'">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        Templates
+        Talent Pipeline
       </div>
       <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rep'?'on':''" @click="v='rep'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Reports
+        Global Reports
+      </div>
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_analytics'?'on':''" @click="v='l1_analytics'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Global Analytics
+      </div>
+      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_announce'?'on':''" @click="v='l1_announce'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Announcements
       </div>
 
 
@@ -535,26 +535,34 @@ textarea.field{resize:none}
       </div>
       <!-- ── END HR NAVIGATION ──────────────────────────────────── -->
 
-        <div class="nav-group-label" x-show="mlevel===1" style="margin-top:8px">Executive Suite</div>
-        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_analytics'?'on':''" @click="v='l1_analytics'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Analytics
-        </div>
-        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_admin'?'on':''" @click="v='l1_admin'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
-          System Admin
-        </div>
-        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_sla'?'on':''" @click="v='l1_sla'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          SLA Settings
-        </div>
-        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_announce'?'on':''" @click="v='l1_announce'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          Announcements
-        </div>
-        <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_audit'?'on':''" @click="v='l1_audit'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          Audit Log
+        <!-- Executive Suite collapsible dropdown (L1 only) -->
+        <div x-show="mlevel===1" style="margin-top:8px">
+          <div @click="l1ExecOpen=!l1ExecOpen" style="display:flex;align-items:center;justify-content:space-between;padding:8px 18px;cursor:pointer;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--w5);user-select:none" :style="l1ExecOpen?'color:var(--ch)':''">
+            <span>Executive Suite</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .2s" :style="l1ExecOpen?'transform:rotate(180deg)':''"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div x-show="l1ExecOpen" style="display:none" :style="l1ExecOpen?'display:block':''">
+            <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='trainers'?'on':''" @click="v='trainers'">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Trainers Directory
+            </div>
+            <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tpl'?'on':''" @click="v='tpl'">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Onboarding Training Templates
+            </div>
+            <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_admin'?'on':''" @click="v='l1_admin'">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+              User Management
+            </div>
+            <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_sla'?'on':''" @click="v='l1_sla'">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              SLA Settings
+            </div>
+            <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_audit'?'on':''" @click="v='l1_audit'">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Audit Log
+            </div>
+          </div>
         </div>
 
       <!-- Mountain Peaks (L1) -->
@@ -1180,7 +1188,7 @@ textarea.field{resize:none}
         <div x-show="v==='l1_admin' && mlevel===1">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
             <div>
-              <div class="ptitle">System Admin</div>
+              <div class="ptitle">User Management</div>
               <div class="psub">All users across all levels and Mountain Peaks</div>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
@@ -3971,7 +3979,7 @@ function app(){
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:''},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
-    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,l1Selected:[],
+    l1ExecOpen:false,l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,l1Selected:[],
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
