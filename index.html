@@ -1330,7 +1330,7 @@ textarea.field{resize:none}
             <div class="psub">Set maximum completion days per stage — breach triggers priority alert</div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px">
-            <template x-for="(s,si) in stages">
+            <template x-for="(s,si) in stages" :key="s.k">
               <div class="card" style="padding:18px">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
                   <span style="font-size:24px" x-text="s.i"></span>
@@ -1367,7 +1367,7 @@ textarea.field{resize:none}
                   </tr>
                 </thead>
                 <tbody>
-                  <template x-for="s in stages">
+                  <template x-for="s in stages" :key="s.k">
                     <tr style="border-bottom:1px solid var(--w3)">
                       <td style="padding:8px 12px"><div style="display:flex;align-items:center;gap:8px"><span x-text="s.i"></span><span style="font-weight:700" x-text="s.label"></span></div></td>
                       <td style="text-align:center;padding:8px 12px;font-weight:700" x-text="slaRules[s.k]+' days'"></td>
@@ -4449,7 +4449,7 @@ function app(){
     l1LoadAnnouncements(){ try{const d=localStorage.getItem('calo_announcements');if(d)this.l1Announcements=JSON.parse(d);}catch(e){} },
     l1SaveAudit(){ try{localStorage.setItem('calo_audit',JSON.stringify(this.l1AuditLog));}catch(e){} },
     l1LoadAudit(){ try{const d=localStorage.getItem('calo_audit');if(d)this.l1AuditLog=JSON.parse(d);}catch(e){} },
-    saveSlaRules(){ try{localStorage.setItem('calo_sla',JSON.stringify(this.slaRules));alert('SLA rules saved.');}catch(e){} },
+    saveSlaRules(){ try{localStorage.setItem('calo_sla',JSON.stringify(this.slaRules));this.dofl('SLA Saved','','','Rules updated successfully','');}catch(e){} },
     loadSlaRules(){ try{const d=localStorage.getItem('calo_sla');if(d)this.slaRules=JSON.parse(d);}catch(e){} },
     // ── END L1 EXECUTIVE METHODS ──────────────────────────────────
     // ── L2 REGIONAL TRAINING SPECIALIST METHODS ──────────────────
