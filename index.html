@@ -275,35 +275,97 @@ textarea.field{resize:none}
 
 <!-- LOGIN -->
 <div x-show="!loggedIn" style="display:block" class="login-bg">
-  <div class="login-card au">
+  <div class="login-card au" style="max-width:440px">
 
-    <div style="text-align:center;margin-bottom:32px">
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:24px">
       <div class="logo" style="font-size:42px;letter-spacing:-2px">CALO</div>
       <div style="width:36px;height:3px;background:var(--green);border-radius:2px;margin:10px auto"></div>
       <div class="logo-sub" style="margin-top:10px;font-size:12px">Onboarding Command Center</div>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div>
-        <div class="f-label">User ID</div>
-        <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter your user ID" class="field" style="font-weight:700;letter-spacing:.04em" autocomplete="username">
+    <!-- Step 1: Role cards -->
+    <div style="font-size:10.5px;color:var(--w5);font-weight:600;letter-spacing:.08em;margin-bottom:10px;text-align:center">STEP 1 — SELECT YOUR ROLE</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">
+      <div @click="selLevel=1;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===1?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">🌐</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ch)">Global Admin</div>
+        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 1</div>
       </div>
-      <div>
-        <div class="f-label">Password</div>
-        <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter your password" class="field" autocomplete="new-password">
+      <div @click="selLevel=2;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===2?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">📊</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ch)">RTS</div>
+        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 2 · Regional</div>
       </div>
-      <div x-show="lerr" style="display:none;background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
-      <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px;border-radius:var(--r8)" :style="ll?'opacity:.85;cursor:not-allowed':''">
-        <div x-show="ll" style="display:none" class="spinner spinner-w"></div>
-        <span x-text="ll?'Signing in…':'Sign In'"></span>
-      </button>
+      <div @click="selLevel=3;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===3?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">📋</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ch)">Training Coord.</div>
+        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 3 · Market</div>
+      </div>
+      <div @click="selLevel=4;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===4?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">👤</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ch)">Trainer / Officer</div>
+        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 4 · Dept</div>
+      </div>
     </div>
 
+    <!-- Step 2: Login form -->
+    <div x-show="selLevel" style="display:none">
+      <div style="font-size:10.5px;color:var(--w5);font-weight:600;letter-spacing:.08em;margin-bottom:12px;text-align:center">STEP 2 — ENTER YOUR DETAILS</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+
+        <!-- Country — L3 and L4 -->
+        <div x-show="selLevel===3||selLevel===4" style="display:none">
+          <div class="f-label">Market / Country</div>
+          <select x-model="loginCountry" class="field">
+            <option value="">Select your market…</option>
+            <option>UAE</option><option>Qatar</option><option>Kuwait</option>
+            <option>Bahrain</option><option>Riyadh</option><option>Jeddah</option>
+            <option>Oman</option><option>UK</option>
+          </select>
+        </div>
+
+        <!-- Department — L4 only -->
+        <div x-show="selLevel===4" style="display:none">
+          <div class="f-label">Department</div>
+          <select x-model="loginDept" class="field">
+            <option value="">Select your department…</option>
+            <option value="HR_Status">HR Officer</option>
+            <option value="Quality_Status">Quality Trainer</option>
+            <option value="DEPT_MANAGER">Department Manager</option>
+          </select>
+        </div>
+
+        <!-- Employee ID -->
+        <div>
+          <div class="f-label">Employee ID</div>
+          <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter your employee ID" class="field" style="font-weight:700;letter-spacing:.04em" autocomplete="username">
+        </div>
+
+        <!-- Password -->
+        <div>
+          <div class="f-label">Password</div>
+          <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter your password" class="field" autocomplete="new-password">
+        </div>
+
+        <!-- Error -->
+        <div x-show="lerr" style="display:none;background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
+
+        <!-- Submit -->
+        <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px;border-radius:var(--r8)" :style="ll?'opacity:.85;cursor:not-allowed':''">
+          <div x-show="ll" style="display:none" class="spinner spinner-w"></div>
+          <span x-text="ll?'Signing in…':'Sign In'"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- One-time login notice -->
     <div style="display:flex;align-items:center;gap:8px;background:rgba(56,189,118,.07);border:1px solid rgba(56,189,118,.2);border-radius:var(--r8);padding:10px 13px;margin-top:18px">
       <div style="font-size:16px;flex-shrink:0">🔐</div>
       <div style="font-size:11.5px;color:var(--w7);line-height:1.5">You only need to sign in <strong>once</strong>. Your session stays saved on this device — no need to log in again.</div>
     </div>
 
+    <!-- Footer -->
     <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:1px solid var(--w3)">
       <div style="font-size:11px;color:var(--w6);font-weight:400">© 2026 Calo · All Rights Reserved</div>
       <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">Authorized personnel only</div>
@@ -4130,7 +4192,7 @@ textarea.field{resize:none}
 <script>
 function app(){
   return {
-    loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
+    loggedIn:false,lf:{u:'',p:''},selLevel:null,loginCountry:'',loginDept:'',hint:0,lerr:'',ll:false,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:''},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
@@ -4222,14 +4284,19 @@ function app(){
 
     clearSession(){
       try { localStorage.removeItem('calo_session'); } catch(e){}
-      this.loggedIn=false;
+      this.loggedIn=false;this.selLevel=null;this.loginCountry='';this.loginDept='';
       this.qualMaterials=[];this.dmMaterials=[];this.hrMaterials=[];
     },
 
     login(){
       if(!this.lf.u||!this.lf.p){this.lerr='Please enter your credentials.';return;}
+      if((this.selLevel===3||this.selLevel===4)&&!this.loginCountry){this.lerr='Please select your market.';return;}
+      if(this.selLevel===4&&!this.loginDept){this.lerr='Please select your department.';return;}
       this.ll=true;this.lerr='';
-      this.gas('checkLogin',{username:this.lf.u, password:this.lf.p})
+      const extra={};
+      if(this.loginCountry) extra.country=this.loginCountry;
+      if(this.loginDept) extra.dept=this.loginDept;
+      this.gas('checkLogin',{username:this.lf.u, password:this.lf.p, ...extra})
         .then(r=>{
           this.ll=false;
           if(r.success){
