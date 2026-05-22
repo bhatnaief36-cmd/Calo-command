@@ -3915,11 +3915,13 @@ textarea.field{resize:none}
       </div>
       <template x-for="(m,i) in mods">
         <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);border:1px solid var(--w3);transition:all .12s" :style="m.done?'border-color:var(--green);background:var(--green-l)':''">
-          <input type="checkbox" x-model="m.done" :disabled="!acc(se,as?.k)" style="width:16px;height:16px;accent-color:var(--green);flex-shrink:0">
+          <input type="checkbox" x-model="m.done" :disabled="!acc(se,as?.k)" @change="if(m.done&&!m.date&&acc(se,as?.k))m.date=new Date().toISOString().split('T')[0]" style="width:16px;height:16px;accent-color:var(--green);flex-shrink:0">
           <div style="flex:1">
             <input type="text" x-model="m.name" :disabled="!acc(se,as?.k)" style="width:100%;border:none;background:transparent;font-size:13px;font-family:var(--f);color:var(--ch);outline:none;font-weight:700" :style="m.done?'text-decoration:line-through;color:var(--w5);font-weight:400':''">
           </div>
-          <input type="date" x-model="m.date" :disabled="!acc(se,as?.k)" style="border:none;background:transparent;font-size:10px;font-family:var(--f);color:var(--w5);outline:none;width:112px;flex-shrink:0" title="Completion date">
+          <input type="date" x-model="m.date" :disabled="!acc(se,as?.k)" title="Completion date"
+            style="border:1px solid;border-radius:6px;padding:3px 8px;font-size:11px;font-family:var(--f);outline:none;flex-shrink:0;cursor:pointer;transition:all .15s;width:128px"
+            :style="m.date?'background:var(--green-l);color:var(--green);font-weight:700;border-color:var(--green)':'background:var(--w2);color:var(--w5);border-color:var(--w3)'">
           <a x-show="m.link&&m.link!=='#'" :href="m.link" target="_blank" style="font-size:11px;color:var(--info);flex-shrink:0">🔗</a>
           <button x-show="acc(se,as?.k)" @click="mods.splice(i,1)" style="background:none;border:none;color:var(--w5);cursor:pointer;font-size:18px;line-height:1;flex-shrink:0" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--w5)'">&times;</button>
         </div>
@@ -5001,6 +5003,7 @@ function app(){
       if(!this.acc(e,s.k))return;
       this.se=e;this.as=s;
       this.mods=JSON.parse(JSON.stringify((e[s.k].items||[]).map(m=>({date:'',link:'#',...m}))));
+      try{const sd=JSON.parse(localStorage.getItem('calo_dates_'+e.row+'_'+s.k)||'{}');this.mods.forEach(m=>{if(!m.date&&sd[m.name])m.date=sd[m.name];});}catch(ex){}
       this.at=JSON.parse(JSON.stringify(e.trainers?.[s.k]||{name:'',img:''}));
       this.atNotes=(e.trainerNotes&&e.trainerNotes[s.k])||'';
       this.stpl='';this.atImgMode='file';this.sm_=true;
@@ -5029,6 +5032,7 @@ function app(){
           this.se.trainerNotes[this.as.k]=this.atNotes;
           const o=this.emps.find(x=>x.row===this.se.row);
           if(o){if(!o.trainerNotes)o.trainerNotes={};o.trainerNotes[this.as.k]=this.atNotes;}
+          try{const dates={};this.mods.forEach(m=>{if(m.date)dates[m.name]=m.date;});localStorage.setItem('calo_dates_'+this.se.row+'_'+this.as.k,JSON.stringify(dates));}catch(ex){}
           this.sv=false;this.sm_=false;this.fetchAll();
           this.dofl('Saved!',this.se.image,this.se.name,this.as.label+' updated',this.se.country);
         })
