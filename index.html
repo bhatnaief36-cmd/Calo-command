@@ -1665,6 +1665,7 @@ textarea.field{resize:none}
                     <span class="chip c-green" style="font-size:9px;margin-top:5px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
                     <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">📅 <span x-text="e.dateString||''"></span></div>
                   </div>
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);flex-shrink:0;align-self:flex-start">
                 </div>
                 <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
                   <template x-for="s in stages">
@@ -2607,6 +2608,7 @@ textarea.field{resize:none}
                 <div style="text-align:center;cursor:pointer;padding:10px 8px;border-radius:var(--r8);border:1px solid var(--w3);min-width:70px;transition:all .15s" @click="v='dm_pipe'" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background=''">
                   <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block;margin:0 auto 5px">
                   <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
+                  <div style="font-size:9px;color:var(--w5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px;font-weight:300" x-text="e.role"></div>
                   <div style="font-size:10px;font-weight:900;margin-top:2px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
                   <div style="font-size:9px;color:var(--w5);margin-top:2px;font-weight:300" x-text="e.dateString||''"></div>
                 </div>
@@ -2635,6 +2637,7 @@ textarea.field{resize:none}
                     <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">📅 <span x-text="e.dateString||''"></span></div>
                     <div x-show="e.joiningDept" style="font-size:10px;margin-top:3px" class="chip c-l3" x-text="'📁 '+e.joiningDept"></div>
                   </div>
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);flex-shrink:0;align-self:flex-start">
                 </div>
                 <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
                   <template x-for="s in stages">
@@ -2851,6 +2854,7 @@ textarea.field{resize:none}
                     <span class="chip c-green" style="font-size:9px;margin-top:5px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
                     <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">📅 <span x-text="e.dateString||''"></span></div>
                   </div>
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);flex-shrink:0;align-self:flex-start">
                 </div>
                 <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
                   <template x-for="s in stages">
@@ -3381,6 +3385,20 @@ textarea.field{resize:none}
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                 <div>
+                  <div class="f-label">Probation Period</div>
+                  <select x-model="hrNH.probation" class="field" style="width:100%;box-sizing:border-box">
+                    <option value="">— None —</option>
+                    <option value="3">3 Months</option>
+                    <option value="6">6 Months</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="f-label">Probation End Date</div>
+                  <div class="field" style="background:var(--w2);color:var(--w5);display:flex;align-items:center;min-height:38px;font-size:12px" x-text="(hrNH.dt&&hrNH.probation)?(()=>{const d=new Date(hrNH.dt);d.setMonth(d.getMonth()+parseInt(hrNH.probation));return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});})():'Auto-calculated'"></div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div>
                   <div class="f-label">Joining Department</div>
                   <select x-model="hrNH.dept" class="field" style="width:100%;box-sizing:border-box">
                     <option value="">— Select —</option>
@@ -3406,7 +3424,7 @@ textarea.field{resize:none}
               </div>
             </div>
             <div class="mf">
-              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre',image:'',dept:'',section:''};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
+              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre',image:'',dept:'',section:'',probation:''};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
               <button @click="hrAddCandidate()" :disabled="!hrNH.n||!hrNH.d||!hrNH.dt||hrSaving" class="btn btn-primary" style="flex:1;justify-content:center">
                 <div x-show="hrSaving" style="display:none" class="spinner spinner-w"></div>
                 <span x-text="hrSaving?'Adding…':'Submit'"></span>
@@ -4677,7 +4695,7 @@ function app(){
       // Reset form for next entry — keep country and stage
       const prevC = this.hrNH.c;
       const prevS = this.hrNH.stage;
-      this.hrNH = {n:'', d:'', c:prevC, dt:'', stage:prevS, image:'', dept:'', section:''};
+      this.hrNH = {n:'', d:'', c:prevC, dt:'', stage:prevS, image:'', dept:'', section:'', probation:''};
 
       // Sync to backend in background
       this.gas('addNewEmployee', {
