@@ -3361,7 +3361,7 @@ textarea.field{resize:none}
         <!-- ══════════════════════════════════════════════════════ -->
         <!-- HR ENTRY FORM MODAL                                    -->
         <!-- ══════════════════════════════════════════════════════ -->
-        <div x-show="hrForm" style="display:none" class="overlay" @click.self="hrForm=false" :style="hrForm?'display:flex':''">
+        <div x-show="hrForm && loggedIn" style="display:none" class="overlay" @click.self="hrForm=false" :style="(hrForm&&loggedIn)?'display:flex':''">
           <div class="modal" style="max-width:480px;max-height:92vh">
             <div class="mh">
               <div style="font-size:18px;font-weight:900;color:var(--ch)">New Candidate</div>
@@ -3711,7 +3711,7 @@ textarea.field{resize:none}
 
 
 <!-- TASK MANAGER -->
-<div x-show="sm_" style="display:none" class="overlay" @click.self="sm_=false">
+<div x-show="sm_ && loggedIn" style="display:none" class="overlay" @click.self="sm_=false">
   <div class="modal" style="max-width:580px;max-height:90vh">
     <div class="mh">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
@@ -3787,7 +3787,7 @@ textarea.field{resize:none}
 
 
 <!-- DETAIL -->
-<div x-show="sd" style="display:none" class="overlay" @click.self="sd=false">
+<div x-show="sd && loggedIn" style="display:none" class="overlay" @click.self="sd=false">
   <div class="modal" style="max-width:480px;max-height:90vh">
     <div class="mh" style="display:flex;justify-content:space-between;align-items:center">
       <div style="font-size:17px;font-weight:900">Employee Profile</div>
