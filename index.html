@@ -1250,8 +1250,8 @@ textarea.field{resize:none}
           </div>
 
           <!-- Add User Modal -->
-          <div x-show="l1AdminForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:flex-start;justify-content:flex-end;padding:20px" :style="l1AdminForm?'display:flex':''">
-            <div class="card" style="width:100%;max-width:500px;padding:28px;border-radius:var(--r16);margin-top:60px;margin-right:20px">
+          <div x-show="l1AdminForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000" :style="l1AdminForm?'display:block':''">
+            <div class="card" style="position:absolute;top:70px;right:24px;width:500px;max-width:calc(100vw - 48px);padding:28px;border-radius:var(--r16)">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
                 <div><div style="font-size:18px;font-weight:900">Add System User</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Create access for any level</div></div>
                 <button @click="l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
@@ -3876,7 +3876,7 @@ textarea.field{resize:none}
 
 
 <!-- NEW HIRE -->
-<div x-show="sf" style="display:none" class="overlay">
+<div x-show="sf && loggedIn" style="display:none" class="overlay">
   <div class="modal ar" style="max-width:430px;max-height:92vh">
     <div class="mh">
       <div style="font-size:17px;font-weight:900">Register New Hire</div>
@@ -4180,7 +4180,7 @@ function app(){
     // ── L1 EXECUTIVE METHODS ──────────────────────────────────────
     l1FilteredUsers(){
       const t = this.l1AdminTab;
-      const users = this.l1Users;
+      const users = this.l1Users.map(u=>({...u,level:parseInt(u.level)||4}));
       if(t==='all')   return users;
       if(t==='2')     return users.filter(u=>u.level===2);
       if(t==='3')     return users.filter(u=>u.level===3);

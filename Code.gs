@@ -192,7 +192,7 @@ function addDynamicUser(user) {
       dynSheet.getRange(1,1,1,8).setFontWeight('bold');
     }
     dynSheet.appendRow([
-      String(user.username).toUpperCase(),
+      String(user.username).trim(),
       user.pass,
       user.name,
       user.level,
