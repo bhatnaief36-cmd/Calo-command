@@ -1273,7 +1273,7 @@ textarea.field{resize:none}
             </div>
             <div style="display:flex;gap:8px;align-items:center">
               <button x-show="l1Selected.length>0" @click="l1BulkDelete()" class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger)" x-text="'Delete ('+l1Selected.length+')'"></button>
-              <button @click="l1AdminForm=true" class="btn btn-primary btn-sm">+ Add User</button>
+              <button @click="l1AdminForm=true;l1NewUser.pass=genPass()" class="btn btn-primary btn-sm">+ Add User</button>
             </div>
           </div>
 
@@ -1382,7 +1382,13 @@ textarea.field{resize:none}
                   </div>
                   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                     <div><div class="f-label">Username *</div><input type="text" x-model="l1NewUser.username" class="field" placeholder="e.g. naief@calo.app" style="width:100%;box-sizing:border-box" autocomplete="off"></div>
-                    <div><div class="f-label">Password *</div><input type="text" x-model="l1NewUser.pass" class="field" placeholder="e.g. Tc@BHR25" style="width:100%;box-sizing:border-box"></div>
+                    <div>
+                      <div class="f-label">Password *</div>
+                      <div style="display:flex;gap:6px;align-items:center">
+                        <input type="text" x-model="l1NewUser.pass" class="field" placeholder="Auto-generated" style="width:100%;box-sizing:border-box;flex:1">
+                        <button type="button" @click="l1NewUser.pass=genPass()" title="Regenerate password" style="flex-shrink:0;background:var(--w2);border:1px solid var(--w3);border-radius:var(--r8);width:34px;height:34px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">🔄</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div style="display:flex;gap:8px;margin-top:20px">
@@ -2285,7 +2291,7 @@ textarea.field{resize:none}
             </div>
             <div style="display:flex;gap:8px">
               <button @click="tcBulkOpen=true" class="btn btn-ghost btn-sm">📥 Bulk Upload CSV</button>
-              <button @click="tcAddTrainerForm=true;tcEditIdx=-1;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false}" class="btn btn-primary btn-sm">+ Add Trainer</button>
+              <button @click="tcAddTrainerForm=true;tcEditIdx=-1;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:genPass(),photo:'',active:true,showPass:false}" class="btn btn-primary btn-sm">+ Add Trainer</button>
             </div>
           </div>
 
@@ -2397,7 +2403,13 @@ textarea.field{resize:none}
                   </div>
                   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                     <div><div class="f-label">Username *</div><input type="text" x-model="tcNewTrainer.username" class="field" placeholder="e.g. tr-hr-uae" style="width:100%;box-sizing:border-box"></div>
-                    <div><div class="f-label">Password *</div><input type="text" x-model="tcNewTrainer.password" class="field" placeholder="e.g. Tr@hr@UAE" style="width:100%;box-sizing:border-box"></div>
+                    <div>
+                      <div class="f-label">Password *</div>
+                      <div style="display:flex;gap:6px;align-items:center">
+                        <input type="text" x-model="tcNewTrainer.password" class="field" placeholder="Auto-generated" style="width:100%;box-sizing:border-box;flex:1">
+                        <button type="button" @click="tcNewTrainer.password=genPass()" title="Regenerate password" style="flex-shrink:0;background:var(--w2);border:1px solid var(--w3);border-radius:var(--r8);width:34px;height:34px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">🔄</button>
+                      </div>
+                    </div>
                   </div>
                   <div x-show="tcEditIdx<0" style="padding:10px;background:var(--w2);border-radius:var(--r8);font-size:11px;color:var(--w5)">
                     This trainer will receive login access to their dashboard and appear in the Global Trainers Directory.
@@ -4344,6 +4356,15 @@ function app(){
       try { localStorage.setItem('calo_session', JSON.stringify(r)); } catch(e){}
     },
 
+    genPass(){
+      const c='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      const s='@#$!';
+      let p='';
+      for(let i=0;i<8;i++) p+=c[Math.floor(Math.random()*c.length)];
+      p+=s[Math.floor(Math.random()*s.length)];
+      p+=Math.floor(Math.random()*90+10);
+      return p;
+    },
     loginInstr(u){
       if(!u) return '';
       const card={2:'RTS',3:'Training Coord.',4:'Trainer / Officer'}[u.level]||'Global Admin';
