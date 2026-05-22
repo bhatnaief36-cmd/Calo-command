@@ -270,7 +270,7 @@ textarea.field{resize:none}
     <div style="display:flex;flex-direction:column;gap:14px">
       <div>
         <div class="f-label">User ID</div>
-        <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter your user ID" class="field" style="text-transform:uppercase;font-weight:700;letter-spacing:.04em" autocomplete="off">
+        <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter your user ID" class="field" style="font-weight:700;letter-spacing:.04em" autocomplete="off">
       </div>
       <div>
         <div class="f-label">Password</div>
@@ -1197,6 +1197,10 @@ textarea.field{resize:none}
 
           <!-- User list -->
           <div style="display:flex;flex-direction:column;gap:8px">
+            <div x-show="l1UsersLoading" style="text-align:center;padding:20px;color:var(--w5)">
+              <div class="spinner" style="margin:0 auto 8px"></div>
+              <div style="font-size:12px">Loading users from Google Sheets…</div>
+            </div>
             <template x-for="(u,ui) in l1FilteredUsers()">
               <div class="card" style="padding:14px" :style="!u.active?'opacity:.55':''">
                 <div style="display:flex;align-items:center;gap:14px">
@@ -1221,6 +1225,8 @@ textarea.field{resize:none}
                     :style="u.active!==false?'color:var(--danger)':'color:var(--green)'"
                     x-text="u.active!==false?'Deactivate':'Activate'">
                   </button>
+                  <button @click="l1ResetUserPW(u.username)" class="btn btn-ghost btn-sm" style="color:var(--info)">Reset PW</button>
+                  <button @click="l1DeleteUser(u.username)" class="btn btn-ghost btn-sm" style="color:var(--danger)">Delete</button>
                 </div>
               </div>
             </template>
@@ -3950,7 +3956,7 @@ function app(){
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:''},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
-    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],
+    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
@@ -4063,15 +4069,10 @@ function app(){
             this.saveSession(r);
             this.loggedIn=true;
             this.loadMaterials();
-            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
-            this.l1LoadAnnouncements(); // All levels load announcements
-          if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
-          if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
-            if(r.level===1){this.l1LoadUsers();this.l1LoadAnnouncements();this.l1LoadAudit();this.loadSlaRules();}
-            this.l1LoadAnnouncements(); // All levels load announcements
-          if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
-          if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
-          if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
+            this.l1LoadAnnouncements();
+            if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
+            if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
+            if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
             this.fetchAll();
           } else {this.lerr='Invalid credentials. Please try again.';}
         })
@@ -4163,34 +4164,35 @@ function app(){
 
     // ── L1 EXECUTIVE METHODS ──────────────────────────────────────
     l1FilteredUsers(){
-      const base = [
-        {name:'RTS-GLOBAL',username:'RTS-GLOBAL',pass:'Rts@Global25',level:2,market:'All',dept:'',title:'Regional Training Specialist',active:true},
-        {name:'TC-UAE',username:'TC-UAE',pass:'Tc@UAE25',level:3,market:'UAE',dept:'',title:'Training Coordinator · UAE',active:true},
-        {name:'TC-QTR',username:'TC-QTR',pass:'Tc@QTR25',level:3,market:'Qatar',dept:'',title:'Training Coordinator · Qatar',active:true},
-        {name:'HR-UAE',username:'HR-UAE',pass:'Hr@UAE25',level:4,market:'UAE',dept:'HR_Status',title:'HR Officer · UAE',active:true},
-        {name:'TR-QUAL-UAE',username:'TR-QUAL-UAE',pass:'Tr@qual@UAE',level:4,market:'UAE',dept:'Quality_Status',title:'Quality Trainer · UAE',active:true},
-        {name:'DM-UAE',username:'DM-UAE',pass:'Dm@UAE25',level:4,market:'UAE',dept:'DEPT_MANAGER',title:'Department Manager · UAE',active:true},
-        ...this.l1Users
-      ];
       const t = this.l1AdminTab;
-      if(t==='all') return base;
-      if(t==='2')    return base.filter(u=>u.level===2);
-      if(t==='3')    return base.filter(u=>u.level===3);
-      if(t==='4hr')  return base.filter(u=>u.level===4&&u.dept==='HR_Status');
-      if(t==='4qual')return base.filter(u=>u.level===4&&u.dept==='Quality_Status');
-      if(t==='4dm')  return base.filter(u=>u.level===4&&u.dept==='DEPT_MANAGER');
-      return base;
+      const users = this.l1Users;
+      if(t==='all')   return users;
+      if(t==='2')     return users.filter(u=>u.level===2);
+      if(t==='3')     return users.filter(u=>u.level===3);
+      if(t==='4hr')   return users.filter(u=>u.level===4&&u.dept==='HR_Status');
+      if(t==='4qual') return users.filter(u=>u.level===4&&u.dept==='Quality_Status');
+      if(t==='4dm')   return users.filter(u=>u.level===4&&u.dept==='DEPT_MANAGER');
+      return users;
     },
-    l1SaveUsers(){ try{localStorage.setItem('calo_l1_users',JSON.stringify(this.l1Users));}catch(e){} },
-    l1LoadUsers(){ try{const d=localStorage.getItem('calo_l1_users');if(d)this.l1Users=JSON.parse(d);}catch(e){} },
+    l1SaveUsers(){
+      // No-op: users are now stored in Google Sheets via addDynamicUser
+    },
+    l1LoadUsers(){
+      this.l1UsersLoading=true;
+      this.gas('getUsers').then(users=>{
+        this.l1Users=users||[];
+        this.l1UsersLoading=false;
+      }).catch(()=>{
+        // Fallback to localStorage cache if Sheets unreachable
+        try{const d=localStorage.getItem('calo_l1_users_cache');if(d)this.l1Users=JSON.parse(d);}catch(e){}
+        this.l1UsersLoading=false;
+      });
+    },
     l1SaveNewUser(){
       if(!this.l1NewUser.name||!this.l1NewUser.username||!this.l1NewUser.pass)return;
       const newU = Object.assign({},this.l1NewUser);
-      this.l1Users.push(newU);
-      this.l1SaveUsers();
-      this.l1AuditLog.push({type:'add',action:'User Created',detail:newU.username+' · L'+newU.level+' · '+newU.market,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      this.l1AuditLog.push({type:'add',action:'User Created',detail:newU.username+' · L'+newU.level+' · '+newU.market,user:this.mname,date:new Date().toLocaleDateString()});
       this.l1SaveAudit();
-      // Write to Google Sheet Dynamic_Users tab so user can log in
       this.gas('addDynamicUser',{user:{
         username: newU.username,
         pass:     newU.pass,
@@ -4199,10 +4201,34 @@ function app(){
         market:   newU.market,
         dept:     newU.dept||'',
         title:    newU.title||'L'+newU.level+' · '+newU.market
-      }}).then(r=>{ console.log('User synced to sheet:', r); })
-         .catch(e=>{ console.warn('Sheet sync failed — user saved locally only:', e); });
+      }}).then(()=>{
+        this.l1LoadUsers();
+        // Cache to localStorage as backup
+        try{localStorage.setItem('calo_l1_users_cache',JSON.stringify(this.l1Users));}catch(e){}
+      }).catch(e=>{console.warn('Sheet sync failed:',e);alert('Failed to save user to Google Sheets. Check your connection.');});
       this.l1AdminForm=false;
       this.l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true};
+    },
+    l1DeleteUser(username){
+      if(!confirm('Permanently delete user "'+username+'"? They will no longer be able to log in.'))return;
+      this.gas('deleteUser',{username}).then(r=>{
+        if(r&&r.success){
+          this.l1Users=this.l1Users.filter(u=>u.username!==username);
+          this.l1AuditLog.push({type:'delete',action:'User Deleted',detail:username,user:this.mname,date:new Date().toLocaleDateString()});
+          this.l1SaveAudit();
+        } else {alert('Delete failed — user may not exist in Sheets.');}
+      }).catch(()=>alert('Delete failed. Check your connection.'));
+    },
+    l1ResetUserPW(username){
+      const newPass=prompt('New password for '+username+':');
+      if(!newPass||!newPass.trim())return;
+      this.gas('updateUserPassword',{username,newPassword:newPass.trim()}).then(r=>{
+        if(r&&r.success){
+          const u=this.l1Users.find(x=>x.username===username);
+          if(u)u.pass=newPass.trim();
+          alert('Password updated for '+username);
+        } else {alert('Update failed — user may not exist in Sheets.');}
+      }).catch(()=>alert('Update failed. Check your connection.'));
     },
     l1PostAnnouncement(){
       if(!this.l1AnnNew.title||!this.l1AnnNew.body)return;
