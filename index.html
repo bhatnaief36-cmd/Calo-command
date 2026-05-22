@@ -4133,7 +4133,7 @@ function app(){
     ],
     sm_:false,sd:false,sf:false,
     se:null,as:null,mods:[],at:{name:'',img:''},atNotes:'',stpl:'',
-    de:null,sdExpanded:{},
+    de:null,sdExpanded:{pre:false,ori:false,hr:false,qual:false,ojt:false,assess:false,cert:false},
     qualSO:{open:false,emp:null,dept:''},
     nh:{name:'',role:'',country:'UAE',date:'',image:'',notes:'',priority:'normal'},
     fl:{show:false,leaving:false,title:'',name:'',sub:'',b:'',img:''},
@@ -4983,7 +4983,7 @@ function app(){
         .catch(()=>{this.sv=false;alert('Save failed. Please retry.');});
     },
 
-    odetail(e){this.de=JSON.parse(JSON.stringify(e));this.sdExpanded={};this.sd=true;},
+    odetail(e){this.de=JSON.parse(JSON.stringify(e));this.sdExpanded={pre:false,ori:false,hr:false,qual:false,ojt:false,assess:false,cert:false};this.sd=true;},
     snotes(e){
       this.gas('updateCandidateField',{row:e.row,field:'Notes',value:e.notes});
       const o=this.emps.find(x=>x.row===e.row);if(o)o.notes=e.notes;
