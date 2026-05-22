@@ -3855,25 +3855,25 @@ textarea.field{resize:none}
 
       <div class="stitle">Lifecycle Stages <span style="font-size:10px;font-weight:300;color:var(--w5)">(tap to expand tasks)</span></div>
       <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
-        <template x-for="s in stages" :key="s.k">
+        <template x-for="(s, si) in stages" :key="si">
           <div>
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded[s.k]?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded[s.k]=!sdExpanded[s.k]">
-              <span style="font-size:16px" x-text="s.i"></span>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded[stages[si].k]?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded[stages[si].k]=!sdExpanded[stages[si].k]">
+              <span style="font-size:16px" x-text="stages[si].i"></span>
               <div style="flex:1">
                 <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                  <span style="font-size:12px;font-weight:700" x-text="s.label"></span>
-                  <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,s.k)===100?'var(--green)':'var(--warn)')">
-                    <span x-text="de?.[s.k]?.done||0"></span>/<span x-text="de?.[s.k]?.total||0"></span>
+                  <span style="font-size:12px;font-weight:700" x-text="stages[si].label"></span>
+                  <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,stages[si].k)===100?'var(--green)':'var(--warn)')">
+                    <span x-text="de?.[stages[si].k]?.done||0"></span>/<span x-text="de?.[stages[si].k]?.total||0"></span>
                   </span>
                 </div>
-                <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,s.k)+'%'"></div></div>
+                <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,stages[si].k)+'%'"></div></div>
               </div>
-              <span x-show="de?.trainers?.[s.k]?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.[s.k]?.name"></span>
-              <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded[s.k]?'▲':'▼'"></span>
+              <span x-show="de?.trainers?.[stages[si].k]?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.[stages[si].k]?.name"></span>
+              <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded[stages[si].k]?'▲':'▼'"></span>
             </div>
-            <div x-show="sdExpanded[s.k]" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
-              <div x-show="!de?.[s.k]?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
-              <template x-for="task in (de?.[s.k]?.items||[])">
+            <div x-show="sdExpanded[stages[si].k]" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+              <div x-show="!de?.[stages[si].k]?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
+              <template x-for="task in (de?.[stages[si].k]?.items||[])" :key="task.name">
                 <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)">
                   <div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'">
                     <svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
@@ -3882,9 +3882,9 @@ textarea.field{resize:none}
                   <span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span>
                 </div>
               </template>
-              <div x-show="de?.trainerNotes?.[s.k]" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)">
+              <div x-show="de?.trainerNotes?.[stages[si].k]" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)">
                 <div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div>
-                <div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes[s.k]"></div>
+                <div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes[stages[si].k]"></div>
               </div>
             </div>
           </div>
