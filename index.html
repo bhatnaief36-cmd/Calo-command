@@ -253,6 +253,14 @@ textarea.field{resize:none}
   div[style*="grid-template-columns:repeat(2"]{grid-template-columns:1fr!important}
 }
 /* ═══ END MOBILE RESPONSIVE ════════════════════════════════════ */
+@media print {
+  .sidebar,.topbar,.overlay{display:none!important}
+  .main{margin-left:0!important;padding:20px!important}
+  [x-show]:not([style*="display: none"]):not([style*="display:none"]) > *{break-inside:avoid}
+  body{background:#fff!important}
+  .card{box-shadow:none!important;border:1px solid #ddd!important}
+  button{display:none!important}
+}
 </style>
 </head>
 <body x-data="app()" x-init="init()">
@@ -421,10 +429,6 @@ textarea.field{resize:none}
         <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_pipe'?'on':''" @click="v='tc_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Pipeline
-        </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_stages'?'on':''" @click="v='tc_stages'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-          Stage Overview
         </div>
         <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_depts'?'on':''" @click="v='tc_depts'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
@@ -2209,7 +2213,7 @@ textarea.field{resize:none}
           </div>
 
           <!-- Bulk CSV Upload Modal -->
-          <div x-show="tcBulkOpen" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="tcBulkOpen?'display:flex':''">
+          <div x-show="tcBulkOpen" style="display:none" class="overlay" @click.self="tcBulkOpen=false;tcBulkPreview=[]">
             <div class="card" style="width:100%;max-width:560px;padding:28px;border-radius:var(--r16)">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
                 <div><div style="font-size:18px;font-weight:900">Bulk Upload Trainers</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Upload a CSV file with trainer details</div></div>
@@ -2246,7 +2250,7 @@ textarea.field{resize:none}
           </div>
 
           <!-- Add / Edit Trainer Modal -->
-          <div x-show="tcAddTrainerForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="tcAddTrainerForm?'display:flex':''">
+          <div x-show="tcAddTrainerForm" style="display:none" class="overlay" @click.self="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1">
             <div class="card" style="width:100%;max-width:480px;padding:28px;border-radius:var(--r16)">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
                 <div><div style="font-size:18px;font-weight:900;color:var(--ch)" x-text="tcEditIdx>=0?'Edit Trainer':'Add Trainer'"></div><div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="mmarket+' Mountain Peak'"></div></div>
@@ -2493,9 +2497,15 @@ textarea.field{resize:none}
 
         <!-- L3 REPORTS -->
         <div x-show="v==='tc_reports' && mlevel===3">
-          <div style="margin-bottom:24px">
-            <div class="ptitle">Reports</div>
-            <div class="psub" x-text="mmarket+' Mountain Peak · All Stages'"></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Reports</div>
+              <div class="psub" x-text="mmarket+' Mountain Peak · All Stages'"></div>
+            </div>
+            <button @click="window.print()" class="btn btn-ghost btn-sm" style="margin-top:4px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Export PDF
+            </button>
           </div>
           <!-- Stage matrix table -->
           <div class="card" style="padding:18px;margin-bottom:14px">
@@ -3845,7 +3855,7 @@ textarea.field{resize:none}
 
       <div class="stitle">Lifecycle Stages <span style="font-size:10px;font-weight:300;color:var(--w5)">(tap to expand tasks)</span></div>
       <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
-        <template x-for="s in stages">
+        <template x-for="s in stages" :key="s.k">
           <div>
             <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded[s.k]?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded[s.k]=!sdExpanded[s.k]">
               <span style="font-size:16px" x-text="s.i"></span>
