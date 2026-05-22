@@ -262,12 +262,15 @@ textarea.field{resize:none}
 }
 /* ═══ END MOBILE RESPONSIVE ════════════════════════════════════ */
 @media print {
-  .sidebar,.topbar,.overlay{display:none!important}
+  html,body{height:auto!important;overflow:visible!important;background:#fff!important}
+  .app-shell{display:block!important;height:auto!important;overflow:visible!important}
+  .sidebar,.topbar,.overlay,.mob-nav-toggle,.mob-overlay{display:none!important}
+  .main-area{height:auto!important;overflow:visible!important;width:100%!important;background:#fff!important}
   .main{margin-left:0!important;padding:20px!important}
-  [x-show]:not([style*="display: none"]):not([style*="display:none"]) > *{break-inside:avoid}
-  body{background:#fff!important}
-  .card{box-shadow:none!important;border:1px solid #ddd!important}
+  .cmd-bar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .card{box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid}
   button{display:none!important}
+  [x-cloak]{display:none!important}
 }
 </style>
 </head>
