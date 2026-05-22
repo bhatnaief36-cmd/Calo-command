@@ -3855,40 +3855,154 @@ textarea.field{resize:none}
 
       <div class="stitle">Lifecycle Stages <span style="font-size:10px;font-weight:300;color:var(--w5)">(tap to expand tasks)</span></div>
       <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
-        <template x-for="(s, si) in stages" :key="si">
-          <div>
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded[stages[si].k]?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded[stages[si].k]=!sdExpanded[stages[si].k]">
-              <span style="font-size:16px" x-text="stages[si].i"></span>
-              <div style="flex:1">
-                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                  <span style="font-size:12px;font-weight:700" x-text="stages[si].label"></span>
-                  <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,stages[si].k)===100?'var(--green)':'var(--warn)')">
-                    <span x-text="de?.[stages[si].k]?.done||0"></span>/<span x-text="de?.[stages[si].k]?.total||0"></span>
-                  </span>
-                </div>
-                <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,stages[si].k)+'%'"></div></div>
+
+        <!-- Pre-Boarding -->
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['pre']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['pre']=!sdExpanded['pre']">
+            <span style="font-size:16px">📋</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:700">Pre-Boarding</span>
+                <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'pre')===100?'var(--green)':'var(--warn)')"><span x-text="de?.pre?.done||0"></span>/<span x-text="de?.pre?.total||0"></span></span>
               </div>
-              <span x-show="de?.trainers?.[stages[si].k]?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.[stages[si].k]?.name"></span>
-              <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded[stages[si].k]?'▲':'▼'"></span>
+              <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'pre')+'%'"></div></div>
             </div>
-            <div x-show="sdExpanded[stages[si].k]" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
-              <div x-show="!de?.[stages[si].k]?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
-              <template x-for="task in (de?.[stages[si].k]?.items||[])" :key="task.name">
-                <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)">
-                  <div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'">
-                    <svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                  </div>
-                  <span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span>
-                  <span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span>
-                </div>
-              </template>
-              <div x-show="de?.trainerNotes?.[stages[si].k]" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)">
-                <div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div>
-                <div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes[stages[si].k]"></div>
-              </div>
-            </div>
+            <span x-show="de?.trainers?.pre?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.pre?.name"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['pre']?'▲':'▼'"></span>
           </div>
-        </template>
+          <div x-show="sdExpanded['pre']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+            <div x-show="!de?.pre?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
+            <template x-for="task in (de?.pre?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
+            <div x-show="de?.trainerNotes?.pre" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.pre"></div></div>
+          </div>
+        </div>
+
+        <!-- Orientation -->
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['ori']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['ori']=!sdExpanded['ori']">
+            <span style="font-size:16px">🎯</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:700">Orientation</span>
+                <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'ori')===100?'var(--green)':'var(--warn)')"><span x-text="de?.ori?.done||0"></span>/<span x-text="de?.ori?.total||0"></span></span>
+              </div>
+              <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'ori')+'%'"></div></div>
+            </div>
+            <span x-show="de?.trainers?.ori?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.ori?.name"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['ori']?'▲':'▼'"></span>
+          </div>
+          <div x-show="sdExpanded['ori']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+            <div x-show="!de?.ori?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
+            <template x-for="task in (de?.ori?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
+            <div x-show="de?.trainerNotes?.ori" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.ori"></div></div>
+          </div>
+        </div>
+
+        <!-- HR Compliance -->
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['hr']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['hr']=!sdExpanded['hr']">
+            <span style="font-size:16px">📝</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:700">HR Compliance</span>
+                <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'hr')===100?'var(--green)':'var(--warn)')"><span x-text="de?.hr?.done||0"></span>/<span x-text="de?.hr?.total||0"></span></span>
+              </div>
+              <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'hr')+'%'"></div></div>
+            </div>
+            <span x-show="de?.trainers?.hr?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.hr?.name"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['hr']?'▲':'▼'"></span>
+          </div>
+          <div x-show="sdExpanded['hr']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+            <div x-show="!de?.hr?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
+            <template x-for="task in (de?.hr?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
+            <div x-show="de?.trainerNotes?.hr" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.hr"></div></div>
+          </div>
+        </div>
+
+        <!-- Quality Standards -->
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['qual']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['qual']=!sdExpanded['qual']">
+            <span style="font-size:16px">⭐</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:700">Quality Std.</span>
+                <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'qual')===100?'var(--green)':'var(--warn)')"><span x-text="de?.qual?.done||0"></span>/<span x-text="de?.qual?.total||0"></span></span>
+              </div>
+              <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'qual')+'%'"></div></div>
+            </div>
+            <span x-show="de?.trainers?.qual?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.qual?.name"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['qual']?'▲':'▼'"></span>
+          </div>
+          <div x-show="sdExpanded['qual']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+            <div x-show="!de?.qual?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
+            <template x-for="task in (de?.qual?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
+            <div x-show="de?.trainerNotes?.qual" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.qual"></div></div>
+          </div>
+        </div>
+
+        <!-- OJT Training -->
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['ojt']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['ojt']=!sdExpanded['ojt']">
+            <span style="font-size:16px">🔧</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:700">OJT Training</span>
+                <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'ojt')===100?'var(--green)':'var(--warn)')"><span x-text="de?.ojt?.done||0"></span>/<span x-text="de?.ojt?.total||0"></span></span>
+              </div>
+              <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'ojt')+'%'"></div></div>
+            </div>
+            <span x-show="de?.trainers?.ojt?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.ojt?.name"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['ojt']?'▲':'▼'"></span>
+          </div>
+          <div x-show="sdExpanded['ojt']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+            <div x-show="!de?.ojt?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
+            <template x-for="task in (de?.ojt?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
+            <div x-show="de?.trainerNotes?.ojt" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.ojt"></div></div>
+          </div>
+        </div>
+
+        <!-- Assessment -->
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['assess']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['assess']=!sdExpanded['assess']">
+            <span style="font-size:16px">📊</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:700">Assessment</span>
+                <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'assess')===100?'var(--green)':'var(--warn)')"><span x-text="de?.assess?.done||0"></span>/<span x-text="de?.assess?.total||0"></span></span>
+              </div>
+              <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'assess')+'%'"></div></div>
+            </div>
+            <span x-show="de?.trainers?.assess?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.assess?.name"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['assess']?'▲':'▼'"></span>
+          </div>
+          <div x-show="sdExpanded['assess']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+            <div x-show="!de?.assess?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
+            <template x-for="task in (de?.assess?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
+            <div x-show="de?.trainerNotes?.assess" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.assess"></div></div>
+          </div>
+        </div>
+
+        <!-- Certification -->
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['cert']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['cert']=!sdExpanded['cert']">
+            <span style="font-size:16px">🏆</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:700">Certification</span>
+                <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'cert')===100?'var(--green)':'var(--warn)')"><span x-text="de?.cert?.done||0"></span>/<span x-text="de?.cert?.total||0"></span></span>
+              </div>
+              <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'cert')+'%'"></div></div>
+            </div>
+            <span x-show="de?.trainers?.cert?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.cert?.name"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['cert']?'▲':'▼'"></span>
+          </div>
+          <div x-show="sdExpanded['cert']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+            <div x-show="!de?.cert?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
+            <template x-for="task in (de?.cert?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
+            <div x-show="de?.trainerNotes?.cert" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.cert"></div></div>
+          </div>
+        </div>
+
       </div>
 
       <div class="stitle">Notes</div>
