@@ -763,6 +763,7 @@ textarea.field{resize:none}
                 <div style="width:8px;height:8px;border-radius:50%;background:#00C07F;box-shadow:0 0 0 3px rgba(0,192,127,.3)"></div>
                 <span style="font-size:11px;color:rgba(255,255,255,.6)">Live</span>
                 <button @click="fetchAll()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);padding:6px 12px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">↻ Refresh</button>
+                <button @click="window.print()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);padding:6px 12px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">⬇ Export PDF</button>
               </div>
             </div>
           </div>
@@ -4622,7 +4623,16 @@ function app(){
       this.gas('saveSLARules',{rules:this.slaRules}).then(()=>this.dofl('SLA Saved','','','Rules updated successfully','')).catch(()=>this.dofl('SLA Saved','','','Rules updated successfully',''));
     },
     loadSlaRules(){
-      this.gas('getSLARules').then(d=>{if(Array.isArray(d))this.slaRules=d;}).catch(()=>{});
+      this.gas('getSLARules').then(d=>{
+        if(!d) return;
+        const base={pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3};
+        if(Array.isArray(d)){
+          d.forEach(r=>{ if(r&&r.stage&&r.days) base[r.stage]=parseInt(r.days)||base[r.stage]; });
+          this.slaRules=Object.assign({},base);
+        } else if(typeof d==='object'){
+          this.slaRules=Object.assign({},base,d);
+        }
+      }).catch(()=>{});
     },
     // ── END L1 EXECUTIVE METHODS ──────────────────────────────────
     // ── L2 REGIONAL TRAINING SPECIALIST METHODS ──────────────────
