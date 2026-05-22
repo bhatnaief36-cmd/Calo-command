@@ -565,19 +565,24 @@ textarea.field{resize:none}
           </div>
         </div>
 
-      <!-- Mountain Peaks (L1) -->
-      <div x-show="mlevel===1">
-        <div class="nav-group-label" style="margin-top:8px">Mountain Peaks</div>
-        <div class="branch-row" :class="mf==='All'?'on':''" @click="mf='All'">
-          <span style="font-weight:700">🌍 All Peaks</span>
-          <span class="branch-ct" x-text="emps.length"></span>
+      <!-- Mountain Peaks (L1) collapsible -->
+      <div x-show="mlevel===1" style="margin-top:8px">
+        <div @click="l1PeaksOpen=!l1PeaksOpen" style="display:flex;align-items:center;justify-content:space-between;padding:8px 18px;cursor:pointer;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--w5);user-select:none" :style="l1PeaksOpen?'color:var(--ch)':''">
+          <span>Mountain Peaks</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .2s" :style="l1PeaksOpen?'transform:rotate(180deg)':''"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <template x-for="b in branches">
-          <div class="branch-row" :class="mf===b?'on':''" @click="mf=b">
-            <span><span x-text="flag(b)"></span>&nbsp;<span x-text="b"></span></span>
-            <span class="branch-ct" x-text="emps.filter(e=>e.country===b).length"></span>
+        <div x-show="l1PeaksOpen" style="display:none" :style="l1PeaksOpen?'display:block':''">
+          <div class="branch-row" :class="mf==='All'?'on':''" @click="mf='All'">
+            <span style="font-weight:700">🌍 All Peaks</span>
+            <span class="branch-ct" x-text="emps.length"></span>
           </div>
-        </template>
+          <template x-for="b in branches">
+            <div class="branch-row" :class="mf===b?'on':''" @click="mf=b">
+              <span><span x-text="flag(b)"></span>&nbsp;<span x-text="b"></span></span>
+              <span class="branch-ct" x-text="emps.filter(e=>e.country===b).length"></span>
+            </div>
+          </template>
+        </div>
       </div>
 
       <!-- Own Mountain Peak (L2–L4) -->
@@ -2902,7 +2907,7 @@ textarea.field{resize:none}
           </div>
         </div>
         <!-- QUALITY SIGN-OFF DEPT ROUTING MODAL -->
-        <div x-show="qualSO.open" style="display:none" class="overlay" @click.self="qualSO.open=false" :style="qualSO.open?'display:flex':''">
+        <div x-show="qualSO.open" style="display:none" class="overlay" @click.self="qualSO.open=false">
           <div class="modal" style="max-width:420px">
             <div class="mh">
               <div style="font-size:17px;font-weight:900">Route to Department Manager</div>
@@ -3369,7 +3374,7 @@ textarea.field{resize:none}
         <!-- ══════════════════════════════════════════════════════ -->
         <!-- HR ENTRY FORM MODAL                                    -->
         <!-- ══════════════════════════════════════════════════════ -->
-        <div x-show="hrForm && loggedIn" style="display:none" class="overlay" @click.self="hrForm=false" :style="(hrForm&&loggedIn)?'display:flex':''">
+        <div x-show="hrForm && loggedIn" style="display:none" class="overlay" @click.self="hrForm=false">
           <div class="modal" style="max-width:480px;max-height:92vh">
             <div class="mh">
               <div style="font-size:18px;font-weight:900;color:var(--ch)">New Candidate</div>
@@ -3979,7 +3984,7 @@ function app(){
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:''},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
-    l1ExecOpen:false,l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,l1Selected:[],
+    l1ExecOpen:false,l1PeaksOpen:false,l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,l1Selected:[],
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
