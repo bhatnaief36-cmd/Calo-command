@@ -1435,7 +1435,7 @@ textarea.field{resize:none}
                     </div>
                     <div style="font-size:11px;color:var(--w5);margin-top:4px" x-text="'To: '+(a.audience==='all'?'All Users':a.audience==='2'?'RTS':a.audience==='3'?'Coordinators':'Trainers')+' · '+a.date"></div>
                   </div>
-                  <button @click="l1Announcements.splice(l1Announcements.length-1-ai,1);l1SaveAnnouncements()" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button @click="l1DeleteAnnouncement(a)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
                 <div style="font-size:13px;color:var(--ch);line-height:1.5" x-text="a.body"></div>
               </div>
@@ -2008,7 +2008,7 @@ textarea.field{resize:none}
                   <div style="width:40px;height:40px;border-radius:var(--r8);background:var(--green-l);display:flex;align-items:center;justify-content:center;font-size:20px" x-text="d.icon||'🏢'"></div>
                   <div><div style="font-size:14px;font-weight:900" x-text="d.name"></div><div style="font-size:11px;color:var(--w5)">Global department</div></div>
                 </div>
-                <button @click="rtsDepts.splice(di,1);rtsSaveDepts()" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;color:var(--danger)">Remove</button>
+                <button @click="rtsDeleteDept(di)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;color:var(--danger)">Remove</button>
               </div>
             </template>
           </div>
@@ -2211,7 +2211,7 @@ textarea.field{resize:none}
                   </div>
                   <div style="display:flex;gap:6px">
                     <button @click="tcEditTrainer(ti)" class="btn btn-ghost btn-sm">Edit</button>
-                    <button @click="t.active=!t.active;tcSaveTrainers()" class="btn btn-ghost btn-sm" :style="t.active?'color:var(--danger)':'color:var(--green)'" x-text="t.active?'Deactivate':'Activate'"></button>
+                    <button @click="t.active=!t.active;tcSaveOneTrainer(t)" class="btn btn-ghost btn-sm" :style="t.active?'color:var(--danger)':'color:var(--green)'" x-text="t.active?'Deactivate':'Activate'"></button>
                     <button @click="tcResetPW(ti)" class="btn btn-ghost btn-sm" style="color:var(--info)">Reset PW</button>
                     <button @click="tcDeleteTrainer(ti)" class="btn btn-ghost btn-sm" style="color:var(--danger)">Delete</button>
                   </div>
@@ -2431,7 +2431,7 @@ textarea.field{resize:none}
                   </div>
                 </div>
                 <div style="display:flex;gap:6px">
-                  <button @click="tcDepts.splice(di,1);tcSaveDepts()" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;color:var(--danger)">Remove</button>
+                  <button @click="tcDeleteDept(di)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;color:var(--danger)">Remove</button>
                 </div>
               </div>
             </template>
@@ -4197,42 +4197,19 @@ function app(){
     },
 
     saveMaterials(){
-      // Persist training materials per user to localStorage
-      try {
-        const key = 'calo_mat_'+this.mname+'_'+(this.mdept||'all');
-        const data = {
-          qual: this.qualMaterials,
-          dm:   this.dmMaterials,
-          hr:   this.hrMaterials,
-        };
-        localStorage.setItem(key, JSON.stringify(data));
-      } catch(e){}
+      // Individual add/remove methods handle GAS sync; this is kept as no-op for compatibility
     },
     loadMaterials(){
-      try {
-        const key = 'calo_mat_'+this.mname+'_'+(this.mdept||'all');
-        const raw = localStorage.getItem(key);
-        if(raw){
-          const data = JSON.parse(raw);
-          if(data.qual) this.qualMaterials = data.qual;
-          if(data.dm)   this.dmMaterials   = data.dm;
-          if(data.hr)   this.hrMaterials   = data.hr;
-        }
-      } catch(e){}
-      // Merge TC-shared materials for this role
+      if(this.mlevel !== 4 || !this.mmarket) return;
       const deptRoleMap = {'HR_Status':'hr','Quality_Status':'qual','DEPT_MANAGER':'dm'};
       const roleKey = deptRoleMap[this.mdept||''];
-      if(roleKey && this.mmarket){
-        try {
-          const shared = JSON.parse(localStorage.getItem('calo_shared_mat_'+this.mmarket+'_'+roleKey)||'[]');
-          const arrName = roleKey==='hr'?'hrMaterials':roleKey==='qual'?'qualMaterials':'dmMaterials';
-          const existing = this[arrName] || [];
-          shared.forEach(m => {
-            if(!existing.find(x=>x.url===m.url)) existing.push(Object.assign({},m,{sharedByTC:true}));
-          });
-          this[arrName] = existing;
-        } catch(e){}
-      }
+      if(!roleKey) return;
+      this.gas('getMaterials',{market:this.mmarket,role:roleKey}).then(d=>{
+        if(!Array.isArray(d)) return;
+        if(roleKey==='hr')   this.hrMaterials   = d;
+        else if(roleKey==='qual') this.qualMaterials = d;
+        else                 this.dmMaterials   = d;
+      }).catch(()=>{});
     },
     saveSession(r){
       try { localStorage.setItem('calo_session', JSON.stringify(r)); } catch(e){}
@@ -4261,6 +4238,7 @@ function app(){
             if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
             if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
             if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
+            if(r.level===4){this.tcLoadTrainers();}
             this.fetchAll();
           } else {this.lerr='Invalid credentials. Please try again.';}
         })
@@ -4432,13 +4410,19 @@ function app(){
     },
     l1PostAnnouncement(){
       if(!this.l1AnnNew.title||!this.l1AnnNew.body)return;
-      this.l1Announcements.push({...this.l1AnnNew,date:new Date().toLocaleDateString()});
-      this.l1SaveAnnouncements();
-      this.l1AuditLog.push({type:'info',action:'Announcement Posted',detail:this.l1AnnNew.title,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      const ann=Object.assign({},this.l1AnnNew,{date:new Date().toLocaleDateString()});
+      this.l1Announcements.push(ann);
+      this.gas('saveAnnouncement',{ann}).catch(()=>{});
+      this.l1AuditLog.push({type:'info',action:'Announcement Posted',detail:ann.title,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
       this.l1SaveAudit();
       this.l1AnnNew={title:'',body:'',priority:'normal',audience:'all'};
     },
-    l1SaveAnnouncements(){ try{localStorage.setItem('calo_announcements',JSON.stringify(this.l1Announcements));}catch(e){} },
+    l1SaveAnnouncements(){ /* no-op: per-item GAS saves in l1PostAnnouncement/l1DeleteAnnouncement */ },
+    l1DeleteAnnouncement(a){
+      const idx=this.l1Announcements.findIndex(x=>x.title===a.title&&x.date===a.date);
+      if(idx>=0) this.l1Announcements.splice(idx,1);
+      this.gas('deleteAnnouncement',{title:a.title,date:a.date}).catch(()=>{});
+    },
     visibleAnnouncements(){
       if(this.mlevel===1) return []; // L1 sees them in Announcements tab only
       return this.l1Announcements.filter(a=>{
@@ -4446,11 +4430,17 @@ function app(){
         return a.audience==='all' || a.audience===levelStr;
       }).slice(-3); // Show max 3 most recent
     },
-    l1LoadAnnouncements(){ try{const d=localStorage.getItem('calo_announcements');if(d)this.l1Announcements=JSON.parse(d);}catch(e){} },
+    l1LoadAnnouncements(){
+      this.gas('getAnnouncements').then(d=>{if(Array.isArray(d))this.l1Announcements=d;}).catch(()=>{});
+    },
     l1SaveAudit(){ try{localStorage.setItem('calo_audit',JSON.stringify(this.l1AuditLog));}catch(e){} },
     l1LoadAudit(){ try{const d=localStorage.getItem('calo_audit');if(d)this.l1AuditLog=JSON.parse(d);}catch(e){} },
-    saveSlaRules(){ try{localStorage.setItem('calo_sla',JSON.stringify(this.slaRules));this.dofl('SLA Saved','','','Rules updated successfully','');}catch(e){} },
-    loadSlaRules(){ try{const d=localStorage.getItem('calo_sla');if(d)this.slaRules=JSON.parse(d);}catch(e){} },
+    saveSlaRules(){
+      this.gas('saveSLARules',{rules:this.slaRules}).then(()=>this.dofl('SLA Saved','','','Rules updated successfully','')).catch(()=>this.dofl('SLA Saved','','','Rules updated successfully',''));
+    },
+    loadSlaRules(){
+      this.gas('getSLARules').then(d=>{if(Array.isArray(d))this.slaRules=d;}).catch(()=>{});
+    },
     // ── END L1 EXECUTIVE METHODS ──────────────────────────────────
     // ── L2 REGIONAL TRAINING SPECIALIST METHODS ──────────────────
     rtsFiltered(){
@@ -4468,16 +4458,18 @@ function app(){
     },
     rtsAddMaterial(){
       if(!this.rtsMat.title||!this.rtsMat.url) return;
-      this.rtsMaterials.push(Object.assign({},this.rtsMat));
+      const mat=Object.assign({},this.rtsMat,{market:'All',scope:'rts',addedBy:this.mname});
+      this.rtsMaterials.push(mat);
+      this.gas('saveMaterial',{material:mat,market:'All'}).catch(()=>{});
       this.rtsMat={title:'',type:'google_slides',url:'',desc:'',mp:'all'};
-      try { localStorage.setItem('calo_mat_rts', JSON.stringify(this.rtsMaterials)); } catch(e){}
     },
     rtsRemoveMaterial(i){
+      const m=this.rtsMaterials[i];
       this.rtsMaterials.splice(i,1);
-      try { localStorage.setItem('calo_mat_rts', JSON.stringify(this.rtsMaterials)); } catch(e){}
+      this.gas('deleteMaterial',{url:m.url,market:'All'}).catch(()=>{});
     },
     rtsLoadMaterials(){
-      try { const d=localStorage.getItem('calo_mat_rts'); if(d) this.rtsMaterials=JSON.parse(d); } catch(e){}
+      this.gas('getMaterials',{market:'All',scope:'rts'}).then(d=>{if(Array.isArray(d))this.rtsMaterials=d;}).catch(()=>{});
     },
     // ── END L2 METHODS ────────────────────────────────────────────
 
@@ -4510,14 +4502,22 @@ function app(){
       this.rtsMPForm=false;
       this.rtsNewMP={name:'',flag:''};
     },
-    rtsSaveDepts(){ try{localStorage.setItem('calo_rts_depts',JSON.stringify(this.rtsDepts));}catch(e){} },
-    rtsLoadDepts(){ try{const d=localStorage.getItem('calo_rts_depts');if(d)this.rtsDepts=JSON.parse(d);}catch(e){} },
+    rtsSaveDepts(){ /* no-op: per-item GAS saves in rtsSaveDept/rtsDeleteDept */ },
+    rtsLoadDepts(){
+      this.gas('getDepartments',{market:'All'}).then(d=>{if(Array.isArray(d))this.rtsDepts=d;}).catch(()=>{});
+    },
     rtsSaveDept(){
       if(!this.rtsNewDept.name)return;
-      this.rtsDepts.push(Object.assign({},this.rtsNewDept));
-      this.rtsSaveDepts();
+      const dept=Object.assign({},this.rtsNewDept);
+      this.rtsDepts.push(dept);
+      this.gas('saveDepartment',{dept,market:'All'}).catch(()=>{});
       this.rtsDeptForm=false;
       this.rtsNewDept={name:'',icon:''};
+    },
+    rtsDeleteDept(i){
+      const d=this.rtsDepts[i];
+      this.rtsDepts.splice(i,1);
+      this.gas('deleteDepartment',{name:d.name,market:'All'}).catch(()=>{});
     },
     // ── END RTS ADMIN METHODS ─────────────────────────────────────
     // ── L3 TRAINING COORDINATOR METHODS ─────────────────────────
@@ -4536,22 +4536,21 @@ function app(){
       return l;
     },
     tcSaveTrainers(){
-      try { localStorage.setItem('calo_trainers_'+this.mmarket, JSON.stringify(this.tcTrainers)); } catch(e){}
+      // Bulk save: sync each trainer to GAS (used for bulk import)
+      const market=this.mmarket;
+      this.tcTrainers.forEach(t=>{this.gas('saveTrainer',{trainer:Object.assign({},t,{market}),market}).catch(()=>{});});
+    },
+    tcSaveOneTrainer(t){
+      this.gas('saveTrainer',{trainer:Object.assign({},t,{market:this.mmarket}),market:this.mmarket}).catch(()=>{});
     },
     tcLoadTrainers(){
-      try {
-        const d = localStorage.getItem('calo_trainers_'+this.mmarket);
-        if(d) this.tcTrainers = JSON.parse(d);
-      } catch(e){}
+      if(!this.mmarket) return;
+      this.gas('getTrainers',{market:this.mmarket}).then(d=>{if(Array.isArray(d))this.tcTrainers=d;}).catch(()=>{});
     },
-    tcSaveDepts(){
-      try { localStorage.setItem('calo_depts_'+this.mmarket, JSON.stringify(this.tcDepts)); } catch(e){}
-    },
+    tcSaveDepts(){ /* no-op: per-item GAS saves in tcSaveDept/tcDeleteDept */ },
     tcLoadDepts(){
-      try {
-        const d = localStorage.getItem('calo_depts_'+this.mmarket);
-        if(d) this.tcDepts = JSON.parse(d);
-      } catch(e){}
+      if(!this.mmarket) return;
+      this.gas('getDepartments',{market:this.mmarket}).then(d=>{if(Array.isArray(d))this.tcDepts=d;}).catch(()=>{});
     },
     tcSaveNewTrainer(){
       if(!this.tcNewTrainer.name||!this.tcNewTrainer.stage||!this.tcNewTrainer.username||!this.tcNewTrainer.password) return;
@@ -4580,7 +4579,8 @@ function app(){
           title:    this.tcNewTrainer.name+' · '+this.tcNewTrainer.stage+' · '+this.mmarket
         }}).catch(e=>console.warn('Sheet sync failed:',e));
       }
-      this.tcSaveTrainers();
+      // Save trainer profile to Trainers sheet
+      this.gas('saveTrainer',{trainer:Object.assign({},this.tcNewTrainer,{market:this.mmarket}),market:this.mmarket}).catch(e=>console.warn('saveTrainer failed:',e));
       this.tcAddTrainerForm=false;
       this.tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};
       this.tcEditIdx=-1;
@@ -4592,60 +4592,51 @@ function app(){
     },
     tcSaveDept(){
       if(!this.tcNewDept.name) return;
-      this.tcDepts.push(Object.assign({},this.tcNewDept));
-      this.tcSaveDepts();
+      const dept=Object.assign({},this.tcNewDept);
+      this.tcDepts.push(dept);
+      this.gas('saveDepartment',{dept,market:this.mmarket}).catch(()=>{});
       this.tcDeptForm=false;
       this.tcNewDept={name:'',icon:''};
     },
+    tcDeleteDept(i){
+      const d=this.tcDepts[i];
+      this.tcDepts.splice(i,1);
+      this.gas('deleteDepartment',{name:d.name,market:this.mmarket}).catch(()=>{});
+    },
     tcAddMaterial(){
       if(!this.tcMat.title||!this.tcMat.url) return;
-      const mat = Object.assign({}, this.tcMat, {shareWith:[...(this.tcMat.shareWith||[])]});
+      const mat=Object.assign({},this.tcMat,{shareWith:[...(this.tcMat.shareWith||[])],market:this.mmarket,addedBy:this.mname});
       this.tcMaterials.push(mat);
-      const shareWith = this.tcMat.shareWith || [];
-      if(shareWith.length > 0){
-        const sharedMat = Object.assign({}, mat, {sharedByTC:true});
-        shareWith.forEach(role => {
-          try {
-            const key = 'calo_shared_mat_'+this.mmarket+'_'+role;
-            const existing = JSON.parse(localStorage.getItem(key)||'[]');
-            if(!existing.find(m=>m.url===sharedMat.url)) existing.push(sharedMat);
-            localStorage.setItem(key, JSON.stringify(existing));
-          } catch(e){}
-        });
-      }
+      this.gas('saveMaterial',{material:mat,market:this.mmarket}).catch(()=>{});
       this.tcMat={title:'',type:'google_slides',url:'',desc:'',stage:'all',shareWith:[]};
-      this.tcSaveMaterials();
     },
     tcRemoveMaterial(i){
+      const m=this.tcMaterials[i];
       this.tcMaterials.splice(i,1);
-      this.tcSaveMaterials();
+      this.gas('deleteMaterial',{url:m.url,market:this.mmarket}).catch(()=>{});
     },
-    tcSaveMaterials(){
-      try { localStorage.setItem('calo_mat_tc_'+this.mmarket, JSON.stringify(this.tcMaterials)); } catch(e){}
-    },
+    tcSaveMaterials(){ /* no-op: per-item GAS saves in tcAddMaterial/tcRemoveMaterial */ },
     tcLoadMaterials(){
-      try {
-        const d = localStorage.getItem('calo_mat_tc_'+this.mmarket);
-        if(d) this.tcMaterials = JSON.parse(d);
-      } catch(e){}
+      if(!this.mmarket) return;
+      this.gas('getMaterials',{market:this.mmarket,scope:'tc'}).then(d=>{if(Array.isArray(d))this.tcMaterials=d;}).catch(()=>{});
     },
 
     // ── L3 ADMIN METHODS (Mod 1) ──────────────────────────────────
     tcDeleteTrainer(i){
-      const t = this.tcTrainers[i];
+      const t=this.tcTrainers[i];
       if(!confirm('Delete '+t.name+'? This removes their login access. Cannot be undone.'))return;
       this.gas('deleteUser',{username:t.username}).catch(e=>console.warn('Sheet delete failed:',e));
+      this.gas('deleteTrainer',{username:t.username,market:this.mmarket}).catch(()=>{});
       this.tcTrainers.splice(i,1);
-      this.tcSaveTrainers();
     },
     tcResetPW(i){
-      const t = this.tcTrainers[i];
+      const t=this.tcTrainers[i];
       const newPass=prompt('New password for '+t.username+':');
       if(!newPass||!newPass.trim())return;
-      const trimmed = newPass.trim();
+      const trimmed=newPass.trim();
       this.tcTrainers[i].password=trimmed;
-      this.tcSaveTrainers();
       this.gas('updateUserPassword',{username:t.username,newPassword:trimmed}).catch(e=>console.warn('Sheet PW update failed:',e));
+      this.gas('saveTrainer',{trainer:Object.assign({},this.tcTrainers[i],{market:this.mmarket}),market:this.mmarket}).catch(()=>{});
       alert('Password updated for '+t.username);
     },
     tcReadCSV(event){
@@ -4676,8 +4667,8 @@ function app(){
           username:t.username,pass:t.password,name:t.name,level:4,market:this.mmarket,
           dept:deptMap[t.stage]||t.stage,title:t.stage+' Trainer · '+this.mmarket
         }}).catch(e=>console.warn('Sheet sync failed:',e));
+        this.gas('saveTrainer',{trainer:Object.assign({},t,{market:this.mmarket}),market:this.mmarket}).catch(()=>{});
       });
-      this.tcSaveTrainers();
       const count=this.tcBulkPreview.length;
       this.tcBulkPreview=[];
       this.tcBulkOpen=false;
@@ -4720,23 +4711,27 @@ function app(){
     // ── END DEPT MANAGER METHODS ──────────────────────────────────
     dmAddMaterial(){
       if(!this.dmMat.title||!this.dmMat.url) return;
-      this.dmMaterials.push(Object.assign({},this.dmMat));
+      const mat=Object.assign({},this.dmMat,{role:'dm',market:this.mmarket,addedBy:this.mname});
+      this.dmMaterials.push(mat);
+      this.gas('saveMaterial',{material:mat,market:this.mmarket}).catch(()=>{});
       this.dmMat={title:'',type:'google_slides',url:'',desc:''};
-      this.saveMaterials();
     },
     dmRemoveMaterial(i){
+      const m=this.dmMaterials[i];
       this.dmMaterials.splice(i,1);
-      this.saveMaterials();
+      this.gas('deleteMaterial',{url:m.url,market:this.mmarket}).catch(()=>{});
     },
     hrAddMaterial(){
       if(!this.hrMat.title||!this.hrMat.url) return;
-      this.hrMaterials.push(Object.assign({},this.hrMat));
+      const mat=Object.assign({},this.hrMat,{role:'hr',market:this.mmarket,addedBy:this.mname});
+      this.hrMaterials.push(mat);
+      this.gas('saveMaterial',{material:mat,market:this.mmarket}).catch(()=>{});
       this.hrMat={title:'',type:'google_slides',url:'',desc:''};
-      this.saveMaterials();
     },
     hrRemoveMaterial(i){
+      const m=this.hrMaterials[i];
       this.hrMaterials.splice(i,1);
-      this.saveMaterials();
+      this.gas('deleteMaterial',{url:m.url,market:this.mmarket}).catch(()=>{});
     },
     // ── QUALITY TRAINER METHODS ───────────────────────────────────
     qualEmps(){
@@ -4760,13 +4755,15 @@ function app(){
     },
     qualAddMaterial(){
       if(!this.qualMat.title||!this.qualMat.url) return;
-      this.qualMaterials.push(Object.assign({},this.qualMat));
-      this.qualMat = {title:'',type:'google_slides',url:'',desc:''};
-      this.saveMaterials();
+      const mat=Object.assign({},this.qualMat,{role:'qual',market:this.mmarket,addedBy:this.mname});
+      this.qualMaterials.push(mat);
+      this.gas('saveMaterial',{material:mat,market:this.mmarket}).catch(()=>{});
+      this.qualMat={title:'',type:'google_slides',url:'',desc:''};
     },
     qualRemoveMaterial(i){
+      const m=this.qualMaterials[i];
       this.qualMaterials.splice(i,1);
-      this.saveMaterials();
+      this.gas('deleteMaterial',{url:m.url,market:this.mmarket}).catch(()=>{});
     },
     // ── END QUALITY METHODS ───────────────────────────────────────
     // ── HR SPECIFIC METHODS ───────────────────────────────────────
