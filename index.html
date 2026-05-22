@@ -3858,7 +3858,7 @@ textarea.field{resize:none}
 
         <!-- Pre-Boarding -->
         <div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['pre']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['pre']=!sdExpanded['pre']">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdePre?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdePre=!sdePre">
             <span style="font-size:16px">📋</span>
             <div style="flex:1">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px">
@@ -3868,9 +3868,9 @@ textarea.field{resize:none}
               <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'pre')+'%'"></div></div>
             </div>
             <span x-show="de?.trainers?.pre?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.pre?.name"></span>
-            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['pre']?'▲':'▼'"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdePre?'▲':'▼'"></span>
           </div>
-          <div x-show="sdExpanded['pre']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+          <div x-show="sdePre" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
             <div x-show="!de?.pre?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
             <template x-for="task in (de?.pre?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
             <div x-show="de?.trainerNotes?.pre" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.pre"></div></div>
@@ -3879,7 +3879,7 @@ textarea.field{resize:none}
 
         <!-- Orientation -->
         <div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['ori']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['ori']=!sdExpanded['ori']">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdeOri?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdeOri=!sdeOri">
             <span style="font-size:16px">🎯</span>
             <div style="flex:1">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px">
@@ -3889,9 +3889,9 @@ textarea.field{resize:none}
               <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'ori')+'%'"></div></div>
             </div>
             <span x-show="de?.trainers?.ori?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.ori?.name"></span>
-            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['ori']?'▲':'▼'"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdeOri?'▲':'▼'"></span>
           </div>
-          <div x-show="sdExpanded['ori']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+          <div x-show="sdeOri" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
             <div x-show="!de?.ori?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
             <template x-for="task in (de?.ori?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
             <div x-show="de?.trainerNotes?.ori" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.ori"></div></div>
@@ -3900,7 +3900,7 @@ textarea.field{resize:none}
 
         <!-- HR Compliance -->
         <div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['hr']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['hr']=!sdExpanded['hr']">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdeHr?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdeHr=!sdeHr">
             <span style="font-size:16px">📝</span>
             <div style="flex:1">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px">
@@ -3910,9 +3910,9 @@ textarea.field{resize:none}
               <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'hr')+'%'"></div></div>
             </div>
             <span x-show="de?.trainers?.hr?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.hr?.name"></span>
-            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['hr']?'▲':'▼'"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdeHr?'▲':'▼'"></span>
           </div>
-          <div x-show="sdExpanded['hr']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+          <div x-show="sdeHr" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
             <div x-show="!de?.hr?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
             <template x-for="task in (de?.hr?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
             <div x-show="de?.trainerNotes?.hr" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.hr"></div></div>
@@ -3921,7 +3921,7 @@ textarea.field{resize:none}
 
         <!-- Quality Standards -->
         <div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['qual']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['qual']=!sdExpanded['qual']">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdeQual?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdeQual=!sdeQual">
             <span style="font-size:16px">⭐</span>
             <div style="flex:1">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px">
@@ -3931,9 +3931,9 @@ textarea.field{resize:none}
               <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'qual')+'%'"></div></div>
             </div>
             <span x-show="de?.trainers?.qual?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.qual?.name"></span>
-            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['qual']?'▲':'▼'"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdeQual?'▲':'▼'"></span>
           </div>
-          <div x-show="sdExpanded['qual']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+          <div x-show="sdeQual" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
             <div x-show="!de?.qual?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
             <template x-for="task in (de?.qual?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
             <div x-show="de?.trainerNotes?.qual" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.qual"></div></div>
@@ -3942,7 +3942,7 @@ textarea.field{resize:none}
 
         <!-- OJT Training -->
         <div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['ojt']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['ojt']=!sdExpanded['ojt']">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdeOjt?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdeOjt=!sdeOjt">
             <span style="font-size:16px">🔧</span>
             <div style="flex:1">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px">
@@ -3952,9 +3952,9 @@ textarea.field{resize:none}
               <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'ojt')+'%'"></div></div>
             </div>
             <span x-show="de?.trainers?.ojt?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.ojt?.name"></span>
-            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['ojt']?'▲':'▼'"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdeOjt?'▲':'▼'"></span>
           </div>
-          <div x-show="sdExpanded['ojt']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+          <div x-show="sdeOjt" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
             <div x-show="!de?.ojt?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
             <template x-for="task in (de?.ojt?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
             <div x-show="de?.trainerNotes?.ojt" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.ojt"></div></div>
@@ -3963,7 +3963,7 @@ textarea.field{resize:none}
 
         <!-- Assessment -->
         <div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['assess']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['assess']=!sdExpanded['assess']">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdeAssess?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdeAssess=!sdeAssess">
             <span style="font-size:16px">📊</span>
             <div style="flex:1">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px">
@@ -3973,9 +3973,9 @@ textarea.field{resize:none}
               <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'assess')+'%'"></div></div>
             </div>
             <span x-show="de?.trainers?.assess?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.assess?.name"></span>
-            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['assess']?'▲':'▼'"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdeAssess?'▲':'▼'"></span>
           </div>
-          <div x-show="sdExpanded['assess']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+          <div x-show="sdeAssess" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
             <div x-show="!de?.assess?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
             <template x-for="task in (de?.assess?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
             <div x-show="de?.trainerNotes?.assess" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.assess"></div></div>
@@ -3984,7 +3984,7 @@ textarea.field{resize:none}
 
         <!-- Certification -->
         <div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded['cert']?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded['cert']=!sdExpanded['cert']">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdeCert?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdeCert=!sdeCert">
             <span style="font-size:16px">🏆</span>
             <div style="flex:1">
               <div style="display:flex;justify-content:space-between;margin-bottom:4px">
@@ -3994,9 +3994,9 @@ textarea.field{resize:none}
               <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'cert')+'%'"></div></div>
             </div>
             <span x-show="de?.trainers?.cert?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.cert?.name"></span>
-            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded['cert']?'▲':'▼'"></span>
+            <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdeCert?'▲':'▼'"></span>
           </div>
-          <div x-show="sdExpanded['cert']" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+          <div x-show="sdeCert" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
             <div x-show="!de?.cert?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
             <template x-for="task in (de?.cert?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template>
             <div x-show="de?.trainerNotes?.cert" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.cert"></div></div>
@@ -4133,7 +4133,7 @@ function app(){
     ],
     sm_:false,sd:false,sf:false,
     se:null,as:null,mods:[],at:{name:'',img:''},atNotes:'',stpl:'',
-    de:null,sdExpanded:{pre:false,ori:false,hr:false,qual:false,ojt:false,assess:false,cert:false},
+    de:null,sdePre:false,sdeOri:false,sdeHr:false,sdeQual:false,sdeOjt:false,sdeAssess:false,sdeCert:false,
     qualSO:{open:false,emp:null,dept:''},
     nh:{name:'',role:'',country:'UAE',date:'',image:'',notes:'',priority:'normal'},
     fl:{show:false,leaving:false,title:'',name:'',sub:'',b:'',img:''},
@@ -4983,7 +4983,7 @@ function app(){
         .catch(()=>{this.sv=false;alert('Save failed. Please retry.');});
     },
 
-    odetail(e){this.de=JSON.parse(JSON.stringify(e));this.sdExpanded={pre:false,ori:false,hr:false,qual:false,ojt:false,assess:false,cert:false};this.sd=true;},
+    odetail(e){this.de=JSON.parse(JSON.stringify(e));this.sdePre=false;this.sdeOri=false;this.sdeHr=false;this.sdeQual=false;this.sdeOjt=false;this.sdeAssess=false;this.sdeCert=false;this.sd=true;},
     snotes(e){
       this.gas('updateCandidateField',{row:e.row,field:'Notes',value:e.notes});
       const o=this.emps.find(x=>x.row===e.row);if(o)o.notes=e.notes;
