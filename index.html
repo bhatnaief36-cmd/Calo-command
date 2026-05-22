@@ -2476,7 +2476,15 @@ textarea.field{resize:none}
               </div>
             </div>
             <div style="margin-bottom:12px"><div class="f-label">URL / Link *</div><input type="url" x-model="tcMat.url" class="field" placeholder="Paste Google Drive, YouTube or any URL" style="width:100%;box-sizing:border-box"></div>
-            <div style="margin-bottom:16px"><div class="f-label">Description (optional)</div><input type="text" x-model="tcMat.desc" class="field" placeholder="Brief description" style="width:100%;box-sizing:border-box"></div>
+            <div style="margin-bottom:12px"><div class="f-label">Description (optional)</div><input type="text" x-model="tcMat.desc" class="field" placeholder="Brief description" style="width:100%;box-sizing:border-box"></div>
+            <div style="margin-bottom:16px;padding:12px;background:var(--w2);border-radius:var(--r8);border:1px solid var(--w3)">
+              <div class="f-label" style="margin-bottom:8px">Publish to L4 Libraries (optional)</div>
+              <div style="display:flex;gap:20px;flex-wrap:wrap">
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;font-weight:600;color:var(--w6)"><input type="checkbox" x-model="tcMat.shareWith" value="hr" style="width:14px;height:14px;accent-color:var(--green)"> 📝 HR Officers</label>
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;font-weight:600;color:var(--w6)"><input type="checkbox" x-model="tcMat.shareWith" value="qual" style="width:14px;height:14px;accent-color:var(--green)"> ⭐ Quality Trainers</label>
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;font-weight:600;color:var(--w6)"><input type="checkbox" x-model="tcMat.shareWith" value="dm" style="width:14px;height:14px;accent-color:var(--green)"> 🔧 Dept Managers</label>
+              </div>
+            </div>
             <button @click="tcAddMaterial()" :disabled="!tcMat.title||!tcMat.url" class="btn btn-primary" style="padding:9px 24px">+ Add Material</button>
           </div>
           <div class="card" style="padding:20px">
@@ -2492,6 +2500,11 @@ textarea.field{resize:none}
                   <div style="flex:1;min-width:0">
                     <div style="font-size:13px;font-weight:700" x-text="m.title"></div>
                     <div style="font-size:10px;color:var(--green);font-weight:700;margin-top:2px" x-text="m.stage==='all'?'All Stages':stages.find(s=>s.k===m.stage)?.label||m.stage"></div>
+                    <div x-show="m.shareWith&&m.shareWith.length>0" style="display:none;margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
+                      <span x-show="m.shareWith&&m.shareWith.includes('hr')" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#EEF2FF;color:#4F46E5;border-radius:4px">📝 HR</span>
+                      <span x-show="m.shareWith&&m.shareWith.includes('qual')" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#FFF7ED;color:#EA580C;border-radius:4px">⭐ Quality</span>
+                      <span x-show="m.shareWith&&m.shareWith.includes('dm')" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#F0FDF4;color:#16A34A;border-radius:4px">🔧 DM</span>
+                    </div>
                     <div style="font-size:11px;color:var(--w5);font-weight:300" x-text="m.desc||''"></div>
                   </div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
@@ -2762,9 +2775,15 @@ textarea.field{resize:none}
               <template x-for="(m,i) in dmMaterials">
                 <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--w3);border-radius:var(--r8);transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--w3)'">
                   <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
-                  <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div><div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div>
+                      <span x-show="m.sharedByTC" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#F0FDF4;color:#16A34A;border-radius:4px;flex-shrink:0">TC Shared</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div>
+                  </div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
-                  <button @click="dmRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button x-show="!m.sharedByTC" style="display:none" @click="dmRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
               </template>
             </div>
@@ -3004,11 +3023,14 @@ textarea.field{resize:none}
                 <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--w3);border-radius:var(--r8);transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--w3)'">
                   <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div>
+                      <span x-show="m.sharedByTC" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#FFF7ED;color:#EA580C;border-radius:4px;flex-shrink:0">TC Shared</span>
+                    </div>
                     <div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div>
                   </div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
-                  <button @click="qualRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button x-show="!m.sharedByTC" style="display:none" @click="qualRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
               </template>
             </div>
@@ -3182,6 +3204,10 @@ textarea.field{resize:none}
                   </template>
                 </div>
                 <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="e.hr && e.hr.total > 0 && e.hr.done === e.hr.total" style="display:none;margin-bottom:8px">
+                    <button x-show="!(e.stageExits && e.stageExits.hr)" style="display:none;width:100%;justify-content:center" @click="hrSO.emp=e;hrSO.trainer='';hrSO.open=true" class="btn btn-primary btn-sm">Sign Off → Quality</button>
+                    <div x-show="e.stageExits && e.stageExits.hr" style="display:none;text-align:center;font-size:11px;font-weight:700;color:var(--green);padding:6px;background:var(--green-l);border-radius:6px;border:1px solid var(--green-m)">✓ Signed Off to Quality</div>
+                  </div>
                   <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View Details</button>
                 </div>
               </div>
@@ -3194,6 +3220,40 @@ textarea.field{resize:none}
           </div>
         </div>
         <!-- END HR PIPELINE ══════════════════════════════════════ -->
+
+        <!-- HR SIGN-OFF MODAL -->
+        <div x-show="hrSO.open" style="display:none" class="overlay" @click.self="hrSO.open=false">
+          <div class="modal" style="max-width:420px">
+            <div class="mh">
+              <div style="font-size:17px;font-weight:900">Sign Off to Quality Training</div>
+              <div style="font-size:12px;color:var(--w5);font-weight:300;margin-top:3px" x-text="'Assign '+(hrSO.emp?.name||'')+' to a Quality Trainer'"></div>
+            </div>
+            <div class="mb">
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--green-l);border-radius:var(--r8);margin-bottom:16px;border:1px solid var(--green-m)">
+                <img :src="hrSO.emp?.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--green)">
+                <div>
+                  <div style="font-size:13px;font-weight:900" x-text="hrSO.emp?.name"></div>
+                  <div style="font-size:11px;color:var(--w6);font-weight:300" x-text="hrSO.emp?.role"></div>
+                </div>
+              </div>
+              <div>
+                <div class="f-label">Select Quality Trainer *</div>
+                <select x-model="hrSO.trainer" class="field" style="width:100%;box-sizing:border-box;margin-bottom:8px">
+                  <option value="">— Select Quality Trainer —</option>
+                  <template x-for="t in tcTrainers.filter(t=>t.stage==='Quality Trainer'&&t.active!==false)">
+                    <option :value="t.name" x-text="t.name+(t.dept?' · '+t.dept:'')"></option>
+                  </template>
+                </select>
+                <div x-show="tcTrainers.filter(t=>t.stage==='Quality Trainer').length===0" style="font-size:11px;color:var(--w5)">No Quality Trainers found. Ask your Training Coordinator to add trainers first.</div>
+              </div>
+            </div>
+            <div class="mf">
+              <button @click="hrSO.open=false" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+              <button @click="hrSignOff(hrSO.emp,hrSO.trainer);hrSO.open=false" :disabled="!hrSO.trainer" class="btn btn-primary" style="flex:1;justify-content:center">✓ Sign Off</button>
+            </div>
+          </div>
+        </div>
+        <!-- END HR SIGN-OFF MODAL -->
 
 
         <!-- ══════════════════════════════════════════════════════ -->
@@ -3469,9 +3529,15 @@ textarea.field{resize:none}
               <template x-for="(m,i) in hrMaterials">
                 <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--w3);border-radius:var(--r8);transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--w3)'">
                   <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
-                  <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div><div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div>
+                      <span x-show="m.sharedByTC" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#EEF2FF;color:#4F46E5;border-radius:4px;flex-shrink:0">TC Shared</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div>
+                  </div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
-                  <button @click="hrRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button x-show="!m.sharedByTC" style="display:none" @click="hrRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
               </template>
             </div>
@@ -4028,7 +4094,7 @@ function app(){
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
     rtsCoordinators:[],rtsNewCoord:{name:'',mp:'',username:'',password:'',active:true,showPass:false},rtsCoordForm:false,
     rtsMPs:[{name:'UAE',flag:'🇦🇪'},{name:'Qatar',flag:'🇶🇦'},{name:'Kuwait',flag:'🇰🇼'},{name:'Bahrain',flag:'🇧🇭'},{name:'Riyadh',flag:'🇸🇦'},{name:'Jeddah',flag:'🇸🇦'},{name:'Oman',flag:'🇴🇲'},{name:'UK',flag:'🇬🇧'}],rtsNewMP:{name:'',flag:''},rtsMPForm:false,
-    rtsDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],rtsNewDept:{name:'',icon:''},rtsDeptForm:false,tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all'},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,tcBulkOpen:false,tcBulkPreview:[],qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
+    rtsDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],rtsNewDept:{name:'',icon:''},rtsDeptForm:false,tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all',shareWith:[]},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,tcBulkOpen:false,tcBulkPreview:[],qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
     emps:[],tpls:[],
     branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
     flags:{
@@ -4049,6 +4115,7 @@ function app(){
     se:null,as:null,mods:[],at:{name:'',img:''},atNotes:'',stpl:'',
     de:null,sdePre:false,sdeOri:false,sdeHr:false,sdeQual:false,sdeOjt:false,sdeAssess:false,sdeCert:false,
     qualSO:{open:false,emp:null,dept:''},
+    hrSO:{open:false,emp:null,trainer:''},
     nh:{name:'',role:'',country:'UAE',date:'',image:'',notes:'',priority:'normal'},
     fl:{show:false,leaving:false,title:'',name:'',sub:'',b:'',img:''},
 
@@ -4081,6 +4148,7 @@ function app(){
           if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
           if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
+          if(r.level===4){this.tcLoadTrainers();}
           this.fetchAll();
         }
       } catch(e){ localStorage.removeItem('calo_session'); }
@@ -4100,7 +4168,6 @@ function app(){
       } catch(e){}
     },
     loadMaterials(){
-      // Restore training materials for this user from localStorage
       try {
         const key = 'calo_mat_'+this.mname+'_'+(this.mdept||'all');
         const raw = localStorage.getItem(key);
@@ -4111,6 +4178,20 @@ function app(){
           if(data.hr)   this.hrMaterials   = data.hr;
         }
       } catch(e){}
+      // Merge TC-shared materials for this role
+      const deptRoleMap = {'HR_Status':'hr','Quality_Status':'qual','DEPT_MANAGER':'dm'};
+      const roleKey = deptRoleMap[this.mdept||''];
+      if(roleKey && this.mmarket){
+        try {
+          const shared = JSON.parse(localStorage.getItem('calo_shared_mat_'+this.mmarket+'_'+roleKey)||'[]');
+          const arrName = roleKey==='hr'?'hrMaterials':roleKey==='qual'?'qualMaterials':'dmMaterials';
+          const existing = this[arrName] || [];
+          shared.forEach(m => {
+            if(!existing.find(x=>x.url===m.url)) existing.push(Object.assign({},m,{sharedByTC:true}));
+          });
+          this[arrName] = existing;
+        } catch(e){}
+      }
     },
     saveSession(r){
       try { localStorage.setItem('calo_session', JSON.stringify(r)); } catch(e){}
@@ -4477,8 +4558,21 @@ function app(){
     },
     tcAddMaterial(){
       if(!this.tcMat.title||!this.tcMat.url) return;
-      this.tcMaterials.push(Object.assign({},this.tcMat));
-      this.tcMat={title:'',type:'google_slides',url:'',desc:'',stage:'all'};
+      const mat = Object.assign({}, this.tcMat, {shareWith:[...(this.tcMat.shareWith||[])]});
+      this.tcMaterials.push(mat);
+      const shareWith = this.tcMat.shareWith || [];
+      if(shareWith.length > 0){
+        const sharedMat = Object.assign({}, mat, {sharedByTC:true});
+        shareWith.forEach(role => {
+          try {
+            const key = 'calo_shared_mat_'+this.mmarket+'_'+role;
+            const existing = JSON.parse(localStorage.getItem(key)||'[]');
+            if(!existing.find(m=>m.url===sharedMat.url)) existing.push(sharedMat);
+            localStorage.setItem(key, JSON.stringify(existing));
+          } catch(e){}
+        });
+      }
+      this.tcMat={title:'',type:'google_slides',url:'',desc:'',stage:'all',shareWith:[]};
       this.tcSaveMaterials();
     },
     tcRemoveMaterial(i){
@@ -4738,24 +4832,19 @@ function app(){
       return e.stageEntries&&e.stageEntries[k]&&(!e.stageExits||!e.stageExits[k]);
     },
     // HR Signed Off — move candidate to Quality stage
-    hrSignOff(e){
-      if(!confirm('Sign off '+e.name+' from HR and move to Quality stage?')) return;
-      // Record exit dates
+    hrSignOff(e, trainerName){
       const today = new Date().toISOString().split('T')[0];
       if(!e.stageExits) e.stageExits = {};
       e.stageExits.pre = today;
       e.stageExits.ori = today;
       e.stageExits.hr  = today;
-      // Mark all 3 HR stages as complete locally — instant UI update
       if(e.pre){ e.pre.done = e.pre.total; }
       if(e.ori){ e.ori.done = e.ori.total; }
       if(e.hr) { e.hr.done  = e.hr.total;  }
-      // Mark quality as started (1 task started) — candidate enters Quality pipeline
       if(e.qual){ e.qual.done = 0; }
-      // Flash confirmation
-      this.dofl('Signed Off!', e.image, e.name, 'Moved to Quality Training', e.country);
-      this.l1AuditLog.push({type:'signoff',action:'HR Sign-Off',detail:e.name+' → Quality · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
-      // Sync to backend using saveFullUpdate for each stage
+      if(trainerName){ if(!e.trainers) e.trainers={}; e.trainers.qual={name:trainerName,img:''}; }
+      this.dofl('Signed Off!', e.image, e.name, 'Moved to Quality'+(trainerName?' → '+trainerName:''), e.country);
+      this.l1AuditLog.push({type:'signoff',action:'HR Sign-Off',detail:e.name+' → Quality'+(trainerName?' ('+trainerName+')':'')+' · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       const saveStage = (k, col) => {
         const tasks = (e[k].items||[]).map(m=>`${m.name}|${m.link||'#'}|1`).join(';;');
         return this.gas('saveFullUpdate',{row:e.row, colLabel:col, taskStr:tasks||'Complete|#|1', trainer:{}});
