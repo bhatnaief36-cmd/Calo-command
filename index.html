@@ -1679,6 +1679,10 @@ textarea.field{resize:none}
                   </template>
                 </div>
                 <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px">
+                    <img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0">
+                    <div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  </div>
                   <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View</button>
                 </div>
               </div>
@@ -2345,9 +2349,15 @@ textarea.field{resize:none}
                     </div>
                   </template>
                 </div>
-                <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
-                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
-                  <button @click="omgr(e,stages.find(s=>scls(e,s.k)==='stg-active'||scls(e,s.k)==='stg-part'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Edit Tasks</button>
+                <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px">
+                    <img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0">
+                    <div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
+                    <button @click="omgr(e,stages.find(s=>scls(e,s.k)==='stg-active'||scls(e,s.k)==='stg-part'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Edit Tasks</button>
+                  </div>
                 </div>
               </div>
             </template>
@@ -2663,7 +2673,13 @@ textarea.field{resize:none}
                     </div>
                   </template>
                 </div>
-                <div style="padding-top:10px;border-top:1px solid var(--w3)"><button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View</button></div>
+                <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px">
+                    <img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0">
+                    <div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  </div>
+                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View</button>
+                </div>
               </div>
             </template>
             <div x-show="dmEmps().length===0" class="empty" style="grid-column:1/-1"><div style="font-size:32px;margin-bottom:10px">🔧</div><div style="font-size:15px;font-weight:700">No trainees yet</div></div>
@@ -2886,9 +2902,15 @@ textarea.field{resize:none}
                     </div>
                   </template>
                 </div>
-                <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
-                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
-                  <button x-show="e.qual&&e.qual.done===e.qual.total" @click="qualSO.emp=e;qualSO.dept=e.joiningDept||'';qualSO.open=true" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → DM</button>
+                <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px">
+                    <img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0">
+                    <div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
+                    <button x-show="e.qual&&e.qual.done===e.qual.total" @click="qualSO.emp=e;qualSO.dept=e.joiningDept||'';qualSO.open=true" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → DM</button>
+                  </div>
                 </div>
               </div>
             </template>
@@ -3204,6 +3226,7 @@ textarea.field{resize:none}
                   </template>
                 </div>
                 <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px"><img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0"><div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
                   <div x-show="e.hr && e.hr.total > 0 && e.hr.done === e.hr.total" style="display:none;margin-bottom:8px">
                     <button x-show="!(e.stageExits && e.stageExits.hr)" style="display:none;width:100%;justify-content:center" @click="hrSO.emp=e;hrSO.trainer='';hrSO.open=true" class="btn btn-primary btn-sm">Sign Off → Quality</button>
                     <div x-show="e.stageExits && e.stageExits.hr" style="display:none;text-align:center;font-size:11px;font-weight:700;color:var(--green);padding:6px;background:var(--green-l);border-radius:6px;border:1px solid var(--green-m)">✓ Signed Off to Quality</div>
@@ -3627,9 +3650,15 @@ textarea.field{resize:none}
                   </template>
                 </div>
 
-                <div style="display:flex;gap:7px;padding-top:10px;border-top:1px solid var(--w3)">
-                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
-                  <button x-show="mlevel===1" @click="cdel(e)" class="btn btn-del btn-sm">Remove</button>
+                <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px">
+                    <img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0">
+                    <div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  </div>
+                  <div style="display:flex;gap:7px">
+                    <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
+                    <button x-show="mlevel===1" @click="cdel(e)" class="btn btn-del btn-sm">Remove</button>
+                  </div>
                 </div>
               </div>
             </template>
@@ -3844,9 +3873,19 @@ textarea.field{resize:none}
             <div style="font-size:10px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Trainer</div>
             <input type="text" x-model="at.name" placeholder="Name" class="field" style="padding:4px 8px;font-size:11px;width:108px;text-align:right">
           </div>
-          <div class="photo-w" style="border-radius:50%">
-            <img :src="at.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--green)">
-            <label class="photo-ov" style="font-size:8px;cursor:pointer">📷<input type="file" @change="utp($event)" class="hidden"></label>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div x-show="atImgMode==='file'" class="photo-w" style="border-radius:50%">
+              <img :src="at.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--green)">
+              <label class="photo-ov" style="font-size:8px;cursor:pointer">📷<input type="file" @change="utp($event)" class="hidden"></label>
+            </div>
+            <div x-show="atImgMode==='url'" style="display:none;text-align:center">
+              <img :src="at.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--green);display:block;margin:0 auto 4px">
+              <input type="url" x-model="at.img" placeholder="Image URL" class="field" style="width:90px;font-size:9px;padding:3px 5px;text-align:center">
+            </div>
+            <div style="display:flex;gap:2px;margin-top:2px">
+              <button @click="atImgMode='file'" :style="atImgMode==='file'?'background:var(--green);color:#fff;border-color:var(--green)':''" style="font-size:9px;padding:2px 6px;border:1px solid var(--w3);border-radius:4px;cursor:pointer;background:transparent;line-height:1.5" title="Upload file">📷</button>
+              <button @click="atImgMode='url'" :style="atImgMode==='url'?'background:var(--green);color:#fff;border-color:var(--green)':''" style="font-size:9px;padding:2px 6px;border:1px solid var(--w3);border-radius:4px;cursor:pointer;background:transparent;line-height:1.5" title="Paste URL">🔗</button>
+            </div>
           </div>
         </div>
       </div>
@@ -4112,7 +4151,7 @@ function app(){
       {k:'cert', short:'Certified',  label:'Certification', col:'Certification_Status',  i:'🏆', color:'#00C07F'},
     ],
     sm_:false,sd:false,sf:false,
-    se:null,as:null,mods:[],at:{name:'',img:''},atNotes:'',stpl:'',
+    se:null,as:null,mods:[],at:{name:'',img:''},atNotes:'',stpl:'',atImgMode:'file',
     de:null,sdePre:false,sdeOri:false,sdeHr:false,sdeQual:false,sdeOjt:false,sdeAssess:false,sdeCert:false,
     qualSO:{open:false,emp:null,dept:''},
     hrSO:{open:false,emp:null,trainer:''},
@@ -4964,7 +5003,17 @@ function app(){
       this.mods=JSON.parse(JSON.stringify((e[s.k].items||[]).map(m=>({date:'',link:'#',...m}))));
       this.at=JSON.parse(JSON.stringify(e.trainers?.[s.k]||{name:'',img:''}));
       this.atNotes=(e.trainerNotes&&e.trainerNotes[s.k])||'';
-      this.stpl='';this.sm_=true;
+      this.stpl='';this.atImgMode='file';this.sm_=true;
+    },
+    activeTrainer(e){
+      if(!e||!e.trainers) return null;
+      const s = this.stages.find(s=>e[s.k]&&e[s.k].done>0&&e[s.k].done<e[s.k].total)
+             || [...this.stages].reverse().find(s=>e[s.k]&&e[s.k].total>0&&e[s.k].done===e[s.k].total)
+             || this.stages.find(s=>e[s.k]&&e[s.k].total>0);
+      if(!s) return null;
+      const t = e.trainers[s.k];
+      if(!t||!t.name) return null;
+      return {name:t.name, img:t.img||'', stage:s.label};
     },
     md(){return this.mods.filter(m=>m.done).length;},
     tpct(){return this.mods.length?Math.round(this.md()/this.mods.length*100):0;},
