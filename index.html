@@ -2188,8 +2188,8 @@ textarea.field{resize:none}
               <div style="background:var(--w2);border-radius:var(--r8);padding:14px;margin-bottom:16px">
                 <div style="font-size:11px;font-weight:700;color:var(--w6);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Required CSV Format</div>
                 <div style="font-family:monospace;font-size:11px;color:var(--ch);background:var(--w1);padding:10px;border-radius:var(--r4);border:1px solid var(--w3);overflow-x:auto;white-space:nowrap">name,stage,department,username,password,photo_url</div>
-                <div style="font-size:10px;color:var(--w5);margin-top:8px">Stage values: use the exact stage label from your trainer form (e.g. Pre-Boarding, Quality Std., OJT Training)</div>
-                <div style="font-size:10px;color:var(--w5);margin-top:4px">Example: Ahmed Ali,Pre-Boarding,Kitchen,TR-KIT-UAE,Tr@kit@UAE,</div>
+                <div style="font-size:10px;color:var(--w5);margin-top:8px">Stage values: <strong>HR Officer</strong>, <strong>Quality Trainer</strong>, or <strong>Department Manager</strong></div>
+                <div style="font-size:10px;color:var(--w5);margin-top:4px">Example: Ahmed Ali,HR Officer,Kitchen,TR-HR-UAE,Tr@hr@UAE,</div>
               </div>
               <div style="margin-bottom:16px">
                 <div class="f-label" style="margin-bottom:6px">Upload CSV File</div>
@@ -2374,8 +2374,10 @@ textarea.field{resize:none}
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                   <div><div class="f-label">Stage *</div>
                     <select x-model="tcNewTrainer.stage" class="field" style="width:100%;box-sizing:border-box">
-                      <option value="">Select stage</option>
-                      <template x-for="s in stages"><option :value="s.label" x-text="s.i+' '+s.label"></option></template>
+                      <option value="">Select role</option>
+                      <option value="HR Officer">👤 HR Officer (Pre-Board · Orientation · HR Compliance)</option>
+                      <option value="Quality Trainer">⭐ Quality Trainer (Quality Standards)</option>
+                      <option value="Department Manager">🔧 Dept Manager (OJT · Assessment · Certification)</option>
                     </select>
                   </div>
                   <div><div class="f-label">Department *</div>
@@ -2627,6 +2629,7 @@ textarea.field{resize:none}
                     <div style="font-size:11px;color:var(--w5);margin-top:1px;font-weight:300" x-text="e.role"></div>
                     <span class="chip c-green" style="font-size:9px;margin-top:5px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
                     <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">📅 <span x-text="e.dateString||''"></span></div>
+                    <div x-show="e.joiningDept" style="font-size:10px;margin-top:3px" class="chip c-l3" x-text="'📁 '+e.joiningDept"></div>
                   </div>
                 </div>
                 <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
@@ -2858,7 +2861,7 @@ textarea.field{resize:none}
                 </div>
                 <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
                   <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
-                  <button x-show="e.qual&&e.qual.done===e.qual.total" @click="qualSignOff(e)" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → OJT</button>
+                  <button x-show="e.qual&&e.qual.done===e.qual.total" @click="qualSO.emp=e;qualSO.dept=e.joiningDept||'';qualSO.open=true" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → DM</button>
                 </div>
               </div>
             </template>
@@ -2869,6 +2872,38 @@ textarea.field{resize:none}
             </div>
           </div>
         </div>
+        <!-- QUALITY SIGN-OFF DEPT ROUTING MODAL -->
+        <div x-show="qualSO.open" style="display:none" class="overlay" @click.self="qualSO.open=false" :style="qualSO.open?'display:flex':''">
+          <div class="modal" style="max-width:420px">
+            <div class="mh">
+              <div style="font-size:17px;font-weight:900">Route to Department Manager</div>
+              <div style="font-size:12px;color:var(--w5);font-weight:300;margin-top:3px" x-text="'Sign off '+(qualSO.emp?.name||'')+' and route to the correct DM queue'"></div>
+            </div>
+            <div class="mb">
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--green-l);border-radius:var(--r8);margin-bottom:16px;border:1px solid var(--green-m)">
+                <img :src="qualSO.emp?.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--green)">
+                <div>
+                  <div style="font-size:13px;font-weight:900" x-text="qualSO.emp?.name"></div>
+                  <div style="font-size:11px;color:var(--w6);font-weight:300" x-text="qualSO.emp?.role"></div>
+                  <div x-show="qualSO.emp?.joiningDept" style="font-size:10px;color:var(--green-h);font-weight:700;margin-top:2px" x-text="qualSO.emp?.joiningDept?'📁 Joining Dept: '+qualSO.emp.joiningDept:''"></div>
+                </div>
+              </div>
+              <div>
+                <div class="f-label">Route to Department *</div>
+                <select x-model="qualSO.dept" class="field" style="width:100%;box-sizing:border-box;margin-bottom:8px">
+                  <option value="">— Select Department —</option>
+                  <template x-for="d in (tcDepts.length?tcDepts:rtsDepts)"><option :value="d.name" x-text="d.icon+' '+d.name"></option></template>
+                </select>
+                <div style="font-size:11px;color:var(--w5)">This routes the candidate to the matching Department Manager's pipeline.</div>
+              </div>
+            </div>
+            <div class="mf">
+              <button @click="qualSO.open=false" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+              <button @click="qualSignOff(qualSO.emp,qualSO.dept);qualSO.open=false" :disabled="!qualSO.dept" class="btn btn-primary" style="flex:1;justify-content:center">✓ Confirm Sign-Off</button>
+            </div>
+          </div>
+        </div>
+        <!-- END QUALITY SIGN-OFF DEPT ROUTING MODAL -->
         <!-- END QUALITY PROGRESS CARDS -->
 
 
@@ -3305,17 +3340,21 @@ textarea.field{resize:none}
         <!-- ══════════════════════════════════════════════════════ -->
         <!-- HR ENTRY FORM MODAL                                    -->
         <!-- ══════════════════════════════════════════════════════ -->
-        <div x-show="hrForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px"
-          :style="hrForm?'display:flex':''">
-          <div class="card" style="width:100%;max-width:460px;padding:28px;border-radius:var(--r16)">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
-              <div>
-                <div style="font-size:18px;font-weight:900;color:var(--ch)">New Candidate</div>
-                <div style="font-size:12px;color:var(--w5);margin-top:3px">Add a new hire to your onboarding pipeline</div>
-              </div>
-              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:''}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+        <div x-show="hrForm" style="display:none" class="overlay" @click.self="hrForm=false" :style="hrForm?'display:flex':''">
+          <div class="modal" style="max-width:480px;max-height:92vh">
+            <div class="mh">
+              <div style="font-size:18px;font-weight:900;color:var(--ch)">New Candidate</div>
+              <div style="font-size:12px;color:var(--w5);margin-top:3px">Add a new hire to your onboarding pipeline</div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="mb scroll-y" style="max-height:calc(92vh - 140px);display:flex;flex-direction:column;gap:14px">
+              <div>
+                <div class="f-label">Profile Photo (optional)</div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                  <img :src="hrNH.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);flex-shrink:0">
+                  <label class="btn btn-ghost btn-sm" style="cursor:pointer;flex-shrink:0">📷 Upload <input type="file" accept="image/*" @change="hrNHUpload($event)" class="hidden"></label>
+                </div>
+                <input type="url" x-model="hrNH.image" class="field" placeholder="Or paste any image URL (Google Drive, Slack, etc.)" style="width:100%;box-sizing:border-box">
+              </div>
               <div>
                 <div class="f-label">Full Name *</div>
                 <input type="text" x-model="hrNH.n" class="field" placeholder="Enter candidate full name" style="width:100%;box-sizing:border-box">
@@ -3336,6 +3375,19 @@ textarea.field{resize:none}
                 <div class="f-label">Joining Date *</div>
                 <input type="date" x-model="hrNH.dt" class="field" :max="(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})()" style="width:100%;box-sizing:border-box">
               </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div>
+                  <div class="f-label">Joining Department</div>
+                  <select x-model="hrNH.dept" class="field" style="width:100%;box-sizing:border-box">
+                    <option value="">— Select —</option>
+                    <template x-for="d in (tcDepts.length?tcDepts:rtsDepts)"><option :value="d.name" x-text="d.icon+' '+d.name"></option></template>
+                  </select>
+                </div>
+                <div>
+                  <div class="f-label">Joining Section</div>
+                  <input type="text" x-model="hrNH.section" class="field" placeholder="e.g. Cold Chain" style="width:100%;box-sizing:border-box">
+                </div>
+              </div>
               <div>
                 <div class="f-label">Assign Starting Stage *</div>
                 <select x-model="hrNH.stage" class="field" style="width:100%;box-sizing:border-box">
@@ -3344,13 +3396,13 @@ textarea.field{resize:none}
                   <option value="hr">📝 HR Compliance</option>
                 </select>
               </div>
+              <!-- Success flash -->
+              <div x-show="hrSuccess" style="display:none;background:#E6F9F3;border:1px solid var(--green-m);border-radius:var(--r8);padding:10px 14px;font-size:12px;font-weight:700;color:var(--green-h);text-align:center" :style="hrSuccess?'display:block':''">
+                ✅ Candidate added successfully!
+              </div>
             </div>
-            <!-- Success flash -->
-            <div x-show="hrSuccess" style="display:none;background:#E6F9F3;border:1px solid var(--green-m);border-radius:var(--r8);padding:10px 14px;margin-top:14px;font-size:12px;font-weight:700;color:var(--green-h);text-align:center" :style="hrSuccess?'display:block':''">
-              ✅ Candidate added successfully!
-            </div>
-            <div style="display:flex;gap:8px;margin-top:14px">
-              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre'};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
+            <div class="mf">
+              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre',image:'',dept:'',section:''};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
               <button @click="hrAddCandidate()" :disabled="!hrNH.n||!hrNH.d||!hrNH.dt||hrSaving" class="btn btn-primary" style="flex:1;justify-content:center">
                 <div x-show="hrSaving" style="display:none" class="spinner spinner-w"></div>
                 <span x-text="hrSaving?'Adding…':'Submit'"></span>
@@ -3692,10 +3744,15 @@ textarea.field{resize:none}
           <div style="flex:1">
             <input type="text" x-model="m.name" :disabled="!acc(se,as?.k)" style="width:100%;border:none;background:transparent;font-size:13px;font-family:var(--f);color:var(--ch);outline:none;font-weight:700" :style="m.done?'text-decoration:line-through;color:var(--w5);font-weight:400':''">
           </div>
+          <input type="date" x-model="m.date" :disabled="!acc(se,as?.k)" style="border:none;background:transparent;font-size:10px;font-family:var(--f);color:var(--w5);outline:none;width:112px;flex-shrink:0" title="Completion date">
           <a x-show="m.link&&m.link!=='#'" :href="m.link" target="_blank" style="font-size:11px;color:var(--info);flex-shrink:0">🔗</a>
           <button x-show="acc(se,as?.k)" @click="mods.splice(i,1)" style="background:none;border:none;color:var(--w5);cursor:pointer;font-size:18px;line-height:1;flex-shrink:0" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--w5)'">&times;</button>
         </div>
       </template>
+      <div x-show="acc(se,as?.k)" style="padding-top:10px;border-top:1px solid var(--w3);margin-top:4px">
+        <div style="font-size:11px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">Trainer Notes</div>
+        <textarea x-model="atNotes" class="field" style="height:58px;font-size:12px" placeholder="Add notes about this candidate's progress in this stage…"></textarea>
+      </div>
     </div>
     <div class="mf">
       <button @click="sm_=false" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
@@ -3752,21 +3809,40 @@ textarea.field{resize:none}
         <div class="pbar" style="height:6px;border-radius:6px"><div class="pbar-fill" :style="'width:'+opct(de)+'%'"></div></div>
       </div>
 
-      <div class="stitle">Lifecycle Stages</div>
+      <div class="stitle">Lifecycle Stages <span style="font-size:10px;font-weight:300;color:var(--w5)">(tap to expand tasks)</span></div>
       <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
         <template x-for="s in stages">
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3)">
-            <span style="font-size:16px" x-text="s.i"></span>
-            <div style="flex:1">
-              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                <span style="font-size:12px;font-weight:700" x-text="s.label"></span>
-                <span style="font-size:12px;font-weight:900;color:var(--green)">
-                  <span x-text="de?.[s.k]?.done||0"></span>/<span x-text="de?.[s.k]?.total||0"></span>
-                </span>
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded[s.k]?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded[s.k]=!sdExpanded[s.k]">
+              <span style="font-size:16px" x-text="s.i"></span>
+              <div style="flex:1">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-size:12px;font-weight:700" x-text="s.label"></span>
+                  <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,s.k)===100?'var(--green)':'var(--warn)')">
+                    <span x-text="de?.[s.k]?.done||0"></span>/<span x-text="de?.[s.k]?.total||0"></span>
+                  </span>
+                </div>
+                <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,s.k)+'%'"></div></div>
               </div>
-              <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,s.k)+'%'"></div></div>
+              <span x-show="de?.trainers?.[s.k]?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.[s.k]?.name"></span>
+              <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded[s.k]?'▲':'▼'"></span>
             </div>
-            <span x-show="de?.trainers?.[s.k]?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.[s.k]?.name"></span>
+            <div x-show="sdExpanded[s.k]" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
+              <div x-show="!de?.[s.k]?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
+              <template x-for="task in (de?.[s.k]?.items||[])">
+                <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)">
+                  <div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'">
+                    <svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span>
+                  <span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span>
+                </div>
+              </template>
+              <div x-show="de?.trainerNotes?.[s.k]" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)">
+                <div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div>
+                <div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes[s.k]"></div>
+              </div>
+            </div>
           </div>
         </template>
       </div>
@@ -3873,7 +3949,7 @@ function app(){
     loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
-    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
+    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:''},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
     l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
@@ -3898,8 +3974,9 @@ function app(){
       {k:'cert', short:'Certified',  label:'Certification', col:'Certification_Status',  i:'🏆', color:'#00C07F'},
     ],
     sm_:false,sd:false,sf:false,
-    se:null,as:null,mods:[],at:{name:'',img:''},stpl:'',
-    de:null,
+    se:null,as:null,mods:[],at:{name:'',img:''},atNotes:'',stpl:'',
+    de:null,sdExpanded:{},
+    qualSO:{open:false,emp:null,dept:''},
     nh:{name:'',role:'',country:'UAE',date:'',image:'',notes:'',priority:'normal'},
     fl:{show:false,leaving:false,title:'',name:'',sub:'',b:'',img:''},
 
@@ -4259,9 +4336,13 @@ function app(){
         // Write to Google Sheet so trainer can log in (new trainers only, not edits)
         // Map stage to dept column
         const deptMap = {
+          'HR Officer':'HR_Status',
+          'Quality Trainer':'Quality_Status',
+          'Department Manager':'DEPT_MANAGER',
           'Pre-Boarding':'HR_Status','Orientation':'HR_Status','HR Compliance':'HR_Status',
-          'Quality Std':'Quality_Status','OJT Training':'OJTTraining_Status',
-          'Pre-Floor Assessment':'Assessment_Status','Floor Ready Certification':'Certification_Status'
+          'Quality Std.':'Quality_Status','Quality Std':'Quality_Status',
+          'OJT Training':'DEPT_MANAGER','Assessment':'DEPT_MANAGER','Certification':'DEPT_MANAGER',
+          'Pre-Floor Assessment':'DEPT_MANAGER','Floor Ready Certification':'DEPT_MANAGER'
         };
         this.gas('addDynamicUser',{user:{
           username: this.tcNewTrainer.username.toUpperCase(),
@@ -4270,7 +4351,7 @@ function app(){
           level:    4,
           market:   this.mmarket,
           dept:     deptMap[this.tcNewTrainer.stage]||this.tcNewTrainer.stage,
-          title:    this.tcNewTrainer.stage+' Trainer · '+this.mmarket
+          title:    this.tcNewTrainer.name+' · '+this.tcNewTrainer.stage+' · '+this.mmarket
         }}).catch(e=>console.warn('Sheet sync failed:',e));
       }
       this.tcSaveTrainers();
@@ -4344,7 +4425,7 @@ function app(){
       r.readAsText(f);
     },
     tcImportBulk(){
-      const deptMap={'Pre-Boarding':'HR_Status','Orientation':'HR_Status','HR Compliance':'HR_Status','Quality Std.':'Quality_Status','OJT Training':'OJTTraining_Status','Pre-Floor Assessment':'Assessment_Status','Floor Ready Certification':'Certification_Status'};
+      const deptMap={'HR Officer':'HR_Status','Quality Trainer':'Quality_Status','Department Manager':'DEPT_MANAGER','Pre-Boarding':'HR_Status','Orientation':'HR_Status','HR Compliance':'HR_Status','Quality Std.':'Quality_Status','Quality Std':'Quality_Status','OJT Training':'DEPT_MANAGER','Assessment':'DEPT_MANAGER','Certification':'DEPT_MANAGER','Pre-Floor Assessment':'DEPT_MANAGER','Floor Ready Certification':'DEPT_MANAGER'};
       this.tcBulkPreview.forEach(t=>{
         this.tcTrainers.push(Object.assign({},t));
         this.gas('addDynamicUser',{user:{
@@ -4422,11 +4503,13 @@ function app(){
         return mok&&tok&&hrDone;
       });
     },
-    qualSignOff(e){
-      if(!confirm('Sign off '+e.name+' from Quality and move to OJT Training?')) return;
+    qualSignOff(e, dept){
+      const deptLabel = dept || e.joiningDept || 'OJT Training';
+      if(!confirm('Sign off '+e.name+' and route to '+deptLabel+' Department Manager?')) return;
       if(e.qual){ e.qual.done = e.qual.total; }
-      this.dofl('Quality Signed Off!', e.image, e.name, 'Moved to OJT Training', e.country);
-      this.l1AuditLog.push({type:'signoff',action:'Quality Sign-Off',detail:e.name+' → OJT · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
+      if(dept){ e.joiningDept = dept; const o=this.emps.find(x=>x.row===e.row);if(o)o.joiningDept=dept; }
+      this.dofl('Quality Signed Off!', e.image, e.name, 'Routed to '+deptLabel+' DM', e.country);
+      this.l1AuditLog.push({type:'signoff',action:'Quality Sign-Off',detail:e.name+' → '+deptLabel+' DM · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       const tasks = (e.qual&&e.qual.items||[]).map(m=>m.name+'|'+(m.link||'#')+'|1').join(';;');
       this.gas('saveFullUpdate',{row:e.row,colLabel:'Quality_Status',taskStr:tasks||'Complete|#|1',trainer:{}})
         .then(()=>this.fetchAll()).catch(()=>this.fetchAll());
@@ -4478,15 +4561,17 @@ function app(){
         name:     this.hrNH.n.toUpperCase().trim(),
         role:     this.hrNH.d.trim(),
         country:  this.hrNH.c||this.mmarket,
-        image:    '',
+        image:    this.hrNH.image||'',
+        joiningDept: this.hrNH.dept||'',
+        joiningSection: this.hrNH.section||'',
         priority: 'normal',
         notes:    '',
         month:    dt.getMonth(),
         year:     dt.getFullYear(),
         dateString: this.hrNH.dt,
-        pre:   stg==='pre' ? {done:0,total:5,items:[]} : blank(5),
-        ori:   stg==='ori' ? {done:0,total:5,items:[]} : blank(5),
-        hr:    stg==='hr'  ? {done:0,total:6,items:[]} : blank(6),
+        pre:  stg!=='pre' ? {done:5,total:5,items:[]} : {done:0,total:5,items:[]},
+        ori:  stg==='hr'  ? {done:5,total:5,items:[]} : {done:0,total:5,items:[]},
+        hr:   {done:0,total:6,items:[]},
         qual:  blank(4), ojt: blank(5), assess: blank(5), cert: blank(3),
         trainers: {},
         stageEntries: { pre: stg==='pre'?today:null, ori: stg==='ori'?today:null, hr: stg==='hr'?today:null },
@@ -4501,7 +4586,7 @@ function app(){
       // Reset form for next entry — keep country and stage
       const prevC = this.hrNH.c;
       const prevS = this.hrNH.stage;
-      this.hrNH = {n:'', d:'', c:prevC, dt:'', stage:prevS};
+      this.hrNH = {n:'', d:'', c:prevC, dt:'', stage:prevS, image:'', dept:'', section:''};
 
       // Sync to backend in background
       this.gas('addNewEmployee', {
@@ -4510,7 +4595,10 @@ function app(){
           role:     newEmp.role,
           country:  newEmp.country,
           date:     newEmp.dateString,
-          priority: 'normal'
+          priority: 'normal',
+          image:    newEmp.image||'',
+          joiningDept: newEmp.joiningDept||'',
+          joiningSection: newEmp.joiningSection||'',
         }
       })
       .then(r=>{
@@ -4522,6 +4610,7 @@ function app(){
         alert('Candidate added locally but failed to save to Google Sheet. Check your connection and try refreshing.');
       });
     },
+    hrNHUpload(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onloadend=()=>this.hrNH.image=r.result;r.readAsDataURL(f);},
     // Calculate elapsed time for a stage
     hrElapsed(e, k){
       if(!e.stageEntries||!e.stageEntries[k]) return null;
@@ -4674,27 +4763,32 @@ function app(){
     omgr(e,s){
       if(!this.acc(e,s.k))return;
       this.se=e;this.as=s;
-      this.mods=JSON.parse(JSON.stringify(e[s.k].items||[]));
+      this.mods=JSON.parse(JSON.stringify((e[s.k].items||[]).map(m=>({date:'',link:'#',...m}))));
       this.at=JSON.parse(JSON.stringify(e.trainers?.[s.k]||{name:'',img:''}));
+      this.atNotes=(e.trainerNotes&&e.trainerNotes[s.k])||'';
       this.stpl='';this.sm_=true;
     },
     md(){return this.mods.filter(m=>m.done).length;},
     tpct(){return this.mods.length?Math.round(this.md()/this.mods.length*100):0;},
-    at_(){this.mods.push({name:'New Task',link:'#',done:false});},
-    itpl(){if(!this.stpl)return;this.gas('getTasksFromTemplate',{tab:this.stpl}).then(t=>{if(t&&t.length)this.mods=t;});},
+    at_(){this.mods.push({name:'New Task',link:'#',done:false,date:''});},
+    itpl(){if(!this.stpl)return;this.gas('getTasksFromTemplate',{tab:this.stpl}).then(t=>{if(t&&t.length)this.mods=t.map(x=>({date:'',...x}));});},
     utp(e){const f=e.target.files[0],r=new FileReader();r.onloadend=()=>this.at.img=r.result;r.readAsDataURL(f);},
     save_(){
       this.sv=true;
-      const str=this.mods.map(m=>`${m.name}|${m.link||'#'}|${m.done?'1':'0'}`).join(';;');
+      const str=this.mods.map(m=>`${m.name}|${m.link||'#'}|${m.done?'1':'0'}|${m.date||''}`).join(';;');
       this.gas('saveFullUpdate',{row:this.se.row,colLabel:this.as.col,taskStr:str,trainer:this.at})
         .then(()=>{
+          if(!this.se.trainerNotes)this.se.trainerNotes={};
+          this.se.trainerNotes[this.as.k]=this.atNotes;
+          const o=this.emps.find(x=>x.row===this.se.row);
+          if(o){if(!o.trainerNotes)o.trainerNotes={};o.trainerNotes[this.as.k]=this.atNotes;}
           this.sv=false;this.sm_=false;this.fetchAll();
           this.dofl('Saved!',this.se.image,this.se.name,this.as.label+' updated',this.se.country);
         })
         .catch(()=>{this.sv=false;alert('Save failed. Please retry.');});
     },
 
-    odetail(e){this.de=JSON.parse(JSON.stringify(e));this.sd=true;},
+    odetail(e){this.de=JSON.parse(JSON.stringify(e));this.sdExpanded={};this.sd=true;},
     snotes(e){
       this.gas('updateCandidateField',{row:e.row,field:'Notes',value:e.notes});
       const o=this.emps.find(x=>x.row===e.row);if(o)o.notes=e.notes;
