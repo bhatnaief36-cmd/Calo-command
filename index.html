@@ -1183,13 +1183,16 @@ textarea.field{resize:none}
               <div class="ptitle">System Admin</div>
               <div class="psub">All users across all levels and Mountain Peaks</div>
             </div>
-            <button @click="l1AdminForm=true" class="btn btn-primary btn-sm">+ Add User</button>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button x-show="l1Selected.length>0" @click="l1BulkDelete()" class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger)" x-text="'Delete ('+l1Selected.length+')'"></button>
+              <button @click="l1AdminForm=true" class="btn btn-primary btn-sm">+ Add User</button>
+            </div>
           </div>
 
           <!-- User level tabs -->
-          <div style="display:flex;gap:8px;margin-bottom:16px">
+          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
             <template x-for="tab in [{l:'All Users',v:'all'},{l:'L2 RTS',v:'2'},{l:'L3 Coordinators',v:'3'},{l:'L4 HR',v:'4hr'},{l:'L4 Quality',v:'4qual'},{l:'L4 Dept Manager',v:'4dm'}]">
-              <button @click="l1AdminTab=tab.v" class="btn btn-ghost btn-sm"
+              <button @click="l1AdminTab=tab.v;l1Selected=[]" class="btn btn-ghost btn-sm"
                 :style="l1AdminTab===tab.v?'border-color:var(--green);color:var(--green);background:var(--green-l)':''"
                 x-text="tab.l"></button>
             </template>
@@ -1201,9 +1204,19 @@ textarea.field{resize:none}
               <div class="spinner" style="margin:0 auto 8px"></div>
               <div style="font-size:12px">Loading users from Google Sheets…</div>
             </div>
+            <!-- Select all row -->
+            <div x-show="!l1UsersLoading&&l1FilteredUsers().length>0" style="display:flex;align-items:center;gap:10px;padding:4px 14px">
+              <input type="checkbox" style="width:16px;height:16px;cursor:pointer"
+                :checked="l1Selected.length===l1FilteredUsers().length&&l1FilteredUsers().length>0"
+                @change="l1Selected.length===l1FilteredUsers().length?l1Selected=[]:l1Selected=l1FilteredUsers().map(u=>u.username)">
+              <span style="font-size:11px;color:var(--w5)" x-text="l1Selected.length>0?l1Selected.length+' selected':'Select all'"></span>
+            </div>
             <template x-for="(u,ui) in l1FilteredUsers()">
               <div class="card" style="padding:14px" :style="!u.active?'opacity:.55':''">
                 <div style="display:flex;align-items:center;gap:14px">
+                  <input type="checkbox" style="width:16px;height:16px;cursor:pointer;flex-shrink:0"
+                    :checked="l1Selected.includes(u.username)"
+                    @change="l1Selected.includes(u.username)?l1Selected=l1Selected.filter(x=>x!==u.username):l1Selected=[...l1Selected,u.username]">
                   <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:900;color:#fff"
                     :style="'background:'+(u.level===2?'#3B82F6':u.level===3?'#A78BFA':u.dept==='HR_Status'?'#F97316':u.dept==='Quality_Status'?'var(--green)':'var(--warn)')">
                     <span x-text="'L'+u.level"></span>
@@ -1237,8 +1250,8 @@ textarea.field{resize:none}
           </div>
 
           <!-- Add User Modal -->
-          <div x-show="l1AdminForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="l1AdminForm?'display:flex':''">
-            <div class="card" style="width:100%;max-width:500px;padding:28px;border-radius:var(--r16)">
+          <div x-show="l1AdminForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:flex-start;justify-content:flex-end;padding:20px" :style="l1AdminForm?'display:flex':''">
+            <div class="card" style="width:100%;max-width:500px;padding:28px;border-radius:var(--r16);margin-top:60px;margin-right:20px">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
                 <div><div style="font-size:18px;font-weight:900">Add System User</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Create access for any level</div></div>
                 <button @click="l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
@@ -1261,17 +1274,19 @@ textarea.field{resize:none}
                       <template x-for="b in branches"><option :value="b" x-text="b"></option></template>
                     </select>
                   </div>
-                  <div><div class="f-label">Department (L4)</div>
-                    <select x-model="l1NewUser.dept" class="field" style="width:100%;box-sizing:border-box">
+                  <div>
+                    <div class="f-label" x-text="l1NewUser.level==4?'Department *':'Department'"></div>
+                    <select x-model="l1NewUser.dept" class="field" style="width:100%;box-sizing:border-box" :disabled="l1NewUser.level!=4" @change="l1NewUser.level!=4&&(l1NewUser.dept='')">
                       <option value="">— None —</option>
                       <option value="HR_Status">HR Officer</option>
                       <option value="Quality_Status">Quality Trainer</option>
                       <option value="DEPT_MANAGER">Dept Manager</option>
                     </select>
+                    <div x-show="l1NewUser.level!=4" style="font-size:10px;color:var(--w5);margin-top:3px">Not required for L2/L3</div>
                   </div>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Username *</div><input type="text" x-model="l1NewUser.username" class="field" placeholder="e.g. TC-BHR" style="width:100%;box-sizing:border-box;text-transform:uppercase" @input="l1NewUser.username=l1NewUser.username.toUpperCase()"></div>
+                  <div><div class="f-label">Username *</div><input type="text" x-model="l1NewUser.username" class="field" placeholder="e.g. naief@calo.app" style="width:100%;box-sizing:border-box" autocomplete="off"></div>
                   <div><div class="f-label">Password *</div><input type="text" x-model="l1NewUser.pass" class="field" placeholder="e.g. Tc@BHR25" style="width:100%;box-sizing:border-box"></div>
                 </div>
               </div>
@@ -3956,7 +3971,7 @@ function app(){
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:''},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
-    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,
+    l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,l1Selected:[],
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
@@ -4218,6 +4233,18 @@ function app(){
           this.l1SaveAudit();
         } else {alert('Delete failed — user may not exist in Sheets.');}
       }).catch(()=>alert('Delete failed. Check your connection.'));
+    },
+    l1BulkDelete(){
+      const count = this.l1Selected.length;
+      if(!count)return;
+      if(!confirm('Permanently delete '+count+' selected user'+(count>1?'s':'')+' ? This cannot be undone.'))return;
+      const toDelete = [...this.l1Selected];
+      Promise.all(toDelete.map(u=>this.gas('deleteUser',{username:u}))).then(()=>{
+        this.l1Users=this.l1Users.filter(u=>!toDelete.includes(u.username));
+        this.l1Selected=[];
+        this.l1AuditLog.push({type:'bulk_delete',action:'Bulk Delete',detail:toDelete.join(', '),user:this.mname,date:new Date().toLocaleDateString()});
+        this.l1SaveAudit();
+      }).catch(()=>alert('Some deletions may have failed. Refresh to check.'));
     },
     l1ResetUserPW(username){
       const newPass=prompt('New password for '+username+':');
