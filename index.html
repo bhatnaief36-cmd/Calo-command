@@ -114,6 +114,14 @@ textarea.field{resize:none}
 .c-l3{background:rgba(59,130,246,.1);color:#1D4ED8}
 .c-l4{background:var(--green-l);color:var(--green-h)}
 
+/* STAGE DETAILS ACCORDION */
+.stg-acc{border-radius:var(--r8);overflow:hidden}
+.stg-acc summary{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--w2);border:1px solid var(--w3);border-radius:var(--r8);cursor:pointer;list-style:none;user-select:none}
+.stg-acc summary::-webkit-details-marker{display:none}
+.stg-acc[open]>summary{border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0}
+.stg-acc .stg-arrow{font-size:11px;color:var(--w5);flex-shrink:0;transition:transform .15s}
+.stg-acc[open] .stg-arrow{transform:rotate(180deg)}
+.stg-body{padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)}
 /* MODALS */
 .overlay{position:fixed;inset:0;background:rgba(74,74,74,.42);backdrop-filter:blur(4px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
 .modal{background:var(--w1);border-radius:var(--r16);width:100%;overflow:hidden;display:flex;flex-direction:column;animation:min .2s ease;box-shadow:0 16px 48px rgba(0,0,0,.14)}
@@ -253,37 +261,115 @@ textarea.field{resize:none}
   div[style*="grid-template-columns:repeat(2"]{grid-template-columns:1fr!important}
 }
 /* ═══ END MOBILE RESPONSIVE ════════════════════════════════════ */
+@media print {
+  html,body{height:auto!important;overflow:visible!important;background:#fff!important}
+  .app-shell{display:block!important;height:auto!important;overflow:visible!important}
+  .sidebar,.topbar,.overlay,.mob-nav-toggle,.mob-overlay{display:none!important}
+  .main-area{height:auto!important;overflow:visible!important;width:100%!important;background:#fff!important}
+  .main{margin-left:0!important;padding:20px!important}
+  .cmd-bar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .card{box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid}
+  button{display:none!important}
+  [x-cloak]{display:none!important}
+}
 </style>
 </head>
 <body x-data="app()" x-init="init()">
 
 <!-- LOGIN -->
 <div x-show="!loggedIn" style="display:block" class="login-bg">
-  <div class="login-card au">
+  <div class="login-card au" style="max-width:440px">
 
-    <div style="text-align:center;margin-bottom:32px">
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:24px">
       <div class="logo" style="font-size:42px;letter-spacing:-2px">CALO</div>
       <div style="width:36px;height:3px;background:var(--green);border-radius:2px;margin:10px auto"></div>
       <div class="logo-sub" style="margin-top:10px;font-size:12px">Onboarding Command Center</div>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div>
-        <div class="f-label">User ID</div>
-        <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter your user ID" class="field" style="font-weight:700;letter-spacing:.04em" autocomplete="off">
+    <!-- Step 1: Role cards -->
+    <div style="font-size:10.5px;color:var(--w5);font-weight:600;letter-spacing:.08em;margin-bottom:10px;text-align:center">STEP 1 — SELECT YOUR ROLE</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">
+      <div @click="selLevel=1;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===1?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">🌐</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ch)">Global Admin</div>
+        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 1</div>
       </div>
-      <div>
-        <div class="f-label">Password</div>
-        <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter your password" class="field" autocomplete="off">
+      <div @click="selLevel=2;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===2?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">📊</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ch)">RTS</div>
+        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 2 · Regional</div>
       </div>
-      <div x-show="lerr" style="display:none;background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
-      <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px;border-radius:var(--r8)" :style="ll?'opacity:.85;cursor:not-allowed':''">
-        <div x-show="ll" style="display:none" class="spinner spinner-w"></div>
-        <span x-text="ll?'Signing in…':'Sign In'"></span>
-      </button>
+      <div @click="selLevel=3;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===3?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">📋</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ch)">Training Coord.</div>
+        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 3 · Market</div>
+      </div>
+      <div @click="selLevel=4;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===4?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">👤</div>
+        <div style="font-size:12px;font-weight:700;color:var(--ch)">Trainer / Officer</div>
+        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 4 · Dept</div>
+      </div>
     </div>
 
-    <div style="text-align:center;margin-top:28px;padding-top:20px;border-top:1px solid var(--w3)">
+    <!-- Step 2: Login form -->
+    <div x-show="selLevel" style="display:none">
+      <div style="font-size:10.5px;color:var(--w5);font-weight:600;letter-spacing:.08em;margin-bottom:12px;text-align:center">STEP 2 — ENTER YOUR DETAILS</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+
+        <!-- Country — L3 and L4 -->
+        <div x-show="selLevel===3||selLevel===4" style="display:none">
+          <div class="f-label">Market / Country</div>
+          <select x-model="loginCountry" class="field">
+            <option value="">Select your market…</option>
+            <option>UAE</option><option>Qatar</option><option>Kuwait</option>
+            <option>Bahrain</option><option>Riyadh</option><option>Jeddah</option>
+            <option>Oman</option><option>UK</option>
+          </select>
+        </div>
+
+        <!-- Department — L4 only -->
+        <div x-show="selLevel===4" style="display:none">
+          <div class="f-label">Department</div>
+          <select x-model="loginDept" class="field">
+            <option value="">Select your department…</option>
+            <option value="HR_Status">HR Officer</option>
+            <option value="Quality_Status">Quality Trainer</option>
+            <option value="DEPT_MANAGER">Department Manager</option>
+          </select>
+        </div>
+
+        <!-- Employee ID -->
+        <div>
+          <div class="f-label">Employee ID</div>
+          <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter your employee ID" class="field" style="font-weight:700;letter-spacing:.04em" autocomplete="off">
+        </div>
+
+        <!-- Password -->
+        <div>
+          <div class="f-label">Password</div>
+          <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter your password" class="field" autocomplete="new-password">
+        </div>
+
+        <!-- Error -->
+        <div x-show="lerr" style="display:none;background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
+
+        <!-- Submit -->
+        <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px;border-radius:var(--r8)" :style="ll?'opacity:.85;cursor:not-allowed':''">
+          <div x-show="ll" style="display:none" class="spinner spinner-w"></div>
+          <span x-text="ll?'Signing in…':'Sign In'"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- One-time login notice -->
+    <div style="display:flex;align-items:center;gap:8px;background:rgba(56,189,118,.07);border:1px solid rgba(56,189,118,.2);border-radius:var(--r8);padding:10px 13px;margin-top:18px">
+      <div style="font-size:16px;flex-shrink:0">🔐</div>
+      <div style="font-size:11.5px;color:var(--w7);line-height:1.5">You only need to sign in <strong>once</strong>. Your session stays saved on this device — no need to log in again.</div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:1px solid var(--w3)">
       <div style="font-size:11px;color:var(--w6);font-weight:400">© 2026 Calo · All Rights Reserved</div>
       <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">Authorized personnel only</div>
     </div>
@@ -312,7 +398,7 @@ textarea.field{resize:none}
     <div style="padding:12px 14px;border-bottom:1px solid var(--w3);background:var(--w2)">
       <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
         <div class="dot-g"></div>
-        <span style="font-weight:700;font-size:12px;color:var(--ch)" x-text="mname"></span>
+        <span style="font-weight:700;font-size:12px;color:var(--ch)" x-text="dname()"></span>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
         <span class="chip" :class="'c-l'+mlevel" style="font-size:10px" x-text="'Level '+mlevel"></span>
@@ -334,11 +420,11 @@ textarea.field{resize:none}
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         Talent Pipeline
       </div>
-      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rep'?'on':''" @click="v='rep'">
+      <div x-show="false" class="nav-link" :class="v==='rep'?'on':''" @click="v='rep'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         Global Reports
       </div>
-      <div x-show="mlevel===1" class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='l1_analytics'?'on':''" @click="v='l1_analytics'">
+      <div x-show="false" class="nav-link" :class="v==='l1_analytics'?'on':''" @click="v='l1_analytics'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Global Analytics
       </div>
@@ -358,7 +444,7 @@ textarea.field{resize:none}
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_pipe'?'on':''" @click="v='rts_pipe'">
+        <div class="nav-link" style="display:none" :class="v==='rts_pipe'?'on':''" @click="v='rts_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Pipeline
         </div>
@@ -366,7 +452,7 @@ textarea.field{resize:none}
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
           MP Performance
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_trainers'?'on':''" @click="v='rts_trainers'">
+        <div class="nav-link" style="display:none" :class="v==='rts_trainers'?'on':''" @click="v='rts_trainers'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Trainers Directory
         </div>
@@ -374,7 +460,7 @@ textarea.field{resize:none}
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           Reports
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_materials'?'on':''" @click="v='rts_materials'">
+        <div class="nav-link" style="display:none" :class="v==='rts_materials'?'on':''" @click="v='rts_materials'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           Training Materials
         </div>
@@ -421,10 +507,6 @@ textarea.field{resize:none}
         <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_pipe'?'on':''" @click="v='tc_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Pipeline
-        </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_stages'?'on':''" @click="v='tc_stages'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-          Stage Overview
         </div>
         <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='tc_depts'?'on':''" @click="v='tc_depts'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
@@ -623,7 +705,7 @@ textarea.field{resize:none}
       <div style="display:flex;align-items:center;gap:8px">
         <button @click="useDateFilter=!useDateFilter" class="btn btn-ghost btn-sm" :style="useDateFilter?'border-color:var(--green);color:var(--green);background:var(--green-l)':''" x-text="useDateFilter?'📅 Date Filter ON':'📅 Date Filter'"></button>
         <span style="font-size:12px;color:var(--w5);font-weight:300" x-text="new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})"></span>
-        <button x-show="mlevel===4 && mdept==='HR_Status'" @click="sf=true" class="btn btn-primary btn-sm">
+        <button x-show="false" @click="sf=true" class="btn btn-primary btn-sm">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Hire
         </button>
@@ -684,6 +766,7 @@ textarea.field{resize:none}
                 <div style="width:8px;height:8px;border-radius:50%;background:#00C07F;box-shadow:0 0 0 3px rgba(0,192,127,.3)"></div>
                 <span style="font-size:11px;color:rgba(255,255,255,.6)">Live</span>
                 <button @click="fetchAll()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);padding:6px 12px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">↻ Refresh</button>
+                <button @click="window.print()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);padding:6px 12px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">⬇ Export PDF</button>
               </div>
             </div>
           </div>
@@ -1194,7 +1277,7 @@ textarea.field{resize:none}
             </div>
             <div style="display:flex;gap:8px;align-items:center">
               <button x-show="l1Selected.length>0" @click="l1BulkDelete()" class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger)" x-text="'Delete ('+l1Selected.length+')'"></button>
-              <button @click="l1AdminForm=true" class="btn btn-primary btn-sm">+ Add User</button>
+              <button @click="l1AdminForm=true;l1NewUser.pass=genPass()" class="btn btn-primary btn-sm">+ Add User</button>
             </div>
           </div>
 
@@ -1261,47 +1344,84 @@ textarea.field{resize:none}
           <!-- Add User Modal -->
           <div x-show="l1AdminForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000" :style="l1AdminForm?'display:block':''">
             <div class="card" style="position:absolute;top:70px;right:24px;width:500px;max-width:calc(100vw - 48px);padding:28px;border-radius:var(--r16)">
+              <!-- Header -->
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-                <div><div style="font-size:18px;font-weight:900">Add System User</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Create access for any level</div></div>
-                <button @click="l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+                <div>
+                  <div style="font-size:18px;font-weight:900" x-text="l1CreatedUser?'User Created':'Add System User'"></div>
+                  <div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="l1CreatedUser?'Share login instructions below':'Create access for any level'"></div>
+                </div>
+                <button @click="l1AdminForm=false;l1CreatedUser=null;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
               </div>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Full Name *</div><input type="text" x-model="l1NewUser.name" class="field" placeholder="User name" style="width:100%;box-sizing:border-box"></div>
-                  <div><div class="f-label">Title</div><input type="text" x-model="l1NewUser.title" class="field" placeholder="e.g. HR Officer · UAE" style="width:100%;box-sizing:border-box"></div>
+
+              <!-- Form (hidden after creation) -->
+              <div x-show="!l1CreatedUser">
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div><div class="f-label">Full Name *</div><input type="text" x-model="l1NewUser.name" class="field" placeholder="User name" style="width:100%;box-sizing:border-box"></div>
+                    <div><div class="f-label">Title</div><input type="text" x-model="l1NewUser.title" class="field" placeholder="e.g. HR Officer · UAE" style="width:100%;box-sizing:border-box"></div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+                    <div><div class="f-label">Level *</div>
+                      <select x-model.number="l1NewUser.level" class="field" style="width:100%;box-sizing:border-box">
+                        <option value="2">L2 — RTS</option>
+                        <option value="3">L3 — Coordinator</option>
+                        <option value="4">L4 — Trainer/HR/DM</option>
+                      </select>
+                    </div>
+                    <div><div class="f-label">Mountain Peak *</div>
+                      <select x-model="l1NewUser.market" class="field" style="width:100%;box-sizing:border-box">
+                        <template x-for="b in branches"><option :value="b" x-text="b"></option></template>
+                      </select>
+                    </div>
+                    <div>
+                      <div class="f-label" x-text="l1NewUser.level==4?'Department *':'Department'"></div>
+                      <select x-model="l1NewUser.dept" class="field" style="width:100%;box-sizing:border-box" :disabled="l1NewUser.level!=4" @change="l1NewUser.level!=4&&(l1NewUser.dept='')">
+                        <option value="">— None —</option>
+                        <option value="HR_Status">HR Officer</option>
+                        <option value="Quality_Status">Quality Trainer</option>
+                        <option value="DEPT_MANAGER">Dept Manager</option>
+                      </select>
+                      <div x-show="l1NewUser.level!=4" style="font-size:10px;color:var(--w5);margin-top:3px">Not required for L2/L3</div>
+                    </div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div><div class="f-label">Username *</div><input type="text" x-model="l1NewUser.username" class="field" placeholder="e.g. naief@calo.app" style="width:100%;box-sizing:border-box" autocomplete="off"></div>
+                    <div>
+                      <div class="f-label">Password *</div>
+                      <div style="display:flex;gap:6px;align-items:center">
+                        <input type="text" x-model="l1NewUser.pass" class="field" placeholder="Auto-generated" style="width:100%;box-sizing:border-box;flex:1">
+                        <button type="button" @click="l1NewUser.pass=genPass()" title="Regenerate password" style="flex-shrink:0;background:var(--w2);border:1px solid var(--w3);border-radius:var(--r8);width:34px;height:34px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">🔄</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-                  <div><div class="f-label">Level *</div>
-                    <select x-model.number="l1NewUser.level" class="field" style="width:100%;box-sizing:border-box">
-                      <option value="2">L2 — RTS</option>
-                      <option value="3">L3 — Coordinator</option>
-                      <option value="4">L4 — Trainer/HR/DM</option>
-                    </select>
-                  </div>
-                  <div><div class="f-label">Mountain Peak *</div>
-                    <select x-model="l1NewUser.market" class="field" style="width:100%;box-sizing:border-box">
-                      <template x-for="b in branches"><option :value="b" x-text="b"></option></template>
-                    </select>
-                  </div>
-                  <div>
-                    <div class="f-label" x-text="l1NewUser.level==4?'Department *':'Department'"></div>
-                    <select x-model="l1NewUser.dept" class="field" style="width:100%;box-sizing:border-box" :disabled="l1NewUser.level!=4" @change="l1NewUser.level!=4&&(l1NewUser.dept='')">
-                      <option value="">— None —</option>
-                      <option value="HR_Status">HR Officer</option>
-                      <option value="Quality_Status">Quality Trainer</option>
-                      <option value="DEPT_MANAGER">Dept Manager</option>
-                    </select>
-                    <div x-show="l1NewUser.level!=4" style="font-size:10px;color:var(--w5);margin-top:3px">Not required for L2/L3</div>
-                  </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Username *</div><input type="text" x-model="l1NewUser.username" class="field" placeholder="e.g. naief@calo.app" style="width:100%;box-sizing:border-box" autocomplete="off"></div>
-                  <div><div class="f-label">Password *</div><input type="text" x-model="l1NewUser.pass" class="field" placeholder="e.g. Tc@BHR25" style="width:100%;box-sizing:border-box"></div>
+                <div style="display:flex;gap:8px;margin-top:20px">
+                  <button @click="l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                  <button @click="l1SaveNewUser()" :disabled="!l1NewUser.name||!l1NewUser.username||!l1NewUser.pass" class="btn btn-primary" style="flex:1;justify-content:center">Create User</button>
                 </div>
               </div>
-              <div style="display:flex;gap:8px;margin-top:20px">
-                <button @click="l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
-                <button @click="l1SaveNewUser()" :disabled="!l1NewUser.name||!l1NewUser.username||!l1NewUser.pass" class="btn btn-primary" style="flex:1;justify-content:center">Create User</button>
+
+              <!-- Login Instructions card (shown after creation) -->
+              <div x-show="l1CreatedUser" style="display:none">
+                <div style="background:rgba(56,189,118,.07);border:1px solid rgba(56,189,118,.25);border-radius:var(--r8);padding:16px;margin-bottom:16px">
+                  <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.06em;margin-bottom:12px">SHARE THESE INSTRUCTIONS WITH THE USER</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--ch);line-height:1.6">
+                    <div>🌐 <strong>App:</strong> https://calo-command.vercel.app</div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div>1️⃣ <strong>Click card:</strong> <span x-text="l1CreatedUser&&({2:'RTS',3:'Training Coord.',4:'Trainer / Officer'}[l1CreatedUser.level]||'Global Admin')"></span></div>
+                    <div x-show="l1CreatedUser&&(l1CreatedUser.level===3||l1CreatedUser.level===4)">2️⃣ <strong>Select market:</strong> <span x-text="l1CreatedUser&&l1CreatedUser.market"></span></div>
+                    <div x-show="l1CreatedUser&&l1CreatedUser.level===4&&l1CreatedUser.dept">3️⃣ <strong>Select department:</strong> <span x-text="l1CreatedUser&&({'HR_Status':'HR Officer','Quality_Status':'Quality Trainer','DEPT_MANAGER':'Department Manager'}[l1CreatedUser.dept]||'')"></span></div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div>🪪 <strong>Employee ID:</strong> <code style="background:var(--w2);padding:2px 6px;border-radius:4px;font-size:12px" x-text="l1CreatedUser&&l1CreatedUser.username"></code></div>
+                    <div>🔑 <strong>Password:</strong> <code style="background:var(--w2);padding:2px 6px;border-radius:4px;font-size:12px" x-text="l1CreatedUser&&l1CreatedUser.pass"></code></div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div style="font-size:11px;color:var(--w5)">🔐 They only need to sign in once — session is saved on their device.</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button @click="copyText(loginInstr(l1CreatedUser))" class="btn btn-ghost" style="flex:1;justify-content:center">📋 Copy Instructions</button>
+                  <button @click="l1CreatedUser=null;l1AdminForm=false;l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true}" class="btn btn-primary" style="flex:1;justify-content:center">Done</button>
+                </div>
               </div>
             </div>
           </div>
@@ -1318,7 +1438,7 @@ textarea.field{resize:none}
             <div class="psub">Set maximum completion days per stage — breach triggers priority alert</div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px">
-            <template x-for="(s,si) in stages">
+            <template x-for="(s,si) in stages" :key="s.k">
               <div class="card" style="padding:18px">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
                   <span style="font-size:24px" x-text="s.i"></span>
@@ -1355,7 +1475,7 @@ textarea.field{resize:none}
                   </tr>
                 </thead>
                 <tbody>
-                  <template x-for="s in stages">
+                  <template x-for="s in stages" :key="s.k">
                     <tr style="border-bottom:1px solid var(--w3)">
                       <td style="padding:8px 12px"><div style="display:flex;align-items:center;gap:8px"><span x-text="s.i"></span><span style="font-weight:700" x-text="s.label"></span></div></td>
                       <td style="text-align:center;padding:8px 12px;font-weight:700" x-text="slaRules[s.k]+' days'"></td>
@@ -1423,7 +1543,7 @@ textarea.field{resize:none}
                     </div>
                     <div style="font-size:11px;color:var(--w5);margin-top:4px" x-text="'To: '+(a.audience==='all'?'All Users':a.audience==='2'?'RTS':a.audience==='3'?'Coordinators':'Trainers')+' · '+a.date"></div>
                   </div>
-                  <button @click="l1Announcements.splice(l1Announcements.length-1-ai,1);l1SaveAnnouncements()" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button @click="l1DeleteAnnouncement(a)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
                 <div style="font-size:13px;color:var(--ch);line-height:1.5" x-text="a.body"></div>
               </div>
@@ -1488,7 +1608,7 @@ textarea.field{resize:none}
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
               <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Calo Group · All Mountain Peaks</div>
-              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="dname()"></span> 👋</div>
             </div>
             <div style="display:flex;gap:0;align-items:center">
               <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="emps.length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TOTAL STAFF</div></div>
@@ -1653,6 +1773,7 @@ textarea.field{resize:none}
                     <span class="chip c-green" style="font-size:9px;margin-top:5px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
                     <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">📅 <span x-text="e.dateString||''"></span></div>
                   </div>
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);flex-shrink:0;align-self:flex-start">
                 </div>
                 <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
                   <template x-for="s in stages">
@@ -1666,6 +1787,10 @@ textarea.field{resize:none}
                   </template>
                 </div>
                 <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px">
+                    <img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0">
+                    <div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  </div>
                   <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View</button>
                 </div>
               </div>
@@ -1991,7 +2116,7 @@ textarea.field{resize:none}
                   <div style="width:40px;height:40px;border-radius:var(--r8);background:var(--green-l);display:flex;align-items:center;justify-content:center;font-size:20px" x-text="d.icon||'🏢'"></div>
                   <div><div style="font-size:14px;font-weight:900" x-text="d.name"></div><div style="font-size:11px;color:var(--w5)">Global department</div></div>
                 </div>
-                <button @click="rtsDepts.splice(di,1);rtsSaveDepts()" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;color:var(--danger)">Remove</button>
+                <button @click="rtsDeleteDept(di)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;color:var(--danger)">Remove</button>
               </div>
             </template>
           </div>
@@ -2057,7 +2182,7 @@ textarea.field{resize:none}
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
               <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Training Coordinator · <span x-text="mmarket"></span> Mountain Peak</div>
-              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="dname()"></span> 👋</div>
             </div>
             <div style="display:flex;gap:0;align-items:center">
               <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="tcEmps().length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TOTAL STAFF</div></div>
@@ -2170,7 +2295,7 @@ textarea.field{resize:none}
             </div>
             <div style="display:flex;gap:8px">
               <button @click="tcBulkOpen=true" class="btn btn-ghost btn-sm">📥 Bulk Upload CSV</button>
-              <button @click="tcAddTrainerForm=true;tcEditIdx=-1;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false}" class="btn btn-primary btn-sm">+ Add Trainer</button>
+              <button @click="tcAddTrainerForm=true;tcEditIdx=-1;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:genPass(),photo:'',active:true,showPass:false}" class="btn btn-primary btn-sm">+ Add Trainer</button>
             </div>
           </div>
 
@@ -2194,7 +2319,7 @@ textarea.field{resize:none}
                   </div>
                   <div style="display:flex;gap:6px">
                     <button @click="tcEditTrainer(ti)" class="btn btn-ghost btn-sm">Edit</button>
-                    <button @click="t.active=!t.active;tcSaveTrainers()" class="btn btn-ghost btn-sm" :style="t.active?'color:var(--danger)':'color:var(--green)'" x-text="t.active?'Deactivate':'Activate'"></button>
+                    <button @click="t.active=!t.active;tcSaveOneTrainer(t)" class="btn btn-ghost btn-sm" :style="t.active?'color:var(--danger)':'color:var(--green)'" x-text="t.active?'Deactivate':'Activate'"></button>
                     <button @click="tcResetPW(ti)" class="btn btn-ghost btn-sm" style="color:var(--info)">Reset PW</button>
                     <button @click="tcDeleteTrainer(ti)" class="btn btn-ghost btn-sm" style="color:var(--danger)">Delete</button>
                   </div>
@@ -2209,7 +2334,7 @@ textarea.field{resize:none}
           </div>
 
           <!-- Bulk CSV Upload Modal -->
-          <div x-show="tcBulkOpen" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="tcBulkOpen?'display:flex':''">
+          <div x-show="tcBulkOpen" style="display:none" class="overlay" @click.self="tcBulkOpen=false;tcBulkPreview=[]">
             <div class="card" style="width:100%;max-width:560px;padding:28px;border-radius:var(--r16)">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
                 <div><div style="font-size:18px;font-weight:900">Bulk Upload Trainers</div><div style="font-size:12px;color:var(--w5);margin-top:3px">Upload a CSV file with trainer details</div></div>
@@ -2246,44 +2371,81 @@ textarea.field{resize:none}
           </div>
 
           <!-- Add / Edit Trainer Modal -->
-          <div x-show="tcAddTrainerForm" style="display:none;position:fixed;inset:0;background:rgba(74,74,74,.45);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" :style="tcAddTrainerForm?'display:flex':''">
+          <div x-show="tcAddTrainerForm" style="display:none" class="overlay" @click.self="tcAddTrainerForm=false;tcCreatedTrainer=null;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1">
             <div class="card" style="width:100%;max-width:480px;padding:28px;border-radius:var(--r16)">
+              <!-- Header -->
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-                <div><div style="font-size:18px;font-weight:900;color:var(--ch)" x-text="tcEditIdx>=0?'Edit Trainer':'Add Trainer'"></div><div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="mmarket+' Mountain Peak'"></div></div>
-                <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
+                <div>
+                  <div style="font-size:18px;font-weight:900;color:var(--ch)" x-text="tcCreatedTrainer?'Trainer Created':(tcEditIdx>=0?'Edit Trainer':'Add Trainer')"></div>
+                  <div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="tcCreatedTrainer?'Share login instructions below':mmarket+' Mountain Peak'"></div>
+                </div>
+                <button @click="tcAddTrainerForm=false;tcCreatedTrainer=null;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--w5);line-height:1">✕</button>
               </div>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Full Name *</div><input type="text" x-model="tcNewTrainer.name" class="field" placeholder="Trainer name" style="width:100%;box-sizing:border-box"></div>
-                  <div><div class="f-label">Photo URL</div><input type="url" x-model="tcNewTrainer.photo" class="field" placeholder="Photo URL (optional)" style="width:100%;box-sizing:border-box"></div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Role *</div>
-                    <select x-model="tcNewTrainer.stage" class="field" style="width:100%;box-sizing:border-box">
-                      <option value="">Select role</option>
-                      <option value="HR Officer">👤 HR Officer (Pre-Board · Orientation · HR Compliance)</option>
-                      <option value="Quality Trainer">⭐ Quality Trainer (Quality Standards)</option>
-                      <option value="Department Manager">🔧 Dept Manager (OJT · Assessment · Certification)</option>
-                    </select>
+
+              <!-- Form (hidden after creation) -->
+              <div x-show="!tcCreatedTrainer">
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div><div class="f-label">Full Name *</div><input type="text" x-model="tcNewTrainer.name" class="field" placeholder="Trainer name" style="width:100%;box-sizing:border-box"></div>
+                    <div><div class="f-label">Photo URL</div><input type="url" x-model="tcNewTrainer.photo" class="field" placeholder="Photo URL (optional)" style="width:100%;box-sizing:border-box"></div>
                   </div>
-                  <div><div class="f-label">Department *</div>
-                    <select x-model="tcNewTrainer.dept" class="field" style="width:100%;box-sizing:border-box">
-                      <option value="">Select dept</option>
-                      <template x-for="d in tcDepts"><option :value="d.name" x-text="d.name"></option></template>
-                    </select>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div><div class="f-label">Role *</div>
+                      <select x-model="tcNewTrainer.stage" class="field" style="width:100%;box-sizing:border-box">
+                        <option value="">Select role</option>
+                        <option value="HR Officer">👤 HR Officer (Pre-Board · Orientation · HR Compliance)</option>
+                        <option value="Quality Trainer">⭐ Quality Trainer (Quality Standards)</option>
+                        <option value="Department Manager">🔧 Dept Manager (OJT · Assessment · Certification)</option>
+                      </select>
+                    </div>
+                    <div><div class="f-label">Department *</div>
+                      <select x-model="tcNewTrainer.dept" class="field" style="width:100%;box-sizing:border-box">
+                        <option value="">Select dept</option>
+                        <template x-for="d in tcDepts"><option :value="d.name" x-text="d.name"></option></template>
+                      </select>
+                    </div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div><div class="f-label">Username *</div><input type="text" x-model="tcNewTrainer.username" class="field" placeholder="e.g. tr-hr-uae" style="width:100%;box-sizing:border-box"></div>
+                    <div>
+                      <div class="f-label">Password *</div>
+                      <div style="display:flex;gap:6px;align-items:center">
+                        <input type="text" x-model="tcNewTrainer.password" class="field" placeholder="Auto-generated" style="width:100%;box-sizing:border-box;flex:1">
+                        <button type="button" @click="tcNewTrainer.password=genPass()" title="Regenerate password" style="flex-shrink:0;background:var(--w2);border:1px solid var(--w3);border-radius:var(--r8);width:34px;height:34px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">🔄</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div x-show="tcEditIdx<0" style="padding:10px;background:var(--w2);border-radius:var(--r8);font-size:11px;color:var(--w5)">
+                    This trainer will receive login access to their dashboard and appear in the Global Trainers Directory.
                   </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div><div class="f-label">Username *</div><input type="text" x-model="tcNewTrainer.username" class="field" placeholder="e.g. tr-hr-uae" style="width:100%;box-sizing:border-box"></div>
-                  <div><div class="f-label">Password *</div><input type="text" x-model="tcNewTrainer.password" class="field" placeholder="e.g. Tr@hr@UAE" style="width:100%;box-sizing:border-box"></div>
-                </div>
-                <div x-show="tcEditIdx<0" style="padding:10px;background:var(--w2);border-radius:var(--r8);font-size:11px;color:var(--w5)">
-                  This trainer will receive login access to their dashboard and appear in the Global Trainers Directory.
+                <div style="display:flex;gap:8px;margin-top:20px">
+                  <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+                  <button @click="tcSaveNewTrainer()" :disabled="!tcNewTrainer.name||!tcNewTrainer.stage||!tcNewTrainer.username||!tcNewTrainer.password" class="btn btn-primary" style="flex:1;justify-content:center" x-text="tcEditIdx>=0?'Save Changes':'Add Trainer'"></button>
                 </div>
               </div>
-              <div style="display:flex;gap:8px;margin-top:20px">
-                <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
-                <button @click="tcSaveNewTrainer()" :disabled="!tcNewTrainer.name||!tcNewTrainer.stage||!tcNewTrainer.username||!tcNewTrainer.password" class="btn btn-primary" style="flex:1;justify-content:center" x-text="tcEditIdx>=0?'Save Changes':'Add Trainer'"></button>
+
+              <!-- Login Instructions card (shown after creation) -->
+              <div x-show="tcCreatedTrainer" style="display:none">
+                <div style="background:rgba(56,189,118,.07);border:1px solid rgba(56,189,118,.25);border-radius:var(--r8);padding:16px;margin-bottom:16px">
+                  <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.06em;margin-bottom:12px">SHARE THESE INSTRUCTIONS WITH THE TRAINER</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--ch);line-height:1.6">
+                    <div>🌐 <strong>App:</strong> https://calo-command.vercel.app</div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div>1️⃣ <strong>Click card:</strong> Trainer / Officer</div>
+                    <div>2️⃣ <strong>Select market:</strong> <span x-text="tcCreatedTrainer&&tcCreatedTrainer.market"></span></div>
+                    <div>3️⃣ <strong>Select department:</strong> <span x-text="tcCreatedTrainer&&tcCreatedTrainer.deptLabel"></span></div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div>🪪 <strong>Employee ID:</strong> <code style="background:var(--w2);padding:2px 6px;border-radius:4px;font-size:12px" x-text="tcCreatedTrainer&&tcCreatedTrainer.username"></code></div>
+                    <div>🔑 <strong>Password:</strong> <code style="background:var(--w2);padding:2px 6px;border-radius:4px;font-size:12px" x-text="tcCreatedTrainer&&tcCreatedTrainer.password"></code></div>
+                    <div style="height:1px;background:var(--w3)"></div>
+                    <div style="font-size:11px;color:var(--w5)">🔐 They only need to sign in once — session is saved on their device.</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button @click="copyText(loginInstrTrainer(tcCreatedTrainer))" class="btn btn-ghost" style="flex:1;justify-content:center">📋 Copy Instructions</button>
+                  <button @click="tcCreatedTrainer=null;tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" class="btn btn-primary" style="flex:1;justify-content:center">Done</button>
+                </div>
               </div>
             </div>
           </div>
@@ -2332,9 +2494,15 @@ textarea.field{resize:none}
                     </div>
                   </template>
                 </div>
-                <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
-                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
-                  <button @click="omgr(e,stages.find(s=>scls(e,s.k)==='stg-active'||scls(e,s.k)==='stg-part'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Edit Tasks</button>
+                <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px">
+                    <img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0">
+                    <div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
+                    <button @click="omgr(e,stages.find(s=>scls(e,s.k)==='stg-active'||scls(e,s.k)==='stg-part'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Edit Tasks</button>
+                  </div>
                 </div>
               </div>
             </template>
@@ -2408,7 +2576,7 @@ textarea.field{resize:none}
                   </div>
                 </div>
                 <div style="display:flex;gap:6px">
-                  <button @click="tcDepts.splice(di,1);tcSaveDepts()" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;color:var(--danger)">Remove</button>
+                  <button @click="tcDeleteDept(di)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;color:var(--danger)">Remove</button>
                 </div>
               </div>
             </template>
@@ -2463,7 +2631,15 @@ textarea.field{resize:none}
               </div>
             </div>
             <div style="margin-bottom:12px"><div class="f-label">URL / Link *</div><input type="url" x-model="tcMat.url" class="field" placeholder="Paste Google Drive, YouTube or any URL" style="width:100%;box-sizing:border-box"></div>
-            <div style="margin-bottom:16px"><div class="f-label">Description (optional)</div><input type="text" x-model="tcMat.desc" class="field" placeholder="Brief description" style="width:100%;box-sizing:border-box"></div>
+            <div style="margin-bottom:12px"><div class="f-label">Description (optional)</div><input type="text" x-model="tcMat.desc" class="field" placeholder="Brief description" style="width:100%;box-sizing:border-box"></div>
+            <div style="margin-bottom:16px;padding:12px;background:var(--w2);border-radius:var(--r8);border:1px solid var(--w3)">
+              <div class="f-label" style="margin-bottom:8px">Publish to L4 Libraries (optional)</div>
+              <div style="display:flex;gap:20px;flex-wrap:wrap">
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;font-weight:600;color:var(--w6)"><input type="checkbox" x-model="tcMat.shareWith" value="hr" style="width:14px;height:14px;accent-color:var(--green)"> 📝 HR Officers</label>
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;font-weight:600;color:var(--w6)"><input type="checkbox" x-model="tcMat.shareWith" value="qual" style="width:14px;height:14px;accent-color:var(--green)"> ⭐ Quality Trainers</label>
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;font-weight:600;color:var(--w6)"><input type="checkbox" x-model="tcMat.shareWith" value="dm" style="width:14px;height:14px;accent-color:var(--green)"> 🔧 Dept Managers</label>
+              </div>
+            </div>
             <button @click="tcAddMaterial()" :disabled="!tcMat.title||!tcMat.url" class="btn btn-primary" style="padding:9px 24px">+ Add Material</button>
           </div>
           <div class="card" style="padding:20px">
@@ -2479,6 +2655,11 @@ textarea.field{resize:none}
                   <div style="flex:1;min-width:0">
                     <div style="font-size:13px;font-weight:700" x-text="m.title"></div>
                     <div style="font-size:10px;color:var(--green);font-weight:700;margin-top:2px" x-text="m.stage==='all'?'All Stages':stages.find(s=>s.k===m.stage)?.label||m.stage"></div>
+                    <div x-show="m.shareWith&&m.shareWith.length>0" style="display:none;margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
+                      <span x-show="m.shareWith&&m.shareWith.includes('hr')" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#EEF2FF;color:#4F46E5;border-radius:4px">📝 HR</span>
+                      <span x-show="m.shareWith&&m.shareWith.includes('qual')" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#FFF7ED;color:#EA580C;border-radius:4px">⭐ Quality</span>
+                      <span x-show="m.shareWith&&m.shareWith.includes('dm')" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#F0FDF4;color:#16A34A;border-radius:4px">🔧 DM</span>
+                    </div>
                     <div style="font-size:11px;color:var(--w5);font-weight:300" x-text="m.desc||''"></div>
                   </div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
@@ -2493,9 +2674,15 @@ textarea.field{resize:none}
 
         <!-- L3 REPORTS -->
         <div x-show="v==='tc_reports' && mlevel===3">
-          <div style="margin-bottom:24px">
-            <div class="ptitle">Reports</div>
-            <div class="psub" x-text="mmarket+' Mountain Peak · All Stages'"></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px">
+            <div>
+              <div class="ptitle">Reports</div>
+              <div class="psub" x-text="mmarket+' Mountain Peak · All Stages'"></div>
+            </div>
+            <button @click="window.print()" class="btn btn-ghost btn-sm" style="margin-top:4px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Export PDF
+            </button>
           </div>
           <!-- Stage matrix table -->
           <div class="card" style="padding:18px;margin-bottom:14px">
@@ -2566,7 +2753,7 @@ textarea.field{resize:none}
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
               <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Department Manager · <span x-text="mmarket"></span></div>
-              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="dname()"></span> 👋</div>
             </div>
             <div style="display:flex;gap:0;align-items:center">
               <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="dmEmps().length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY TRAINEES</div></div>
@@ -2589,6 +2776,7 @@ textarea.field{resize:none}
                 <div style="text-align:center;cursor:pointer;padding:10px 8px;border-radius:var(--r8);border:1px solid var(--w3);min-width:70px;transition:all .15s" @click="v='dm_pipe'" onmouseover="this.style.borderColor='var(--green)';this.style.background='var(--green-l)'" onmouseout="this.style.borderColor='var(--w3)';this.style.background=''">
                   <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);display:block;margin:0 auto 5px">
                   <div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px" x-text="e.name.split(' ')[0]"></div>
+                  <div style="font-size:9px;color:var(--w5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px;font-weight:300" x-text="e.role"></div>
                   <div style="font-size:10px;font-weight:900;margin-top:2px" :style="'color:'+pc(opct(e))" x-text="opct(e)+'%'"></div>
                   <div style="font-size:9px;color:var(--w5);margin-top:2px;font-weight:300" x-text="e.dateString||''"></div>
                 </div>
@@ -2617,6 +2805,7 @@ textarea.field{resize:none}
                     <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">📅 <span x-text="e.dateString||''"></span></div>
                     <div x-show="e.joiningDept" style="font-size:10px;margin-top:3px" class="chip c-l3" x-text="'📁 '+e.joiningDept"></div>
                   </div>
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);flex-shrink:0;align-self:flex-start">
                 </div>
                 <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
                   <template x-for="s in stages">
@@ -2629,7 +2818,13 @@ textarea.field{resize:none}
                     </div>
                   </template>
                 </div>
-                <div style="padding-top:10px;border-top:1px solid var(--w3)"><button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View</button></div>
+                <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px">
+                    <img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0">
+                    <div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  </div>
+                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View</button>
+                </div>
               </div>
             </template>
             <div x-show="dmEmps().length===0" class="empty" style="grid-column:1/-1"><div style="font-size:32px;margin-bottom:10px">🔧</div><div style="font-size:15px;font-weight:700">No trainees yet</div></div>
@@ -2741,9 +2936,15 @@ textarea.field{resize:none}
               <template x-for="(m,i) in dmMaterials">
                 <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--w3);border-radius:var(--r8);transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--w3)'">
                   <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
-                  <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div><div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div>
+                      <span x-show="m.sharedByTC" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#F0FDF4;color:#16A34A;border-radius:4px;flex-shrink:0">TC Shared</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div>
+                  </div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
-                  <button @click="dmRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button x-show="!m.sharedByTC" style="display:none" @click="dmRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
               </template>
             </div>
@@ -2758,7 +2959,7 @@ textarea.field{resize:none}
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
               <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Quality Training · <span x-text="mmarket"></span></div>
-              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="dname()"></span> 👋</div>
             </div>
             <div style="display:flex;gap:0;align-items:center">
               <div class="cmd-stat"><div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="qualEmps().length"></div><div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TO TRAIN</div></div>
@@ -2833,6 +3034,7 @@ textarea.field{resize:none}
                     <span class="chip c-green" style="font-size:9px;margin-top:5px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
                     <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">📅 <span x-text="e.dateString||''"></span></div>
                   </div>
+                  <img :src="e.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);flex-shrink:0;align-self:flex-start">
                 </div>
                 <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
                   <template x-for="s in stages">
@@ -2845,12 +3047,18 @@ textarea.field{resize:none}
                     </div>
                   </template>
                 </div>
-                <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
-                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
-                  <button x-show="e.qual&&e.qual.done===e.qual.total&&!e.qualSO" @click="qualSO.emp=e;qualSO.dept=e.joiningDept||'';qualSO.open=true" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → DM</button>
-                  <div x-show="e.qualSO" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 10px;background:var(--green-l);border:1px solid var(--green-m);border-radius:var(--r8);font-size:11px;font-weight:700;color:var(--green-h)">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                    Signed Off
+                <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px">
+                    <img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0">
+                    <div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
+                    <button x-show="e.qual&&e.qual.done===e.qual.total&&!e.qualSO" @click="qualSO.emp=e;qualSO.dept=e.joiningDept||'';qualSO.open=true" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → DM</button>
+                    <div x-show="e.qualSO" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 10px;background:var(--green-l);border:1px solid var(--green-m);border-radius:var(--r8);font-size:11px;font-weight:700;color:var(--green-h)">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      Signed Off
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2986,11 +3194,14 @@ textarea.field{resize:none}
                 <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--w3);border-radius:var(--r8);transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--w3)'">
                   <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
                   <div style="flex:1;min-width:0">
-                    <div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div>
+                      <span x-show="m.sharedByTC" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#FFF7ED;color:#EA580C;border-radius:4px;flex-shrink:0">TC Shared</span>
+                    </div>
                     <div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div>
                   </div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
-                  <button @click="qualRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button x-show="!m.sharedByTC" style="display:none" @click="qualRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
               </template>
             </div>
@@ -3004,7 +3215,7 @@ textarea.field{resize:none}
           <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
             <div>
               <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px" x-text="mtitle"></div>
-              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="dname()"></span> 👋</div>
             </div>
           </div>
           <!-- OJT / ASSESSMENT / CERT TRAINER CONTENT — build later -->
@@ -3017,29 +3228,21 @@ textarea.field{resize:none}
         <div x-show="v==='dash' && mlevel===4 && mdept==='HR_Status'" style="display:flex;flex-direction:column;min-height:100%">
 
           <!-- HR COMMAND BAR -->
-          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
+          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px;display:flex;align-items:center;justify-content:space-between">
             <div>
               <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Human Resources · <span x-text="mmarket"></span></div>
-              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="mname"></span> 👋</div>
+              <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="dname()"></span> 👋</div>
             </div>
             <div style="display:flex;gap:0;align-items:center">
               <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="hrEmps().length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY STAFF</div>
+                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="hrTotalHired()"></div>
+                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TOTAL HIRED</div>
               </div>
               <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="hrEmps().filter(e=>e.pre&&e.pre.total>0&&e.pre.done===e.pre.total).length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">PRE-BOARD ✓</div>
+                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="hrTotalTrained()"></div>
+                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TOTAL TRAINED</div>
               </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="hrEmps().filter(e=>e.hr&&e.hr.done>0&&e.hr.done<e.hr.total).length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">HR ACTIVE</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="hrEmps().filter(e=>e.hr&&e.hr.total>0&&e.hr.done===e.hr.total).length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">HR DONE</div>
-              </div>
-              <div style="padding-left:16px;display:flex;gap:8px">
+              <div style="padding-left:16px;display:flex;gap:8px;align-items:center">
                 <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
                 <button @click="hrNH.c=mmarket;hrForm=true;hrSuccess=false" style="background:#fff;border:none;color:var(--green);padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:900;cursor:pointer;font-family:var(--f)">+ New Candidate</button>
               </div>
@@ -3164,6 +3367,11 @@ textarea.field{resize:none}
                   </template>
                 </div>
                 <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px"><img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0"><div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  <div x-show="e.hr && e.hr.total > 0 && e.hr.done === e.hr.total" style="display:none;margin-bottom:8px">
+                    <button x-show="!(e.hr && e.hr.total > 0 && e.hr.done === e.hr.total)" style="display:none;width:100%;justify-content:center" @click="hrSO.emp=e;hrSO.trainer='';hrSO.open=true" class="btn btn-primary btn-sm">Sign Off → Quality</button>
+                    <div x-show="e.hr && e.hr.total > 0 && e.hr.done === e.hr.total" style="display:none;text-align:center;font-size:11px;font-weight:700;color:var(--green);padding:6px;background:var(--green-l);border-radius:6px;border:1px solid var(--green-m)">✓ Signed Off to Quality</div>
+                  </div>
                   <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View Details</button>
                 </div>
               </div>
@@ -3176,6 +3384,40 @@ textarea.field{resize:none}
           </div>
         </div>
         <!-- END HR PIPELINE ══════════════════════════════════════ -->
+
+        <!-- HR SIGN-OFF MODAL -->
+        <div x-show="hrSO.open" style="display:none" class="overlay" @click.self="hrSO.open=false">
+          <div class="modal" style="max-width:420px">
+            <div class="mh">
+              <div style="font-size:17px;font-weight:900">Sign Off to Quality Training</div>
+              <div style="font-size:12px;color:var(--w5);font-weight:300;margin-top:3px" x-text="'Assign '+(hrSO.emp?.name||'')+' to a Quality Trainer'"></div>
+            </div>
+            <div class="mb">
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--green-l);border-radius:var(--r8);margin-bottom:16px;border:1px solid var(--green-m)">
+                <img :src="hrSO.emp?.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--green)">
+                <div>
+                  <div style="font-size:13px;font-weight:900" x-text="hrSO.emp?.name"></div>
+                  <div style="font-size:11px;color:var(--w6);font-weight:300" x-text="hrSO.emp?.role"></div>
+                </div>
+              </div>
+              <div>
+                <div class="f-label">Select Quality Trainer *</div>
+                <select x-model="hrSO.trainer" class="field" style="width:100%;box-sizing:border-box;margin-bottom:8px">
+                  <option value="">— Select Quality Trainer —</option>
+                  <template x-for="t in tcTrainers.filter(t=>t.stage==='Quality Trainer'&&t.active!==false)">
+                    <option :value="t.name" x-text="t.name+(t.dept?' · '+t.dept:'')"></option>
+                  </template>
+                </select>
+                <div x-show="tcTrainers.filter(t=>t.stage==='Quality Trainer').length===0" style="font-size:11px;color:var(--w5)">No Quality Trainers found. Ask your Training Coordinator to add trainers first.</div>
+              </div>
+            </div>
+            <div class="mf">
+              <button @click="hrSO.open=false" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
+              <button @click="hrSignOff(hrSO.emp,hrSO.trainer);hrSO.open=false" :disabled="!hrSO.trainer" class="btn btn-primary" style="flex:1;justify-content:center">✓ Sign Off</button>
+            </div>
+          </div>
+        </div>
+        <!-- END HR SIGN-OFF MODAL -->
 
 
         <!-- ══════════════════════════════════════════════════════ -->
@@ -3367,6 +3609,20 @@ textarea.field{resize:none}
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                 <div>
+                  <div class="f-label">Probation Period</div>
+                  <select x-model="hrNH.probation" class="field" style="width:100%;box-sizing:border-box">
+                    <option value="">— None —</option>
+                    <option value="3">3 Months</option>
+                    <option value="6">6 Months</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="f-label">Probation End Date</div>
+                  <div class="field" style="background:var(--w2);color:var(--w5);display:flex;align-items:center;min-height:38px;font-size:12px" x-text="(hrNH.dt&&hrNH.probation)?(()=>{const d=new Date(hrNH.dt);d.setMonth(d.getMonth()+parseInt(hrNH.probation));return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});})():'Auto-calculated'"></div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div>
                   <div class="f-label">Joining Department</div>
                   <select x-model="hrNH.dept" class="field" style="width:100%;box-sizing:border-box">
                     <option value="">— Select —</option>
@@ -3392,7 +3648,7 @@ textarea.field{resize:none}
               </div>
             </div>
             <div class="mf">
-              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre',image:'',dept:'',section:''};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
+              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre',image:'',dept:'',section:'',probation:''};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
               <button @click="hrAddCandidate()" :disabled="!hrNH.n||!hrNH.d||!hrNH.dt||hrSaving" class="btn btn-primary" style="flex:1;justify-content:center">
                 <div x-show="hrSaving" style="display:none" class="spinner spinner-w"></div>
                 <span x-text="hrSaving?'Adding…':'Submit'"></span>
@@ -3437,9 +3693,15 @@ textarea.field{resize:none}
               <template x-for="(m,i) in hrMaterials">
                 <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--w3);border-radius:var(--r8);transition:all .15s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--w3)'">
                   <div style="font-size:24px;flex-shrink:0" x-text="m.type==='google_slides'?'📊':m.type==='google_doc'?'📄':m.type==='video'?'🎥':m.type==='google_sheet'?'📋':'🔗'"></div>
-                  <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div><div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="font-size:13px;font-weight:700;color:var(--ch)" x-text="m.title"></div>
+                      <span x-show="m.sharedByTC" style="display:none;font-size:9px;font-weight:700;padding:2px 5px;background:#EEF2FF;color:#4F46E5;border-radius:4px;flex-shrink:0">TC Shared</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--w5);margin-top:2px;font-weight:300" x-text="m.desc||''"></div>
+                  </div>
                   <a :href="m.url" target="_blank" class="btn btn-ghost btn-sm" style="flex-shrink:0">Open →</a>
-                  <button @click="hrRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
+                  <button x-show="!m.sharedByTC" style="display:none" @click="hrRemoveMaterial(i)" style="background:none;border:none;cursor:pointer;color:var(--w5);font-size:16px;padding:4px;line-height:1">✕</button>
                 </div>
               </template>
             </div>
@@ -3529,9 +3791,15 @@ textarea.field{resize:none}
                   </template>
                 </div>
 
-                <div style="display:flex;gap:7px;padding-top:10px;border-top:1px solid var(--w3)">
-                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
-                  <button x-show="mlevel===1" @click="cdel(e)" class="btn btn-del btn-sm">Remove</button>
+                <div style="padding-top:10px;border-top:1px solid var(--w3)">
+                  <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px">
+                    <img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0">
+                    <div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
+                  </div>
+                  <div style="display:flex;gap:7px">
+                    <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
+                    <button x-show="mlevel===1" @click="cdel(e)" class="btn btn-del btn-sm">Remove</button>
+                  </div>
                 </div>
               </div>
             </template>
@@ -3746,9 +4014,19 @@ textarea.field{resize:none}
             <div style="font-size:10px;font-weight:700;color:var(--w5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Trainer</div>
             <input type="text" x-model="at.name" placeholder="Name" class="field" style="padding:4px 8px;font-size:11px;width:108px;text-align:right">
           </div>
-          <div class="photo-w" style="border-radius:50%">
-            <img :src="at.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--green)">
-            <label class="photo-ov" style="font-size:8px;cursor:pointer">📷<input type="file" @change="utp($event)" class="hidden"></label>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div x-show="atImgMode==='file'" class="photo-w" style="border-radius:50%">
+              <img :src="at.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--green)">
+              <label class="photo-ov" style="font-size:8px;cursor:pointer">📷<input type="file" @change="utp($event)" class="hidden"></label>
+            </div>
+            <div x-show="atImgMode==='url'" style="display:none;text-align:center">
+              <img :src="at.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--green);display:block;margin:0 auto 4px">
+              <input type="url" x-model="at.img" placeholder="Image URL" class="field" style="width:90px;font-size:9px;padding:3px 5px;text-align:center">
+            </div>
+            <div style="display:flex;gap:2px;margin-top:2px">
+              <button @click="atImgMode='file'" :style="atImgMode==='file'?'background:var(--green);color:#fff;border-color:var(--green)':''" style="font-size:9px;padding:2px 6px;border:1px solid var(--w3);border-radius:4px;cursor:pointer;background:transparent;line-height:1.5" title="Upload file">📷</button>
+              <button @click="atImgMode='url'" :style="atImgMode==='url'?'background:var(--green);color:#fff;border-color:var(--green)':''" style="font-size:9px;padding:2px 6px;border:1px solid var(--w3);border-radius:4px;cursor:pointer;background:transparent;line-height:1.5" title="Paste URL">🔗</button>
+            </div>
           </div>
         </div>
       </div>
@@ -3778,11 +4056,13 @@ textarea.field{resize:none}
       </div>
       <template x-for="(m,i) in mods">
         <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);border:1px solid var(--w3);transition:all .12s" :style="m.done?'border-color:var(--green);background:var(--green-l)':''">
-          <input type="checkbox" x-model="m.done" :disabled="!acc(se,as?.k)" style="width:16px;height:16px;accent-color:var(--green);flex-shrink:0">
+          <input type="checkbox" x-model="m.done" :disabled="!acc(se,as?.k)" @change="if(m.done&&!m.date&&acc(se,as?.k))m.date=new Date().toISOString().split('T')[0]" style="width:16px;height:16px;accent-color:var(--green);flex-shrink:0">
           <div style="flex:1">
             <input type="text" x-model="m.name" :disabled="!acc(se,as?.k)" style="width:100%;border:none;background:transparent;font-size:13px;font-family:var(--f);color:var(--ch);outline:none;font-weight:700" :style="m.done?'text-decoration:line-through;color:var(--w5);font-weight:400':''">
           </div>
-          <input type="date" x-model="m.date" :disabled="!acc(se,as?.k)" style="border:none;background:transparent;font-size:10px;font-family:var(--f);color:var(--w5);outline:none;width:112px;flex-shrink:0" title="Completion date">
+          <input type="date" x-model="m.date" :disabled="!acc(se,as?.k)" title="Completion date"
+            style="border:1px solid;border-radius:6px;padding:3px 8px;font-size:11px;font-family:var(--f);outline:none;flex-shrink:0;cursor:pointer;transition:all .15s;width:128px"
+            :style="m.date?'background:var(--green-l);color:var(--green);font-weight:700;border-color:var(--green)':'background:var(--w2);color:var(--w5);border-color:var(--w3)'">
           <a x-show="m.link&&m.link!=='#'" :href="m.link" target="_blank" style="font-size:11px;color:var(--info);flex-shrink:0">🔗</a>
           <button x-show="acc(se,as?.k)" @click="mods.splice(i,1)" style="background:none;border:none;color:var(--w5);cursor:pointer;font-size:18px;line-height:1;flex-shrink:0" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--w5)'">&times;</button>
         </div>
@@ -3849,40 +4129,42 @@ textarea.field{resize:none}
 
       <div class="stitle">Lifecycle Stages <span style="font-size:10px;font-weight:300;color:var(--w5)">(tap to expand tasks)</span></div>
       <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
-        <template x-for="s in stages">
-          <div>
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r8);background:var(--w2);border:1px solid var(--w3);cursor:pointer" :style="sdExpanded[s.k]?'border-color:var(--green);border-radius:var(--r8) var(--r8) 0 0':''" @click="sdExpanded[s.k]=!sdExpanded[s.k]">
-              <span style="font-size:16px" x-text="s.i"></span>
-              <div style="flex:1">
-                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                  <span style="font-size:12px;font-weight:700" x-text="s.label"></span>
-                  <span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,s.k)===100?'var(--green)':'var(--warn)')">
-                    <span x-text="de?.[s.k]?.done||0"></span>/<span x-text="de?.[s.k]?.total||0"></span>
-                  </span>
-                </div>
-                <div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,s.k)+'%'"></div></div>
-              </div>
-              <span x-show="de?.trainers?.[s.k]?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.[s.k]?.name"></span>
-              <span style="font-size:11px;color:var(--w5);flex-shrink:0" x-text="sdExpanded[s.k]?'▲':'▼'"></span>
-            </div>
-            <div x-show="sdExpanded[s.k]" style="padding:8px 12px 10px;background:var(--w1);border:1px solid var(--green);border-top:none;border-radius:0 0 var(--r8) var(--r8)">
-              <div x-show="!de?.[s.k]?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div>
-              <template x-for="task in (de?.[s.k]?.items||[])">
-                <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)">
-                  <div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'">
-                    <svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                  </div>
-                  <span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span>
-                  <span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span>
-                </div>
-              </template>
-              <div x-show="de?.trainerNotes?.[s.k]" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)">
-                <div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div>
-                <div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes[s.k]"></div>
-              </div>
-            </div>
-          </div>
-        </template>
+
+        <details class="stg-acc">
+          <summary><span style="font-size:16px">📋</span><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700">Pre-Boarding</span><span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'pre')===100?'var(--green)':'var(--warn)')"><span x-text="de?.pre?.done||0"></span>/<span x-text="de?.pre?.total||0"></span></span></div><div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'pre')+'%'"></div></div></div><span x-show="de?.trainers?.pre?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.pre?.name"></span><span class="stg-arrow">▼</span></summary>
+          <div class="stg-body"><div x-show="!de?.pre?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div><template x-for="task in (de?.pre?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template><div x-show="de?.trainerNotes?.pre" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.pre"></div></div></div>
+        </details>
+
+        <details class="stg-acc">
+          <summary><span style="font-size:16px">🎯</span><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700">Orientation</span><span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'ori')===100?'var(--green)':'var(--warn)')"><span x-text="de?.ori?.done||0"></span>/<span x-text="de?.ori?.total||0"></span></span></div><div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'ori')+'%'"></div></div></div><span x-show="de?.trainers?.ori?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.ori?.name"></span><span class="stg-arrow">▼</span></summary>
+          <div class="stg-body"><div x-show="!de?.ori?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div><template x-for="task in (de?.ori?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template><div x-show="de?.trainerNotes?.ori" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.ori"></div></div></div>
+        </details>
+
+        <details class="stg-acc">
+          <summary><span style="font-size:16px">📝</span><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700">HR Compliance</span><span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'hr')===100?'var(--green)':'var(--warn)')"><span x-text="de?.hr?.done||0"></span>/<span x-text="de?.hr?.total||0"></span></span></div><div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'hr')+'%'"></div></div></div><span x-show="de?.trainers?.hr?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.hr?.name"></span><span class="stg-arrow">▼</span></summary>
+          <div class="stg-body"><div x-show="!de?.hr?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div><template x-for="task in (de?.hr?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template><div x-show="de?.trainerNotes?.hr" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.hr"></div></div></div>
+        </details>
+
+        <details class="stg-acc">
+          <summary><span style="font-size:16px">⭐</span><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700">Quality Std.</span><span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'qual')===100?'var(--green)':'var(--warn)')"><span x-text="de?.qual?.done||0"></span>/<span x-text="de?.qual?.total||0"></span></span></div><div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'qual')+'%'"></div></div></div><span x-show="de?.trainers?.qual?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.qual?.name"></span><span class="stg-arrow">▼</span></summary>
+          <div class="stg-body"><div x-show="!de?.qual?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div><template x-for="task in (de?.qual?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template><div x-show="de?.trainerNotes?.qual" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.qual"></div></div></div>
+        </details>
+
+        <details class="stg-acc">
+          <summary><span style="font-size:16px">🔧</span><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700">OJT Training</span><span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'ojt')===100?'var(--green)':'var(--warn)')"><span x-text="de?.ojt?.done||0"></span>/<span x-text="de?.ojt?.total||0"></span></span></div><div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'ojt')+'%'"></div></div></div><span x-show="de?.trainers?.ojt?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.ojt?.name"></span><span class="stg-arrow">▼</span></summary>
+          <div class="stg-body"><div x-show="!de?.ojt?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div><template x-for="task in (de?.ojt?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template><div x-show="de?.trainerNotes?.ojt" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.ojt"></div></div></div>
+        </details>
+
+        <details class="stg-acc">
+          <summary><span style="font-size:16px">📊</span><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700">Assessment</span><span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'assess')===100?'var(--green)':'var(--warn)')"><span x-text="de?.assess?.done||0"></span>/<span x-text="de?.assess?.total||0"></span></span></div><div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'assess')+'%'"></div></div></div><span x-show="de?.trainers?.assess?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.assess?.name"></span><span class="stg-arrow">▼</span></summary>
+          <div class="stg-body"><div x-show="!de?.assess?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div><template x-for="task in (de?.assess?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template><div x-show="de?.trainerNotes?.assess" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.assess"></div></div></div>
+        </details>
+
+        <details class="stg-acc">
+          <summary><span style="font-size:16px">🏆</span><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700">Certification</span><span style="font-size:12px;font-weight:900" :style="'color:'+(spce(de,'cert')===100?'var(--green)':'var(--warn)')"><span x-text="de?.cert?.done||0"></span>/<span x-text="de?.cert?.total||0"></span></span></div><div class="pbar"><div class="pbar-fill" :style="'width:'+spce(de,'cert')+'%'"></div></div></div><span x-show="de?.trainers?.cert?.name" style="font-size:10px;color:var(--w5);font-weight:300;white-space:nowrap;flex-shrink:0" x-text="de?.trainers?.cert?.name"></span><span class="stg-arrow">▼</span></summary>
+          <div class="stg-body"><div x-show="!de?.cert?.items?.length" style="font-size:11px;color:var(--w5);font-style:italic;padding:4px 0">No tasks added yet</div><template x-for="task in (de?.cert?.items||[])" :key="task.name"><div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--w3)"><div style="width:14px;height:14px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center" :style="task.done?'background:var(--green);border:1px solid var(--green)':'border:1px solid var(--w4)'"><svg x-show="task.done" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:12px;flex:1" :style="task.done?'color:var(--w5);text-decoration:line-through':'color:var(--ch);font-weight:600'" x-text="task.name"></span><span x-show="task.date" style="font-size:10px;color:var(--w5);flex-shrink:0" x-text="task.date||''"></span></div></template><div x-show="de?.trainerNotes?.cert" style="margin-top:8px;padding:6px 8px;background:rgba(245,166,35,.06);border-radius:var(--r4);border:1px solid rgba(245,166,35,.2)"><div style="font-size:10px;font-weight:700;color:#7A5500;margin-bottom:2px">💬 Trainer Notes</div><div style="font-size:11px;color:var(--ch);font-style:italic" x-text="de.trainerNotes?.cert"></div></div></div>
+        </details>
+
       </div>
 
       <div class="stitle">Notes</div>
@@ -3984,7 +4266,7 @@ textarea.field{resize:none}
 <script>
 function app(){
   return {
-    loggedIn:false,lf:{u:'',p:''},hint:0,lerr:'',ll:false,
+    loggedIn:false,lf:{u:'',p:''},selLevel:null,loginCountry:'',loginDept:'',hint:0,lerr:'',ll:false,l1CreatedUser:null,tcCreatedTrainer:null,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:''},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
@@ -3994,12 +4276,18 @@ function app(){
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
     rtsCoordinators:[],rtsNewCoord:{name:'',mp:'',username:'',password:'',active:true,showPass:false},rtsCoordForm:false,
     rtsMPs:[{name:'UAE',flag:'🇦🇪'},{name:'Qatar',flag:'🇶🇦'},{name:'Kuwait',flag:'🇰🇼'},{name:'Bahrain',flag:'🇧🇭'},{name:'Riyadh',flag:'🇸🇦'},{name:'Jeddah',flag:'🇸🇦'},{name:'Oman',flag:'🇴🇲'},{name:'UK',flag:'🇬🇧'}],rtsNewMP:{name:'',flag:''},rtsMPForm:false,
-    rtsDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],rtsNewDept:{name:'',icon:''},rtsDeptForm:false,tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all'},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,tcBulkOpen:false,tcBulkPreview:[],qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
+    rtsDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],rtsNewDept:{name:'',icon:''},rtsDeptForm:false,tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all',shareWith:[]},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,tcBulkOpen:false,tcBulkPreview:[],qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
     emps:[],tpls:[],
     branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
     flags:{
       'UAE':'🇦🇪','Riyadh':'🇸🇦','Jeddah':'🇸🇦','Bahrain':'🇧🇭',
       'Kuwait':'🇰🇼','Qatar':'🇶🇦','Oman':'🇴🇲','UK':'🇬🇧'
+    },
+    dname(){
+      if(this.mlevel===1) return 'Sallie';
+      const n=this.mname||'';
+      const base=n.includes('@')?n.split('@')[0]:n;
+      return base.replace(/[._-]/g,' ').replace(/\w\S*/g,w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());
     },
     flag(c){ return this.flags[c]||'🏳️'; },
     stages:[
@@ -4012,9 +4300,10 @@ function app(){
       {k:'cert', short:'Certified',  label:'Certification', col:'Certification_Status',  i:'🏆', color:'#00C07F'},
     ],
     sm_:false,sd:false,sf:false,
-    se:null,as:null,mods:[],at:{name:'',img:''},atNotes:'',stpl:'',
-    de:null,sdExpanded:{},
+    se:null,as:null,mods:[],at:{name:'',img:''},atNotes:'',stpl:'',atImgMode:'file',
+    de:null,sdePre:false,sdeOri:false,sdeHr:false,sdeQual:false,sdeOjt:false,sdeAssess:false,sdeCert:false,
     qualSO:{open:false,emp:null,dept:''},
+    hrSO:{open:false,emp:null,trainer:''},
     nh:{name:'',role:'',country:'UAE',date:'',image:'',notes:'',priority:'normal'},
     fl:{show:false,leaving:false,title:'',name:'',sub:'',b:'',img:''},
 
@@ -4047,6 +4336,7 @@ function app(){
           if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
           if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
+          if(r.level===4){this.tcLoadTrainers();}
           this.fetchAll();
         }
       } catch(e){ localStorage.removeItem('calo_session'); }
@@ -4054,44 +4344,77 @@ function app(){
     },
 
     saveMaterials(){
-      // Persist training materials per user to localStorage
-      try {
-        const key = 'calo_mat_'+this.mname+'_'+(this.mdept||'all');
-        const data = {
-          qual: this.qualMaterials,
-          dm:   this.dmMaterials,
-          hr:   this.hrMaterials,
-        };
-        localStorage.setItem(key, JSON.stringify(data));
-      } catch(e){}
+      // Individual add/remove methods handle GAS sync; this is kept as no-op for compatibility
     },
     loadMaterials(){
-      // Restore training materials for this user from localStorage
-      try {
-        const key = 'calo_mat_'+this.mname+'_'+(this.mdept||'all');
-        const raw = localStorage.getItem(key);
-        if(raw){
-          const data = JSON.parse(raw);
-          if(data.qual) this.qualMaterials = data.qual;
-          if(data.dm)   this.dmMaterials   = data.dm;
-          if(data.hr)   this.hrMaterials   = data.hr;
-        }
-      } catch(e){}
+      if(this.mlevel !== 4 || !this.mmarket) return;
+      const deptRoleMap = {'HR_Status':'hr','Quality_Status':'qual','DEPT_MANAGER':'dm'};
+      const roleKey = deptRoleMap[this.mdept||''];
+      if(!roleKey) return;
+      this.gas('getMaterials',{market:this.mmarket,role:roleKey}).then(d=>{
+        if(!Array.isArray(d)) return;
+        if(roleKey==='hr')   this.hrMaterials   = d;
+        else if(roleKey==='qual') this.qualMaterials = d;
+        else                 this.dmMaterials   = d;
+      }).catch(()=>{});
     },
     saveSession(r){
       try { localStorage.setItem('calo_session', JSON.stringify(r)); } catch(e){}
     },
 
+    genPass(){
+      const c='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      const s='@#$!';
+      let p='';
+      for(let i=0;i<8;i++) p+=c[Math.floor(Math.random()*c.length)];
+      p+=s[Math.floor(Math.random()*s.length)];
+      p+=Math.floor(Math.random()*90+10);
+      return p;
+    },
+    loginInstr(u){
+      if(!u) return '';
+      const card={2:'RTS',3:'Training Coord.',4:'Trainer / Officer'}[u.level]||'Global Admin';
+      const deptLabel={'HR_Status':'HR Officer','Quality_Status':'Quality Trainer','DEPT_MANAGER':'Department Manager'}[u.dept]||'';
+      let t='Calo Onboarding — Login Instructions\n';
+      t+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+      t+='App: https://calo-command.vercel.app\n\n';
+      t+='Step 1 — Click the "'+card+'" card\n';
+      if(u.level===3||u.level===4) t+='Step 2 — Select Market: '+u.market+'\n';
+      if(u.level===4&&deptLabel)   t+='Step 3 — Select Department: '+deptLabel+'\n';
+      t+='\nEmployee ID : '+u.username+'\n';
+      t+='Password    : '+u.pass+'\n\n';
+      t+='You only need to sign in once — your session stays saved on this device.';
+      return t;
+    },
+    loginInstrTrainer(u){
+      if(!u) return '';
+      let t='Calo Onboarding — Login Instructions\n';
+      t+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+      t+='App: https://calo-command.vercel.app\n\n';
+      t+='Step 1 — Click the "Trainer / Officer" card\n';
+      t+='Step 2 — Select Market: '+u.market+'\n';
+      t+='Step 3 — Select Department: '+u.deptLabel+'\n';
+      t+='\nEmployee ID : '+u.username+'\n';
+      t+='Password    : '+u.password+'\n\n';
+      t+='You only need to sign in once — your session stays saved on this device.';
+      return t;
+    },
+    copyText(t){ navigator.clipboard.writeText(t).then(()=>this.dofl('Copied','','','Login instructions copied to clipboard','')).catch(()=>{}); },
     clearSession(){
       try { localStorage.removeItem('calo_session'); } catch(e){}
-      this.loggedIn=false;
+      this.loggedIn=false;this.selLevel=null;this.loginCountry='';this.loginDept='';
       this.qualMaterials=[];this.dmMaterials=[];this.hrMaterials=[];
     },
 
     login(){
       if(!this.lf.u||!this.lf.p){this.lerr='Please enter your credentials.';return;}
+      if((this.selLevel===3||this.selLevel===4)&&!this.loginCountry){this.lerr='Please select your market.';return;}
+      if(this.selLevel===4&&!this.loginDept){this.lerr='Please select your department.';return;}
       this.ll=true;this.lerr='';
-      this.gas('checkLogin',{username:this.lf.u, password:this.lf.p})
+      const extra={};
+      if(this.loginCountry) extra.country=this.loginCountry;
+      if(this.loginDept) extra.dept=this.loginDept;
+      this.gas('checkLogin',{username:this.lf.u, password:this.lf.p, ...extra})
         .then(r=>{
           this.ll=false;
           if(r.success){
@@ -4105,6 +4428,7 @@ function app(){
             if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
             if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
             if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
+            if(r.level===4){this.tcLoadTrainers();}
             this.fetchAll();
           } else {this.lerr='Invalid credentials. Please try again.';}
         })
@@ -4243,10 +4567,9 @@ function app(){
         title:    newU.title||'L'+newU.level+' · '+newU.market
       }}).then(()=>{
         this.l1LoadUsers();
-        // Cache to localStorage as backup
         try{localStorage.setItem('calo_l1_users_cache',JSON.stringify(this.l1Users));}catch(e){}
       }).catch(e=>{console.warn('Sheet sync failed:',e);alert('Failed to save user to Google Sheets. Check your connection.');});
-      this.l1AdminForm=false;
+      this.l1CreatedUser = Object.assign({},newU);
       this.l1NewUser={name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true};
     },
     l1DeleteUser(username){
@@ -4284,13 +4607,19 @@ function app(){
     },
     l1PostAnnouncement(){
       if(!this.l1AnnNew.title||!this.l1AnnNew.body)return;
-      this.l1Announcements.push({...this.l1AnnNew,date:new Date().toLocaleDateString()});
-      this.l1SaveAnnouncements();
-      this.l1AuditLog.push({type:'info',action:'Announcement Posted',detail:this.l1AnnNew.title,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
+      const ann=Object.assign({},this.l1AnnNew,{date:new Date().toLocaleDateString()});
+      this.l1Announcements.push(ann);
+      this.gas('saveAnnouncement',{ann}).catch(()=>{});
+      this.l1AuditLog.push({type:'info',action:'Announcement Posted',detail:ann.title,user:'CALO-ADMIN',date:new Date().toLocaleDateString()});
       this.l1SaveAudit();
       this.l1AnnNew={title:'',body:'',priority:'normal',audience:'all'};
     },
-    l1SaveAnnouncements(){ try{localStorage.setItem('calo_announcements',JSON.stringify(this.l1Announcements));}catch(e){} },
+    l1SaveAnnouncements(){ /* no-op: per-item GAS saves in l1PostAnnouncement/l1DeleteAnnouncement */ },
+    l1DeleteAnnouncement(a){
+      const idx=this.l1Announcements.findIndex(x=>x.title===a.title&&x.date===a.date);
+      if(idx>=0) this.l1Announcements.splice(idx,1);
+      this.gas('deleteAnnouncement',{title:a.title,date:a.date}).catch(()=>{});
+    },
     visibleAnnouncements(){
       if(this.mlevel===1) return []; // L1 sees them in Announcements tab only
       return this.l1Announcements.filter(a=>{
@@ -4298,11 +4627,26 @@ function app(){
         return a.audience==='all' || a.audience===levelStr;
       }).slice(-3); // Show max 3 most recent
     },
-    l1LoadAnnouncements(){ try{const d=localStorage.getItem('calo_announcements');if(d)this.l1Announcements=JSON.parse(d);}catch(e){} },
+    l1LoadAnnouncements(){
+      this.gas('getAnnouncements').then(d=>{if(Array.isArray(d))this.l1Announcements=d;}).catch(()=>{});
+    },
     l1SaveAudit(){ try{localStorage.setItem('calo_audit',JSON.stringify(this.l1AuditLog));}catch(e){} },
     l1LoadAudit(){ try{const d=localStorage.getItem('calo_audit');if(d)this.l1AuditLog=JSON.parse(d);}catch(e){} },
-    saveSlaRules(){ try{localStorage.setItem('calo_sla',JSON.stringify(this.slaRules));alert('SLA rules saved.');}catch(e){} },
-    loadSlaRules(){ try{const d=localStorage.getItem('calo_sla');if(d)this.slaRules=JSON.parse(d);}catch(e){} },
+    saveSlaRules(){
+      this.gas('saveSLARules',{rules:this.slaRules}).then(()=>this.dofl('SLA Saved','','','Rules updated successfully','')).catch(()=>this.dofl('SLA Saved','','','Rules updated successfully',''));
+    },
+    loadSlaRules(){
+      this.gas('getSLARules').then(d=>{
+        if(!d) return;
+        const base={pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3};
+        if(Array.isArray(d)){
+          d.forEach(r=>{ if(r&&r.stage&&r.days) base[r.stage]=parseInt(r.days)||base[r.stage]; });
+          this.slaRules=Object.assign({},base);
+        } else if(typeof d==='object'){
+          this.slaRules=Object.assign({},base,d);
+        }
+      }).catch(()=>{});
+    },
     // ── END L1 EXECUTIVE METHODS ──────────────────────────────────
     // ── L2 REGIONAL TRAINING SPECIALIST METHODS ──────────────────
     rtsFiltered(){
@@ -4320,16 +4664,18 @@ function app(){
     },
     rtsAddMaterial(){
       if(!this.rtsMat.title||!this.rtsMat.url) return;
-      this.rtsMaterials.push(Object.assign({},this.rtsMat));
+      const mat=Object.assign({},this.rtsMat,{market:'All',scope:'rts',addedBy:this.mname});
+      this.rtsMaterials.push(mat);
+      this.gas('saveMaterial',{material:mat,market:'All'}).catch(()=>{});
       this.rtsMat={title:'',type:'google_slides',url:'',desc:'',mp:'all'};
-      try { localStorage.setItem('calo_mat_rts', JSON.stringify(this.rtsMaterials)); } catch(e){}
     },
     rtsRemoveMaterial(i){
+      const m=this.rtsMaterials[i];
       this.rtsMaterials.splice(i,1);
-      try { localStorage.setItem('calo_mat_rts', JSON.stringify(this.rtsMaterials)); } catch(e){}
+      this.gas('deleteMaterial',{url:m.url,market:'All'}).catch(()=>{});
     },
     rtsLoadMaterials(){
-      try { const d=localStorage.getItem('calo_mat_rts'); if(d) this.rtsMaterials=JSON.parse(d); } catch(e){}
+      this.gas('getMaterials',{market:'All',scope:'rts'}).then(d=>{if(Array.isArray(d))this.rtsMaterials=d;}).catch(()=>{});
     },
     // ── END L2 METHODS ────────────────────────────────────────────
 
@@ -4362,14 +4708,22 @@ function app(){
       this.rtsMPForm=false;
       this.rtsNewMP={name:'',flag:''};
     },
-    rtsSaveDepts(){ try{localStorage.setItem('calo_rts_depts',JSON.stringify(this.rtsDepts));}catch(e){} },
-    rtsLoadDepts(){ try{const d=localStorage.getItem('calo_rts_depts');if(d)this.rtsDepts=JSON.parse(d);}catch(e){} },
+    rtsSaveDepts(){ /* no-op: per-item GAS saves in rtsSaveDept/rtsDeleteDept */ },
+    rtsLoadDepts(){
+      this.gas('getDepartments',{market:'All'}).then(d=>{if(Array.isArray(d))this.rtsDepts=d;}).catch(()=>{});
+    },
     rtsSaveDept(){
       if(!this.rtsNewDept.name)return;
-      this.rtsDepts.push(Object.assign({},this.rtsNewDept));
-      this.rtsSaveDepts();
+      const dept=Object.assign({},this.rtsNewDept);
+      this.rtsDepts.push(dept);
+      this.gas('saveDepartment',{dept,market:'All'}).catch(()=>{});
       this.rtsDeptForm=false;
       this.rtsNewDept={name:'',icon:''};
+    },
+    rtsDeleteDept(i){
+      const d=this.rtsDepts[i];
+      this.rtsDepts.splice(i,1);
+      this.gas('deleteDepartment',{name:d.name,market:'All'}).catch(()=>{});
     },
     // ── END RTS ADMIN METHODS ─────────────────────────────────────
     // ── L3 TRAINING COORDINATOR METHODS ─────────────────────────
@@ -4388,22 +4742,21 @@ function app(){
       return l;
     },
     tcSaveTrainers(){
-      try { localStorage.setItem('calo_trainers_'+this.mmarket, JSON.stringify(this.tcTrainers)); } catch(e){}
+      // Bulk save: sync each trainer to GAS (used for bulk import)
+      const market=this.mmarket;
+      this.tcTrainers.forEach(t=>{this.gas('saveTrainer',{trainer:Object.assign({},t,{market}),market}).catch(()=>{});});
+    },
+    tcSaveOneTrainer(t){
+      this.gas('saveTrainer',{trainer:Object.assign({},t,{market:this.mmarket}),market:this.mmarket}).catch(()=>{});
     },
     tcLoadTrainers(){
-      try {
-        const d = localStorage.getItem('calo_trainers_'+this.mmarket);
-        if(d) this.tcTrainers = JSON.parse(d);
-      } catch(e){}
+      if(!this.mmarket) return;
+      this.gas('getTrainers',{market:this.mmarket}).then(d=>{if(Array.isArray(d))this.tcTrainers=d;}).catch(()=>{});
     },
-    tcSaveDepts(){
-      try { localStorage.setItem('calo_depts_'+this.mmarket, JSON.stringify(this.tcDepts)); } catch(e){}
-    },
+    tcSaveDepts(){ /* no-op: per-item GAS saves in tcSaveDept/tcDeleteDept */ },
     tcLoadDepts(){
-      try {
-        const d = localStorage.getItem('calo_depts_'+this.mmarket);
-        if(d) this.tcDepts = JSON.parse(d);
-      } catch(e){}
+      if(!this.mmarket) return;
+      this.gas('getDepartments',{market:this.mmarket}).then(d=>{if(Array.isArray(d))this.tcDepts=d;}).catch(()=>{});
     },
     tcSaveNewTrainer(){
       if(!this.tcNewTrainer.name||!this.tcNewTrainer.stage||!this.tcNewTrainer.username||!this.tcNewTrainer.password) return;
@@ -4422,6 +4775,7 @@ function app(){
           'OJT Training':'DEPT_MANAGER','Assessment':'DEPT_MANAGER','Certification':'DEPT_MANAGER',
           'Pre-Floor Assessment':'DEPT_MANAGER','Floor Ready Certification':'DEPT_MANAGER'
         };
+        const deptLabel = {'HR Officer':'HR Officer','Quality Trainer':'Quality Trainer','Department Manager':'Department Manager'}[this.tcNewTrainer.stage]||this.tcNewTrainer.stage;
         this.gas('addDynamicUser',{user:{
           username: this.tcNewTrainer.username.trim(),
           pass:     this.tcNewTrainer.password,
@@ -4431,9 +4785,11 @@ function app(){
           dept:     deptMap[this.tcNewTrainer.stage]||this.tcNewTrainer.stage,
           title:    this.tcNewTrainer.name+' · '+this.tcNewTrainer.stage+' · '+this.mmarket
         }}).catch(e=>console.warn('Sheet sync failed:',e));
+        this.tcCreatedTrainer={name:this.tcNewTrainer.name,username:this.tcNewTrainer.username.trim(),password:this.tcNewTrainer.password,market:this.mmarket,deptLabel};
       }
-      this.tcSaveTrainers();
-      this.tcAddTrainerForm=false;
+      // Save trainer profile to Trainers sheet
+      this.gas('saveTrainer',{trainer:Object.assign({},this.tcNewTrainer,{market:this.mmarket}),market:this.mmarket}).catch(e=>console.warn('saveTrainer failed:',e));
+      if(this.tcEditIdx>=0){ this.tcAddTrainerForm=false; }
       this.tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};
       this.tcEditIdx=-1;
     },
@@ -4444,47 +4800,51 @@ function app(){
     },
     tcSaveDept(){
       if(!this.tcNewDept.name) return;
-      this.tcDepts.push(Object.assign({},this.tcNewDept));
-      this.tcSaveDepts();
+      const dept=Object.assign({},this.tcNewDept);
+      this.tcDepts.push(dept);
+      this.gas('saveDepartment',{dept,market:this.mmarket}).catch(()=>{});
       this.tcDeptForm=false;
       this.tcNewDept={name:'',icon:''};
     },
+    tcDeleteDept(i){
+      const d=this.tcDepts[i];
+      this.tcDepts.splice(i,1);
+      this.gas('deleteDepartment',{name:d.name,market:this.mmarket}).catch(()=>{});
+    },
     tcAddMaterial(){
       if(!this.tcMat.title||!this.tcMat.url) return;
-      this.tcMaterials.push(Object.assign({},this.tcMat));
-      this.tcMat={title:'',type:'google_slides',url:'',desc:'',stage:'all'};
-      this.tcSaveMaterials();
+      const mat=Object.assign({},this.tcMat,{shareWith:[...(this.tcMat.shareWith||[])],market:this.mmarket,addedBy:this.mname});
+      this.tcMaterials.push(mat);
+      this.gas('saveMaterial',{material:mat,market:this.mmarket}).catch(()=>{});
+      this.tcMat={title:'',type:'google_slides',url:'',desc:'',stage:'all',shareWith:[]};
     },
     tcRemoveMaterial(i){
+      const m=this.tcMaterials[i];
       this.tcMaterials.splice(i,1);
-      this.tcSaveMaterials();
+      this.gas('deleteMaterial',{url:m.url,market:this.mmarket}).catch(()=>{});
     },
-    tcSaveMaterials(){
-      try { localStorage.setItem('calo_mat_tc_'+this.mmarket, JSON.stringify(this.tcMaterials)); } catch(e){}
-    },
+    tcSaveMaterials(){ /* no-op: per-item GAS saves in tcAddMaterial/tcRemoveMaterial */ },
     tcLoadMaterials(){
-      try {
-        const d = localStorage.getItem('calo_mat_tc_'+this.mmarket);
-        if(d) this.tcMaterials = JSON.parse(d);
-      } catch(e){}
+      if(!this.mmarket) return;
+      this.gas('getMaterials',{market:this.mmarket,scope:'tc'}).then(d=>{if(Array.isArray(d))this.tcMaterials=d;}).catch(()=>{});
     },
 
     // ── L3 ADMIN METHODS (Mod 1) ──────────────────────────────────
     tcDeleteTrainer(i){
-      const t = this.tcTrainers[i];
+      const t=this.tcTrainers[i];
       if(!confirm('Delete '+t.name+'? This removes their login access. Cannot be undone.'))return;
       this.gas('deleteUser',{username:t.username}).catch(e=>console.warn('Sheet delete failed:',e));
+      this.gas('deleteTrainer',{username:t.username,market:this.mmarket}).catch(()=>{});
       this.tcTrainers.splice(i,1);
-      this.tcSaveTrainers();
     },
     tcResetPW(i){
-      const t = this.tcTrainers[i];
+      const t=this.tcTrainers[i];
       const newPass=prompt('New password for '+t.username+':');
       if(!newPass||!newPass.trim())return;
-      const trimmed = newPass.trim();
+      const trimmed=newPass.trim();
       this.tcTrainers[i].password=trimmed;
-      this.tcSaveTrainers();
       this.gas('updateUserPassword',{username:t.username,newPassword:trimmed}).catch(e=>console.warn('Sheet PW update failed:',e));
+      this.gas('saveTrainer',{trainer:Object.assign({},this.tcTrainers[i],{market:this.mmarket}),market:this.mmarket}).catch(()=>{});
       alert('Password updated for '+t.username);
     },
     tcReadCSV(event){
@@ -4515,8 +4875,8 @@ function app(){
           username:t.username,pass:t.password,name:t.name,level:4,market:this.mmarket,
           dept:deptMap[t.stage]||t.stage,title:t.stage+' Trainer · '+this.mmarket
         }}).catch(e=>console.warn('Sheet sync failed:',e));
+        this.gas('saveTrainer',{trainer:Object.assign({},t,{market:this.mmarket}),market:this.mmarket}).catch(()=>{});
       });
-      this.tcSaveTrainers();
       const count=this.tcBulkPreview.length;
       this.tcBulkPreview=[];
       this.tcBulkOpen=false;
@@ -4559,23 +4919,27 @@ function app(){
     // ── END DEPT MANAGER METHODS ──────────────────────────────────
     dmAddMaterial(){
       if(!this.dmMat.title||!this.dmMat.url) return;
-      this.dmMaterials.push(Object.assign({},this.dmMat));
+      const mat=Object.assign({},this.dmMat,{role:'dm',market:this.mmarket,addedBy:this.mname});
+      this.dmMaterials.push(mat);
+      this.gas('saveMaterial',{material:mat,market:this.mmarket}).catch(()=>{});
       this.dmMat={title:'',type:'google_slides',url:'',desc:''};
-      this.saveMaterials();
     },
     dmRemoveMaterial(i){
+      const m=this.dmMaterials[i];
       this.dmMaterials.splice(i,1);
-      this.saveMaterials();
+      this.gas('deleteMaterial',{url:m.url,market:this.mmarket}).catch(()=>{});
     },
     hrAddMaterial(){
       if(!this.hrMat.title||!this.hrMat.url) return;
-      this.hrMaterials.push(Object.assign({},this.hrMat));
+      const mat=Object.assign({},this.hrMat,{role:'hr',market:this.mmarket,addedBy:this.mname});
+      this.hrMaterials.push(mat);
+      this.gas('saveMaterial',{material:mat,market:this.mmarket}).catch(()=>{});
       this.hrMat={title:'',type:'google_slides',url:'',desc:''};
-      this.saveMaterials();
     },
     hrRemoveMaterial(i){
+      const m=this.hrMaterials[i];
       this.hrMaterials.splice(i,1);
-      this.saveMaterials();
+      this.gas('deleteMaterial',{url:m.url,market:this.mmarket}).catch(()=>{});
     },
     // ── QUALITY TRAINER METHODS ───────────────────────────────────
     qualEmps(){
@@ -4606,13 +4970,15 @@ function app(){
     },
     qualAddMaterial(){
       if(!this.qualMat.title||!this.qualMat.url) return;
-      this.qualMaterials.push(Object.assign({},this.qualMat));
-      this.qualMat = {title:'',type:'google_slides',url:'',desc:''};
-      this.saveMaterials();
+      const mat=Object.assign({},this.qualMat,{role:'qual',market:this.mmarket,addedBy:this.mname});
+      this.qualMaterials.push(mat);
+      this.gas('saveMaterial',{material:mat,market:this.mmarket}).catch(()=>{});
+      this.qualMat={title:'',type:'google_slides',url:'',desc:''};
     },
     qualRemoveMaterial(i){
+      const m=this.qualMaterials[i];
       this.qualMaterials.splice(i,1);
-      this.saveMaterials();
+      this.gas('deleteMaterial',{url:m.url,market:this.mmarket}).catch(()=>{});
     },
     // ── END QUALITY METHODS ───────────────────────────────────────
     // ── HR SPECIFIC METHODS ───────────────────────────────────────
@@ -4676,7 +5042,7 @@ function app(){
       // Reset form for next entry — keep country and stage
       const prevC = this.hrNH.c;
       const prevS = this.hrNH.stage;
-      this.hrNH = {n:'', d:'', c:prevC, dt:'', stage:prevS, image:'', dept:'', section:''};
+      this.hrNH = {n:'', d:'', c:prevC, dt:'', stage:prevS, image:'', dept:'', section:'', probation:''};
 
       // Sync to backend in background
       this.gas('addNewEmployee', {
@@ -4719,24 +5085,19 @@ function app(){
       return e.stageEntries&&e.stageEntries[k]&&(!e.stageExits||!e.stageExits[k]);
     },
     // HR Signed Off — move candidate to Quality stage
-    hrSignOff(e){
-      if(!confirm('Sign off '+e.name+' from HR and move to Quality stage?')) return;
-      // Record exit dates
+    hrSignOff(e, trainerName){
       const today = new Date().toISOString().split('T')[0];
       if(!e.stageExits) e.stageExits = {};
       e.stageExits.pre = today;
       e.stageExits.ori = today;
       e.stageExits.hr  = today;
-      // Mark all 3 HR stages as complete locally — instant UI update
       if(e.pre){ e.pre.done = e.pre.total; }
       if(e.ori){ e.ori.done = e.ori.total; }
       if(e.hr) { e.hr.done  = e.hr.total;  }
-      // Mark quality as started (1 task started) — candidate enters Quality pipeline
       if(e.qual){ e.qual.done = 0; }
-      // Flash confirmation
-      this.dofl('Signed Off!', e.image, e.name, 'Moved to Quality Training', e.country);
-      this.l1AuditLog.push({type:'signoff',action:'HR Sign-Off',detail:e.name+' → Quality · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
-      // Sync to backend using saveFullUpdate for each stage
+      if(trainerName){ if(!e.trainers) e.trainers={}; e.trainers.qual={name:trainerName,img:''}; }
+      this.dofl('Signed Off!', e.image, e.name, 'Moved to Quality'+(trainerName?' → '+trainerName:''), e.country);
+      this.l1AuditLog.push({type:'signoff',action:'HR Sign-Off',detail:e.name+' → Quality'+(trainerName?' ('+trainerName+')':'')+' · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       const saveStage = (k, col) => {
         const tasks = (e[k].items||[]).map(m=>`${m.name}|${m.link||'#'}|1`).join(';;');
         return this.gas('saveFullUpdate',{row:e.row, colLabel:col, taskStr:tasks||'Complete|#|1', trainer:{}});
@@ -4854,9 +5215,20 @@ function app(){
       if(!this.acc(e,s.k))return;
       this.se=e;this.as=s;
       this.mods=JSON.parse(JSON.stringify((e[s.k].items||[]).map(m=>({date:'',link:'#',...m}))));
+      try{const sd=JSON.parse(localStorage.getItem('calo_dates_'+e.row+'_'+s.k)||'{}');this.mods.forEach(m=>{if(!m.date&&sd[m.name])m.date=sd[m.name];});}catch(ex){}
       this.at=JSON.parse(JSON.stringify(e.trainers?.[s.k]||{name:'',img:''}));
       this.atNotes=(e.trainerNotes&&e.trainerNotes[s.k])||'';
-      this.stpl='';this.sm_=true;
+      this.stpl='';this.atImgMode='file';this.sm_=true;
+    },
+    activeTrainer(e){
+      if(!e||!e.trainers) return null;
+      const s = this.stages.find(s=>e[s.k]&&e[s.k].done>0&&e[s.k].done<e[s.k].total)
+             || [...this.stages].reverse().find(s=>e[s.k]&&e[s.k].total>0&&e[s.k].done===e[s.k].total)
+             || this.stages.find(s=>e[s.k]&&e[s.k].total>0);
+      if(!s) return null;
+      const t = e.trainers[s.k];
+      if(!t||!t.name) return null;
+      return {name:t.name, img:t.img||'', stage:s.label};
     },
     md(){return this.mods.filter(m=>m.done).length;},
     tpct(){return this.mods.length?Math.round(this.md()/this.mods.length*100):0;},
@@ -4872,13 +5244,14 @@ function app(){
           this.se.trainerNotes[this.as.k]=this.atNotes;
           const o=this.emps.find(x=>x.row===this.se.row);
           if(o){if(!o.trainerNotes)o.trainerNotes={};o.trainerNotes[this.as.k]=this.atNotes;}
+          try{const dates={};this.mods.forEach(m=>{if(m.date)dates[m.name]=m.date;});localStorage.setItem('calo_dates_'+this.se.row+'_'+this.as.k,JSON.stringify(dates));}catch(ex){}
           this.sv=false;this.sm_=false;this.fetchAll();
           this.dofl('Saved!',this.se.image,this.se.name,this.as.label+' updated',this.se.country);
         })
         .catch(()=>{this.sv=false;alert('Save failed. Please retry.');});
     },
 
-    odetail(e){this.de=JSON.parse(JSON.stringify(e));this.sdExpanded={};this.sd=true;},
+    odetail(e){this.de=JSON.parse(JSON.stringify(e));this.sdePre=false;this.sdeOri=false;this.sdeHr=false;this.sdeQual=false;this.sdeOjt=false;this.sdeAssess=false;this.sdeCert=false;this.sd=true;},
     snotes(e){
       this.gas('updateCandidateField',{row:e.row,field:'Notes',value:e.notes});
       const o=this.emps.find(x=>x.row===e.row);if(o)o.notes=e.notes;
