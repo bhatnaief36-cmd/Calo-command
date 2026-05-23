@@ -3224,32 +3224,14 @@ textarea.field{resize:none}
         <div x-show="v==='dash' && mlevel===4 && mdept==='HR_Status'" style="display:flex;flex-direction:column;min-height:100%">
 
           <!-- HR COMMAND BAR -->
-          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px">
+          <div class="cmd-bar" style="margin:-28px -32px 24px;padding:18px 32px;display:flex;align-items:center;justify-content:space-between">
             <div>
               <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Human Resources · <span x-text="mmarket"></span></div>
               <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="dname()"></span> 👋</div>
             </div>
-            <div style="display:flex;gap:0;align-items:center">
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#fff;line-height:1" x-text="hrEmps().length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">MY STAFF</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="hrEmps().filter(e=>e.pre&&e.pre.total>0&&e.pre.done===e.pre.total).length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">PRE-BOARD ✓</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#FFD580;line-height:1" x-text="hrEmps().filter(e=>e.hr&&e.hr.done>0&&e.hr.done<e.hr.total).length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">HR ACTIVE</div>
-              </div>
-              <div class="cmd-stat">
-                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="hrEmps().filter(e=>e.hr&&e.hr.total>0&&e.hr.done===e.hr.total).length"></div>
-                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">HR DONE</div>
-              </div>
-              <div style="padding-left:16px;display:flex;gap:8px">
-                <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
-                <button @click="hrNH.c=mmarket;hrForm=true;hrSuccess=false" style="background:#fff;border:none;color:var(--green);padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:900;cursor:pointer;font-family:var(--f)">+ New Candidate</button>
-              </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
+              <button @click="hrNH.c=mmarket;hrForm=true;hrSuccess=false" style="background:#fff;border:none;color:var(--green);padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:900;cursor:pointer;font-family:var(--f)">+ New Candidate</button>
             </div>
           </div>
 
