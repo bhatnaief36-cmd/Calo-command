@@ -444,7 +444,7 @@ textarea.field{resize:none}
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_pipe'?'on':''" @click="v='rts_pipe'">
+        <div class="nav-link" style="display:none" :class="v==='rts_pipe'?'on':''" @click="v='rts_pipe'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           Pipeline
         </div>
@@ -452,7 +452,7 @@ textarea.field{resize:none}
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
           MP Performance
         </div>
-        <div class="nav-link" onclick="if(window.innerWidth<=768){document.querySelector('.sidebar').classList.remove('mob-open');document.getElementById('mob-bg').classList.remove('mob-open')}" :class="v==='rts_trainers'?'on':''" @click="v='rts_trainers'">
+        <div class="nav-link" style="display:none" :class="v==='rts_trainers'?'on':''" @click="v='rts_trainers'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Trainers Directory
         </div>
