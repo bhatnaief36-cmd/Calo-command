@@ -2847,7 +2847,11 @@ textarea.field{resize:none}
                 </div>
                 <div style="padding-top:10px;border-top:1px solid var(--w3);display:flex;gap:6px">
                   <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">View</button>
-                  <button x-show="e.qual&&e.qual.done===e.qual.total" @click="qualSO.emp=e;qualSO.dept=e.joiningDept||'';qualSO.open=true" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → DM</button>
+                  <button x-show="e.qual&&e.qual.done===e.qual.total&&!e.qualSO" @click="qualSO.emp=e;qualSO.dept=e.joiningDept||'';qualSO.open=true" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → DM</button>
+                  <div x-show="e.qualSO" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 10px;background:var(--green-l);border:1px solid var(--green-m);border-radius:var(--r8);font-size:11px;font-weight:700;color:var(--green-h)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    Signed Off
+                  </div>
                 </div>
               </div>
             </template>
@@ -4109,7 +4113,15 @@ function app(){
 
     fetchAll(){
       this.ld=true;
-      this.gas('getPipelineData').then(d=>{this.emps=d||[];this.ld=false;}).catch(()=>this.ld=false);
+      this.gas('getPipelineData').then(d=>{
+        this.emps=d||[];
+        // Re-apply quality sign-off flags from localStorage after data reload
+        try{
+          const soRows=JSON.parse(localStorage.getItem('calo_qual_so_'+this.mmarket)||'[]');
+          if(soRows.length) this.emps.forEach(e=>{if(soRows.includes(e.row))e.qualSO=true;});
+        }catch(ex){}
+        this.ld=false;
+      }).catch(()=>this.ld=false);
     },
 
     demoLogin(){
@@ -4579,6 +4591,13 @@ function app(){
       if(!confirm('Sign off '+e.name+' and route to '+deptLabel+' Department Manager?')) return;
       if(e.qual){ e.qual.done = e.qual.total; }
       if(dept){ e.joiningDept = dept; const o=this.emps.find(x=>x.row===e.row);if(o)o.joiningDept=dept; }
+      // Persist sign-off so the indicator survives fetchAll data reload
+      e.qualSO = true;
+      try{
+        const soKey='calo_qual_so_'+this.mmarket;
+        const soRows=JSON.parse(localStorage.getItem(soKey)||'[]');
+        if(!soRows.includes(e.row)){soRows.push(e.row);localStorage.setItem(soKey,JSON.stringify(soRows));}
+      }catch(ex){}
       this.dofl('Quality Signed Off!', e.image, e.name, 'Routed to '+deptLabel+' DM', e.country);
       this.l1AuditLog.push({type:'signoff',action:'Quality Sign-Off',detail:e.name+' → '+deptLabel+' DM · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       const tasks = (e.qual&&e.qual.items||[]).map(m=>m.name+'|'+(m.link||'#')+'|1').join(';;');
