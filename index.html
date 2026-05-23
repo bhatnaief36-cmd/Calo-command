@@ -705,7 +705,7 @@ textarea.field{resize:none}
       <div style="display:flex;align-items:center;gap:8px">
         <button @click="useDateFilter=!useDateFilter" class="btn btn-ghost btn-sm" :style="useDateFilter?'border-color:var(--green);color:var(--green);background:var(--green-l)':''" x-text="useDateFilter?'📅 Date Filter ON':'📅 Date Filter'"></button>
         <span style="font-size:12px;color:var(--w5);font-weight:300" x-text="new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})"></span>
-        <button x-show="mlevel===4 && mdept==='HR_Status'" @click="sf=true" class="btn btn-primary btn-sm">
+        <button x-show="false" @click="sf=true" class="btn btn-primary btn-sm">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Hire
         </button>
