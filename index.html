@@ -3229,9 +3229,19 @@ textarea.field{resize:none}
               <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px">Human Resources · <span x-text="mmarket"></span></div>
               <div style="font-size:22px;font-weight:900;color:#fff">Welcome, <span x-text="dname()"></span> 👋</div>
             </div>
-            <div style="display:flex;gap:8px;align-items:center">
-              <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
-              <button @click="hrNH.c=mmarket;hrForm=true;hrSuccess=false" style="background:#fff;border:none;color:var(--green);padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:900;cursor:pointer;font-family:var(--f)">+ New Candidate</button>
+            <div style="display:flex;gap:0;align-items:center">
+              <div class="cmd-stat">
+                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="hrTotalHired()"></div>
+                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TOTAL HIRED</div>
+              </div>
+              <div class="cmd-stat">
+                <div style="font-size:24px;font-weight:900;color:#7FFFD4;line-height:1" x-text="hrTotalTrained()"></div>
+                <div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px">TOTAL TRAINED</div>
+              </div>
+              <div style="padding-left:16px;display:flex;gap:8px;align-items:center">
+                <button @click="fetchAll()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)" :disabled="ld" x-text="ld?'Refreshing…':'↻ Refresh'">↻ Refresh</button>
+                <button @click="hrNH.c=mmarket;hrForm=true;hrSuccess=false" style="background:#fff;border:none;color:var(--green);padding:6px 14px;border-radius:var(--r8);font-size:11px;font-weight:900;cursor:pointer;font-family:var(--f)">+ New Candidate</button>
+              </div>
             </div>
           </div>
 
@@ -3355,8 +3365,8 @@ textarea.field{resize:none}
                 <div style="padding-top:10px;border-top:1px solid var(--w3)">
                   <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px"><img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0"><div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
                   <div x-show="e.hr && e.hr.total > 0 && e.hr.done === e.hr.total" style="display:none;margin-bottom:8px">
-                    <button x-show="!(e.stageExits && e.stageExits.hr)" style="display:none;width:100%;justify-content:center" @click="hrSO.emp=e;hrSO.trainer='';hrSO.open=true" class="btn btn-primary btn-sm">Sign Off → Quality</button>
-                    <div x-show="e.stageExits && e.stageExits.hr" style="display:none;text-align:center;font-size:11px;font-weight:700;color:var(--green);padding:6px;background:var(--green-l);border-radius:6px;border:1px solid var(--green-m)">✓ Signed Off to Quality</div>
+                    <button x-show="!(e.hr && e.hr.total > 0 && e.hr.done === e.hr.total)" style="display:none;width:100%;justify-content:center" @click="hrSO.emp=e;hrSO.trainer='';hrSO.open=true" class="btn btn-primary btn-sm">Sign Off → Quality</button>
+                    <div x-show="e.hr && e.hr.total > 0 && e.hr.done === e.hr.total" style="display:none;text-align:center;font-size:11px;font-weight:700;color:var(--green);padding:6px;background:var(--green-l);border-radius:6px;border:1px solid var(--green-m)">✓ Signed Off to Quality</div>
                   </div>
                   <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View Details</button>
                 </div>
