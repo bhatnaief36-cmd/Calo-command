@@ -3864,7 +3864,10 @@ textarea.field{resize:none}
                   </div>
                 </div>
 
-                <div x-show="e.notes" class="note-box" style="margin-bottom:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" x-text="e.notes"></div>
+                <div x-show="e.notes" class="note-box" style="margin-bottom:10px;display:flex;gap:5px;align-items:flex-start">
+                  <svg style="flex-shrink:0;margin-top:1px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#7A5500" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  <span style="font-size:10.5px;line-height:1.45;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical" x-text="e.notes"></span>
+                </div>
 
                 <!-- Stages (col-reverse = bottom-to-top) -->
                 <div style="display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:12px">
@@ -4259,8 +4262,14 @@ textarea.field{resize:none}
 
       </div>
 
-      <div class="stitle">Notes</div>
-      <textarea x-model="de.notes" @blur="snotes(de)" class="field" style="height:68px" placeholder="Add notes about this employee…"></textarea>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div class="stitle" style="margin-bottom:0">Notes</div>
+        <button @click="snotes(de);noteSaved=true;setTimeout(()=>noteSaved=false,2500)" class="btn btn-sm" :class="noteSaved?'btn-primary':''" :style="noteSaved?'':'border:1px solid var(--w3);background:var(--w1);color:var(--w6)'" style="font-size:11px;padding:4px 10px;gap:5px">
+          <svg x-show="noteSaved" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          <span x-text="noteSaved?'Saved':'Save Note'"></span>
+        </button>
+      </div>
+      <textarea x-model="de.notes" class="field" style="height:68px" placeholder="Add notes about this employee…"></textarea>
     </div>
   </div>
 </div>
@@ -4392,7 +4401,7 @@ function app(){
       {k:'cert', short:'Certified',  label:'Certification', col:'Certification_Status',  i:'🏆', color:'#00C07F'},
     ],
     sm_:false,sd:false,sf:false,
-    se:null,as:null,mods:[],at:{name:'',img:''},atNotes:'',stpl:'',atImgMode:'file',
+    se:null,as:null,mods:[],at:{name:'',img:''},atNotes:'',stpl:'',atImgMode:'file',noteSaved:false,
     de:null,sdePre:false,sdeOri:false,sdeHr:false,sdeQual:false,sdeOjt:false,sdeAssess:false,sdeCert:false,
     qualSO:{open:false,emp:null,dept:''},
     hrSO:{open:false,emp:null,trainer:''},
