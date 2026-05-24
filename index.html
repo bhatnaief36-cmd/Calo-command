@@ -11,6 +11,12 @@
 <title>Calo — Onboarding Command</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.3.0/alpine.js" defer></script>
+<script>
+// Runs synchronously in <head> — before any body content paints.
+// If a valid session exists, inject CSS to hide the login screen
+// so logged-in users never see it flash.
+(function(){try{var s=JSON.parse(localStorage.getItem('calo_session')||'{}');if(s&&s.username){var t=document.createElement('style');t.textContent='#login-screen{display:none!important}';document.head.appendChild(t);}}catch(e){}})();
+</script>
 <style>
 :root{
   --green:#00C07F;--green-h:#00A96E;--green-l:#E6F9F3;--green-m:#B3EDD8;
@@ -288,10 +294,6 @@ textarea.field{resize:none}
 </head>
 <body x-data="app()" x-init="init()">
 
-<!-- Hide login immediately if a valid session exists — prevents flash for returning users -->
-<script>
-(function(){try{var s=localStorage.getItem('calo_session');if(s&&JSON.parse(s).username){document.write('<style>#login-screen{display:none!important}</style>');}}catch(e){}})();
-</script>
 <!-- LOGIN -->
 <div id="login-screen" x-show="!loggedIn" style="display:flex" class="login-bg">
 
