@@ -289,105 +289,179 @@ textarea.field{resize:none}
 <body x-data="app()" x-init="init()">
 
 <!-- LOGIN -->
-<div x-show="!loggedIn" style="display:block" class="login-bg">
-  <div class="login-card au" style="max-width:440px">
+<div x-show="!loggedIn" style="display:flex" class="login-bg">
 
-    <!-- Header -->
-    <div style="text-align:center;margin-bottom:24px">
-      <div class="logo" style="font-size:42px;letter-spacing:-2px">CALO</div>
-      <div style="width:36px;height:3px;background:var(--green);border-radius:2px;margin:10px auto"></div>
-      <div class="logo-sub" style="margin-top:10px;font-size:12px">Onboarding Command Center</div>
+  <!-- LEFT: Brand Panel -->
+  <div class="login-brand">
+    <!-- Decorative rings -->
+    <div class="login-brand-ring" style="width:320px;height:320px;top:-100px;right:-100px"></div>
+    <div class="login-brand-ring" style="width:180px;height:180px;bottom:-50px;left:-50px"></div>
+    <div class="login-brand-ring" style="width:80px;height:80px;top:40%;left:60%"></div>
+
+    <!-- Top: Logo -->
+    <div>
+      <div style="font-size:48px;font-weight:900;letter-spacing:-3px;color:#00C07F;line-height:1;font-family:var(--f)">CALO</div>
+      <div style="width:40px;height:3px;background:#00C07F;border-radius:2px;margin:10px 0"></div>
+      <div style="font-size:12px;font-weight:400;color:rgba(255,255,255,.45);letter-spacing:.06em;text-transform:uppercase">Onboarding Command Center</div>
     </div>
 
-    <!-- Step 1: Role cards -->
-    <div style="font-size:10.5px;color:var(--w5);font-weight:600;letter-spacing:.08em;margin-bottom:10px;text-align:center">STEP 1 — SELECT YOUR ROLE</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">
-      <div @click="selLevel=1;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===1?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
-        <div style="font-size:22px;margin-bottom:5px">🌐</div>
-        <div style="font-size:12px;font-weight:700;color:var(--ch)">Global Admin</div>
-        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 1</div>
-      </div>
-      <div @click="selLevel=2;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===2?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
-        <div style="font-size:22px;margin-bottom:5px">📊</div>
-        <div style="font-size:12px;font-weight:700;color:var(--ch)">RTS</div>
-        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 2 · Regional</div>
-      </div>
-      <div @click="selLevel=3;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===3?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
-        <div style="font-size:22px;margin-bottom:5px">📋</div>
-        <div style="font-size:12px;font-weight:700;color:var(--ch)">Training Coord.</div>
-        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 3 · Market</div>
-      </div>
-      <div @click="selLevel=4;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''" :style="selLevel===4?'border-color:var(--green);background:rgba(56,189,118,.08)':'border-color:var(--w3)'" style="border:1.5px solid;border-radius:var(--r8);padding:13px 10px;cursor:pointer;transition:all .15s;text-align:center">
-        <div style="font-size:22px;margin-bottom:5px">👤</div>
-        <div style="font-size:12px;font-weight:700;color:var(--ch)">Trainer / Officer</div>
-        <div style="font-size:10px;color:var(--w5);margin-top:3px">Level 4 · Dept</div>
-      </div>
-    </div>
+    <!-- Middle: Tagline + features -->
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:48px 0">
+      <div style="font-size:28px;font-weight:800;color:#fff;line-height:1.3;letter-spacing:-.5px;margin-bottom:12px">One platform.<br>Eight markets.<br>Full visibility.</div>
+      <div style="font-size:12.5px;color:rgba(255,255,255,.45);line-height:1.75;margin-bottom:36px">Track every new hire from pre-boarding to floor-ready certification across all Calo Mountain Peaks.</div>
 
-    <!-- Step 2: Login form -->
-    <div x-show="selLevel" style="display:none">
-      <div style="font-size:10.5px;color:var(--w5);font-weight:600;letter-spacing:.08em;margin-bottom:12px;text-align:center">STEP 2 — ENTER YOUR DETAILS</div>
-      <div style="display:flex;flex-direction:column;gap:12px">
-
-        <!-- Country — L3 and L4 -->
-        <div x-show="selLevel===3||selLevel===4" style="display:none">
-          <div class="f-label">Market / Country</div>
-          <select x-model="loginCountry" class="field">
-            <option value="">Select your market…</option>
-            <option>UAE</option><option>Qatar</option><option>Kuwait</option>
-            <option>Bahrain</option><option>Riyadh</option><option>Jeddah</option>
-            <option>Oman</option><option>UK</option>
-          </select>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,192,127,.15);border:1px solid rgba(0,192,127,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00C07F" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div><div style="font-size:12px;font-weight:700;color:#fff">7 Training Stages</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">Pre-Boarding → Floor Ready Certification</div></div>
         </div>
-
-        <!-- Department — L4 only -->
-        <div x-show="selLevel===4" style="display:none">
-          <div class="f-label">Department</div>
-          <select x-model="loginDept" class="field">
-            <option value="">Select your department…</option>
-            <option value="HR_Status">HR Officer</option>
-            <option value="Quality_Status">Quality Trainer</option>
-            <option value="DEPT_MANAGER">Department Manager</option>
-          </select>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,192,127,.15);border:1px solid rgba(0,192,127,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00C07F" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div><div style="font-size:12px;font-weight:700;color:#fff">8 Mountain Peaks</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">UAE · Qatar · Kuwait · Bahrain · KSA · Oman · UK</div></div>
         </div>
-
-        <!-- Employee ID -->
-        <div>
-          <div class="f-label">Employee ID</div>
-          <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter your employee ID" class="field" style="font-weight:700;letter-spacing:.04em" autocomplete="off">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,192,127,.15);border:1px solid rgba(0,192,127,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00C07F" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div><div style="font-size:12px;font-weight:700;color:#fff">Role-Based Access</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">Admin · RTS · Coordinators · Trainers</div></div>
         </div>
-
-        <!-- Password -->
-        <div>
-          <div class="f-label">Password</div>
-          <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter your password" class="field" autocomplete="new-password">
-        </div>
-
-        <!-- Error -->
-        <div x-show="lerr" style="display:none;background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.2);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
-
-        <!-- Submit -->
-        <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px;border-radius:var(--r8)" :style="ll?'opacity:.85;cursor:not-allowed':''">
-          <div x-show="ll" style="display:none" class="spinner spinner-w"></div>
-          <span x-text="ll?'Signing in…':'Sign In'"></span>
-        </button>
       </div>
     </div>
 
-    <!-- One-time login notice -->
-    <div style="display:flex;align-items:center;gap:8px;background:rgba(56,189,118,.07);border:1px solid rgba(56,189,118,.2);border-radius:var(--r8);padding:10px 13px;margin-top:18px">
-      <div style="font-size:16px;flex-shrink:0">🔐</div>
-      <div style="font-size:11.5px;color:var(--w7);line-height:1.5">You only need to sign in <strong>once</strong>. Your session stays saved on this device — no need to log in again.</div>
-    </div>
-
-    <!-- Footer -->
-    <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:1px solid var(--w3)">
-      <div style="font-size:11px;color:var(--w6);font-weight:400">© 2026 Calo · All Rights Reserved</div>
-      <div style="font-size:10px;color:var(--w5);margin-top:4px;font-weight:300">Authorized personnel only</div>
-    </div>
-
+    <!-- Bottom: Footer -->
+    <div style="font-size:11px;color:rgba(255,255,255,.2)">© 2026 Calo Group · Authorized personnel only</div>
   </div>
-</div>
+
+  <!-- RIGHT: Form Panel -->
+  <div class="login-form-side">
+    <div class="login-form-inner">
+
+      <!-- Mobile logo (shown only on small screens) -->
+      <div class="login-mob-hd" style="text-align:center;margin-bottom:32px">
+        <div style="font-size:36px;font-weight:900;letter-spacing:-2px;color:#00C07F">CALO</div>
+        <div style="font-size:11px;color:var(--w5);margin-top:4px;letter-spacing:.04em;text-transform:uppercase">Onboarding Command Center</div>
+      </div>
+
+      <!-- Greeting -->
+      <div style="margin-bottom:28px">
+        <div style="font-size:24px;font-weight:900;color:var(--ch);letter-spacing:-.5px;line-height:1.2">Welcome back</div>
+        <div style="font-size:13px;color:var(--w5);margin-top:5px">Select your role and sign in to your workspace</div>
+      </div>
+
+      <!-- Role cards -->
+      <div style="margin-bottom:22px">
+        <div style="font-size:10px;font-weight:700;color:var(--w5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Your Role</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div @click="selLevel=1;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''"
+               class="login-role-card" :class="selLevel===1?'sel':''">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:var(--ch)">Global Admin</div>
+            <div style="font-size:10px;color:var(--w5);margin-top:2px">Level 1</div>
+            <div x-show="selLevel===1" style="position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <div @click="selLevel=2;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''"
+               class="login-role-card" :class="selLevel===2?'sel':''">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:var(--ch)">RTS</div>
+            <div style="font-size:10px;color:var(--w5);margin-top:2px">Level 2 · Regional</div>
+            <div x-show="selLevel===2" style="position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <div @click="selLevel=3;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''"
+               class="login-role-card" :class="selLevel===3?'sel':''">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:var(--ch)">Coordinator</div>
+            <div style="font-size:10px;color:var(--w5);margin-top:2px">Level 3 · Market</div>
+            <div x-show="selLevel===3" style="position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <div @click="selLevel=4;loginCountry='';loginDept='';lerr='';lf.u='';lf.p=''"
+               class="login-role-card" :class="selLevel===4?'sel':''">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,192,127,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C07F" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:var(--ch)">Trainer / Officer</div>
+            <div style="font-size:10px;color:var(--w5);margin-top:2px">Level 4 · Dept</div>
+            <div x-show="selLevel===4" style="position:absolute;top:8px;right:8px;width:16px;height:16px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form fields (shown after role selected) -->
+      <div x-show="selLevel" style="display:none">
+        <div style="font-size:10px;font-weight:700;color:var(--w5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Your Details</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+
+          <!-- Country — L3 and L4 -->
+          <div x-show="selLevel===3||selLevel===4" style="display:none">
+            <div class="f-label">Market / Country</div>
+            <select x-model="loginCountry" class="field">
+              <option value="">Select your market…</option>
+              <option>UAE</option><option>Qatar</option><option>Kuwait</option>
+              <option>Bahrain</option><option>Riyadh</option><option>Jeddah</option>
+              <option>Oman</option><option>UK</option>
+            </select>
+          </div>
+
+          <!-- Department — L4 only -->
+          <div x-show="selLevel===4" style="display:none">
+            <div class="f-label">Department</div>
+            <select x-model="loginDept" class="field">
+              <option value="">Select your department…</option>
+              <option value="HR_Status">HR Officer</option>
+              <option value="Quality_Status">Quality Trainer</option>
+              <option value="DEPT_MANAGER">Department Manager</option>
+            </select>
+          </div>
+
+          <!-- Employee ID -->
+          <div>
+            <div class="f-label">Employee ID</div>
+            <input type="text" x-model="lf.u" @keydown.enter="login()" placeholder="Enter your employee ID" class="field" style="font-weight:700;letter-spacing:.04em" autocomplete="off">
+          </div>
+
+          <!-- Password -->
+          <div>
+            <div class="f-label">Password</div>
+            <input type="password" x-model="lf.p" @keydown.enter="login()" placeholder="Enter your password" class="field" autocomplete="new-password">
+          </div>
+
+          <!-- Error -->
+          <div x-show="lerr" style="display:none;background:rgba(224,83,58,.08);border:1px solid rgba(224,83,58,.25);border-radius:var(--r8);padding:9px 12px;font-size:12px;color:var(--danger)" x-text="lerr"></div>
+
+          <!-- Submit -->
+          <button @click="login()" :disabled="ll" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px;border-radius:var(--r8);margin-top:4px" :style="ll?'opacity:.85;cursor:not-allowed':''">
+            <div x-show="ll" style="display:none" class="spinner spinner-w"></div>
+            <span x-text="ll?'Signing in…':'Sign In'"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Session notice -->
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(0,192,127,.06);border:1px solid rgba(0,192,127,.18);border-radius:var(--r8);padding:11px 14px;margin-top:20px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00C07F" stroke-width="2" style="flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <div style="font-size:11.5px;color:var(--w6);line-height:1.5">You only need to sign in <strong>once</strong>. Your session stays saved on this device.</div>
+      </div>
+
+    </div>
+  </div>
+
 
 
 <!-- HAMBURGER — outside x-cloak so always visible -->
