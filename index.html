@@ -15,7 +15,7 @@
 // Runs synchronously in <head> — before any body content paints.
 // If a valid session exists, inject CSS to hide the login screen
 // so logged-in users never see it flash.
-(function(){try{var s=JSON.parse(localStorage.getItem('calo_session')||'{}');if(s&&s.username){var t=document.createElement('style');t.textContent='#login-screen{display:none!important}';document.head.appendChild(t);}}catch(e){}})();
+(function(){try{var s=JSON.parse(localStorage.getItem('calo_session')||'{}');if(s&&s.name&&s.level){var t=document.createElement('style');t.textContent='#login-screen{display:none!important}';document.head.appendChild(t);}}catch(e){}})();
 </script>
 <style>
 :root{
