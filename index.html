@@ -288,8 +288,12 @@ textarea.field{resize:none}
 </head>
 <body x-data="app()" x-init="init()">
 
+<!-- Hide login immediately if a valid session exists — prevents flash for returning users -->
+<script>
+(function(){try{var s=localStorage.getItem('calo_session');if(s&&JSON.parse(s).username){document.write('<style>#login-screen{display:none!important}</style>');}}catch(e){}})();
+</script>
 <!-- LOGIN -->
-<div x-show="!loggedIn" x-cloak class="login-bg">
+<div id="login-screen" x-show="!loggedIn" style="display:flex" class="login-bg">
 
   <!-- LEFT: Brand Panel -->
   <div class="login-brand">
