@@ -15,7 +15,7 @@
 // Runs synchronously in <head> — before any body content paints.
 // If a valid session exists, inject CSS to hide the login screen
 // so logged-in users never see it flash.
-(function(){try{var s=JSON.parse(localStorage.getItem('calo_session')||'{}');if(s&&s.name&&s.level){var t=document.createElement('style');t.textContent='#login-screen{display:none!important}';document.head.appendChild(t);}}catch(e){}})();
+(function(){try{var s=JSON.parse(localStorage.getItem('calo_session')||'{}');if(s&&s.name&&s.level){var t=document.createElement('style');t.id='_hls';t.textContent='#login-screen{display:none!important}';document.head.appendChild(t);}}catch(e){}})();
 </script>
 <style>
 :root{
@@ -3472,7 +3472,10 @@ textarea.field{resize:none}
                       Signed Off to Quality
                     </div>
                   </div>
-                  <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View Details</button>
+                  <div style="display:flex;gap:6px">
+                    <button @click="(()=>{const ds=e.dateString;let dt='';if(ds&&ds!=='N/A'){const p=ds.split('/');if(p.length===3)dt=p[2]+'-'+p[1]+'-'+p[0];}hrEditMode=true;hrEditRow=e.row;hrNH={n:e.name,d:e.role,c:e.country,dt:dt,image:e.image||'',priority:e.priority||'normal',dept:'',section:'',stage:'pre',probation:''};hrForm=true;hrSuccess=false;})()" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">✏ Edit</button>
+                    <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Details</button>
+                  </div>
                 </div>
               </div>
             </template>
@@ -3676,8 +3679,8 @@ textarea.field{resize:none}
         <div x-show="hrForm && loggedIn" style="display:none" class="overlay" @click.self="hrForm=false">
           <div class="modal" style="max-width:480px;max-height:92vh">
             <div class="mh">
-              <div style="font-size:18px;font-weight:900;color:var(--ch)">New Candidate</div>
-              <div style="font-size:12px;color:var(--w5);margin-top:3px">Add a new hire to your onboarding pipeline</div>
+              <div style="font-size:18px;font-weight:900;color:var(--ch)" x-text="hrEditMode?'Edit Candidate':'New Candidate'"></div>
+              <div style="font-size:12px;color:var(--w5);margin-top:3px" x-text="hrEditMode?'Update candidate profile details':'Add a new hire to your onboarding pipeline'"></div>
             </div>
             <div class="mb scroll-y" style="max-height:calc(92vh - 140px);display:flex;flex-direction:column;gap:14px">
               <div>
@@ -3735,12 +3738,20 @@ textarea.field{resize:none}
                   <input type="text" x-model="hrNH.section" class="field" placeholder="e.g. Cold Chain" style="width:100%;box-sizing:border-box">
                 </div>
               </div>
-              <div>
+              <div x-show="!hrEditMode" style="display:none">
                 <div class="f-label">Assign Starting Stage *</div>
                 <select x-model="hrNH.stage" class="field" style="width:100%;box-sizing:border-box">
                   <option value="pre">📋 Pre-Boarding</option>
                   <option value="ori">🎯 Orientation</option>
                   <option value="hr">📝 HR Compliance</option>
+                </select>
+              </div>
+              <div x-show="hrEditMode" style="display:none">
+                <div class="f-label">Priority</div>
+                <select x-model="hrNH.priority" class="field" style="width:100%;box-sizing:border-box">
+                  <option value="normal">Normal</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
                 </select>
               </div>
               <!-- Success flash -->
@@ -3749,10 +3760,10 @@ textarea.field{resize:none}
               </div>
             </div>
             <div class="mf">
-              <button @click="hrForm=false;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre',image:'',dept:'',section:'',probation:''};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
-              <button @click="hrAddCandidate()" :disabled="!hrNH.n||!hrNH.d||!hrNH.dt||hrSaving" class="btn btn-primary" style="flex:1;justify-content:center">
+              <button @click="hrForm=false;hrEditMode=false;hrEditRow=null;hrNH={n:'',d:'',c:mmarket,dt:'',stage:'pre',image:'',dept:'',section:'',probation:'',priority:'normal'};hrSuccess=false" class="btn btn-ghost" style="flex:1;justify-content:center">Close</button>
+              <button @click="hrEditMode?hrSaveEdit():hrAddCandidate()" :disabled="!hrNH.n||!hrNH.d||(!hrNH.dt&&!hrEditMode)||hrSaving" class="btn btn-primary" style="flex:1;justify-content:center">
                 <div x-show="hrSaving" style="display:none" class="spinner spinner-w"></div>
-                <span x-text="hrSaving?'Adding…':'Submit'"></span>
+                <span x-text="hrEditMode?'Save Changes':(hrSaving?'Adding…':'Submit')"></span>
               </button>
             </div>
           </div>
@@ -4396,7 +4407,7 @@ function app(){
     loggedIn:false,lf:{u:'',p:''},selLevel:null,loginCountry:'',loginDept:'',hint:0,lerr:'',ll:false,l1CreatedUser:null,tcCreatedTrainer:null,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
-    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:''},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
+    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrEditMode:false,hrEditRow:null,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:'',probation:'',priority:'normal'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
     l1ExecOpen:false,l1PeaksOpen:false,l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,l1Selected:[],
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
@@ -4529,6 +4540,7 @@ function app(){
     copyText(t){ navigator.clipboard.writeText(t).then(()=>this.dofl('Copied','','','Login instructions copied to clipboard','')).catch(()=>{}); },
     clearSession(){
       try { localStorage.removeItem('calo_session'); } catch(e){}
+      try { var s=document.getElementById('_hls');if(s)s.remove(); } catch(e){}
       this.loggedIn=false;this.selLevel=null;this.loginCountry='';this.loginDept='';
       this.qualMaterials=[];this.dmMaterials=[];this.hrMaterials=[];
     },
@@ -5197,6 +5209,28 @@ function app(){
         console.error('HR submit failed:', err);
         alert('Candidate added locally but failed to save to Google Sheet. Check your connection and try refreshing.');
       });
+    },
+    hrSaveEdit(){
+      if(!this.hrNH.n||!this.hrNH.d) return;
+      const row=this.hrEditRow;
+      const o=this.emps.find(x=>x.row===row);
+      if(!o) return;
+      const name=this.hrNH.n.toUpperCase().trim();
+      const role=this.hrNH.d.trim();
+      const country=this.hrNH.c||this.mmarket;
+      const image=this.hrNH.image||o.image||'';
+      const priority=this.hrNH.priority||'normal';
+      const dt=this.hrNH.dt;
+      o.name=name;o.role=role;o.country=country;o.image=image;o.priority=priority;
+      if(dt){const d=new Date(dt+'T00:00:00');o.month=d.getMonth();o.year=d.getFullYear();const p=dt.split('-');o.dateString=p[2]+'/'+p[1]+'/'+p[0];}
+      if(this.de&&this.de.row===row){this.de.name=name;this.de.role=role;this.de.image=image;}
+      this.hrForm=false;this.hrEditMode=false;this.hrEditRow=null;
+      this.hrNH={n:'',d:'',c:this.mmarket,dt:'',stage:'pre',image:'',dept:'',section:'',probation:'',priority:'normal'};
+      this.dofl('Candidate Updated!',o.image,name,'Profile saved to database',o.country);
+      const saves=[this.gas('updateCandidateField',{row,field:'Name',value:name}),this.gas('updateCandidateField',{row,field:'Designation',value:role}),this.gas('updateCandidateField',{row,field:'Country',value:country}),this.gas('updateCandidateField',{row,field:'Priority',value:priority})];
+      if(image) saves.push(this.gas('updateCandidateField',{row,field:'Image',value:image}));
+      if(dt) saves.push(this.gas('updateCandidateField',{row,field:'Joining Date',value:new Date(dt+'T00:00:00').toISOString()}));
+      Promise.all(saves).then(()=>this.fetchAll()).catch(()=>this.fetchAll());
     },
     hrNHUpload(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onloadend=()=>this.hrNH.image=r.result;r.readAsDataURL(f);},
     // Calculate elapsed time for a stage
