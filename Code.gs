@@ -132,6 +132,8 @@ function _routeAction(action, p) {
     // Write
     case 'saveFullUpdate':
       return saveFullUpdate(p.row, p.colLabel, p.taskStr, p.trainer);
+    case 'updateUser':
+      return updateUser(p.username, p.updates);
     case 'updateTrainer':
       return updateTrainer(p.row, p.stage, p.name, p.img);
     case 'updateCandidatePhoto':
@@ -439,6 +441,25 @@ function saveFullUpdate(row, colLabel, taskStr, trainer) {
     SpreadsheetApp.flush();
     return 'OK';
   } catch (err) { Logger.log(err); return 'ERROR: ' + err; }
+}
+
+function updateUser(username, updates) {
+  try {
+    const ss = SpreadsheetApp.openByUrl(MASTER_SHEET_URL);
+    const dynSheet = ss.getSheetByName('Dynamic_Users');
+    if (!dynSheet) return { success: false, message: 'Dynamic_Users sheet not found' };
+    const rows = dynSheet.getDataRange().getValues();
+    for (let i = 1; i < rows.length; i++) {
+      if (String(rows[i][0]).toUpperCase().trim() === String(username).toUpperCase().trim()) {
+        if (updates.name  !== undefined) dynSheet.getRange(i+1, 3).setValue(updates.name);
+        if (updates.dept  !== undefined) dynSheet.getRange(i+1, 6).setValue(updates.dept);
+        if (updates.title !== undefined) dynSheet.getRange(i+1, 7).setValue(updates.title);
+        SpreadsheetApp.flush();
+        return { success: true };
+      }
+    }
+    return { success: false, message: 'User not found' };
+  } catch(e) { return { success: false, error: e.message }; }
 }
 
 function updateTrainer(row, stage, name, img) {

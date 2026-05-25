@@ -4932,7 +4932,8 @@ function app(){
         this.tcTrainers=d.filter(u=>u.active!==false&&(u.market===market||u.market==='All')&&u.level===4).map(u=>({
           name:u.name||u.username,
           stage:deptLabel[u.dept]||u.dept||'',
-          dept:'',username:u.username,active:u.active!==false,photo:u.photo||''
+          dept:u.dept||'',username:u.username,active:u.active!==false,photo:u.photo||'',
+          pass:u.pass||''
         }));
       }).catch(()=>{});
     },
@@ -4942,22 +4943,36 @@ function app(){
       this.gas('getDepartments',{market:this.mmarket}).then(d=>{if(Array.isArray(d)&&d.length)this.tcDepts=d;}).catch(()=>{});
     },
     tcSaveNewTrainer(){
-      if(!this.tcNewTrainer.name||!this.tcNewTrainer.stage||!this.tcNewTrainer.username||!this.tcNewTrainer.password) return;
-      if(this.tcEditIdx>=0){
-        this.tcTrainers.splice(this.tcEditIdx, 1, Object.assign({},this.tcNewTrainer));
+      const isEdit = this.tcEditIdx >= 0;
+      if(!this.tcNewTrainer.name||!this.tcNewTrainer.stage||!this.tcNewTrainer.username) return;
+      if(!isEdit && !this.tcNewTrainer.password) return;
+      const deptMap = {
+        'HR Officer':'HR_Status','Quality Trainer':'Quality_Status','Department Manager':'DEPT_MANAGER',
+        'Pre-Boarding':'HR_Status','Orientation':'HR_Status','HR Compliance':'HR_Status',
+        'Quality Std.':'Quality_Status','Quality Std':'Quality_Status',
+        'OJT Training':'DEPT_MANAGER','Assessment':'DEPT_MANAGER','Certification':'DEPT_MANAGER',
+        'Pre-Floor Assessment':'DEPT_MANAGER','Floor Ready Certification':'DEPT_MANAGER'
+      };
+      const newTitle = this.tcNewTrainer.name+' · '+this.tcNewTrainer.stage+' · '+this.mmarket+(this.tcNewTrainer.stage==='Department Manager'&&this.tcNewTrainer.dept?' · '+this.tcNewTrainer.dept:'');
+      if(isEdit){
+        this.tcTrainers=this.tcTrainers.map((t,i)=>i===this.tcEditIdx?Object.assign({},this.tcNewTrainer):t);
+        // Update name, dept, title in Dynamic_Users sheet
+        this.gas('updateUser',{username:this.tcNewTrainer.username,updates:{
+          name:this.tcNewTrainer.name,
+          dept:deptMap[this.tcNewTrainer.stage]||this.tcNewTrainer.stage,
+          title:newTitle
+        }}).catch(e=>console.warn('updateUser failed:',e));
+        // Update password only if a new one was entered
+        if(this.tcNewTrainer.password&&this.tcNewTrainer.password!==this.tcNewTrainer.pass){
+          this.gas('updateUserPassword',{username:this.tcNewTrainer.username,newPassword:this.tcNewTrainer.password}).catch(()=>{});
+        }
+        this.tcAddTrainerForm=false;
+        this.tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};
+        this.tcEditIdx=-1;
+        return;
       } else {
         this.tcTrainers.push(Object.assign({},this.tcNewTrainer));
-        // Write to Google Sheet so trainer can log in (new trainers only, not edits)
-        // Map stage to dept column
-        const deptMap = {
-          'HR Officer':'HR_Status',
-          'Quality Trainer':'Quality_Status',
-          'Department Manager':'DEPT_MANAGER',
-          'Pre-Boarding':'HR_Status','Orientation':'HR_Status','HR Compliance':'HR_Status',
-          'Quality Std.':'Quality_Status','Quality Std':'Quality_Status',
-          'OJT Training':'DEPT_MANAGER','Assessment':'DEPT_MANAGER','Certification':'DEPT_MANAGER',
-          'Pre-Floor Assessment':'DEPT_MANAGER','Floor Ready Certification':'DEPT_MANAGER'
-        };
+        // Write to Google Sheet so trainer can log in (new trainers only)
         const deptLabel = {'HR Officer':'HR Officer','Quality Trainer':'Quality Trainer','Department Manager':'Department Manager'}[this.tcNewTrainer.stage]||this.tcNewTrainer.stage;
         this.gas('addDynamicUser',{user:{
           username: this.tcNewTrainer.username.trim(),
@@ -4966,13 +4981,10 @@ function app(){
           level:    4,
           market:   this.mmarket,
           dept:     deptMap[this.tcNewTrainer.stage]||this.tcNewTrainer.stage,
-          title:    this.tcNewTrainer.name+' · '+this.tcNewTrainer.stage+' · '+this.mmarket+(this.tcNewTrainer.stage==='Department Manager'&&this.tcNewTrainer.dept?' · '+this.tcNewTrainer.dept:'')
+          title:    newTitle
         }}).catch(e=>console.warn('Sheet sync failed:',e));
         this.tcCreatedTrainer={name:this.tcNewTrainer.name,username:this.tcNewTrainer.username.trim(),password:this.tcNewTrainer.password,market:this.mmarket,deptLabel};
       }
-      // Save trainer profile to Trainers sheet
-      this.gas('saveTrainer',{trainer:Object.assign({},this.tcNewTrainer,{market:this.mmarket}),market:this.mmarket}).catch(e=>console.warn('saveTrainer failed:',e));
-      if(this.tcEditIdx>=0){ this.tcAddTrainerForm=false; }
       this.tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};
       this.tcEditIdx=-1;
     },
