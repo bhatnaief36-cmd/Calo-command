@@ -4442,6 +4442,7 @@ function app(){
     de:null,sdePre:false,sdeOri:false,sdeHr:false,sdeQual:false,sdeOjt:false,sdeAssess:false,sdeCert:false,
     qualSO:{open:false,emp:null,dept:''},
     hrSO:{open:false,emp:null,trainer:''},
+    hrSignedOffRows:[],qualSignedOffRows:[],
     nh:{name:'',role:'',country:'UAE',date:'',image:'',notes:'',priority:'normal'},
     fl:{show:false,leaving:false,title:'',name:'',sub:'',b:'',img:''},
 
@@ -4580,10 +4581,10 @@ function app(){
       this.ld=true;
       this.gas('getPipelineData').then(d=>{
         this.emps=(d||[]).map(e=>{let nl=[];try{const p=JSON.parse(e.notes||'[]');nl=Array.isArray(p)?p:(e.notes?[{text:e.notes,author:'',role:'',stage:null,ts:''}]:[]);}catch(ex){nl=e.notes?[{text:e.notes,author:'',role:'',stage:null,ts:''}]:[];}return{...e,notesLog:nl};});
-        // Derive sign-off flags from sheet data (trainer assigned = HR signed off; dept set = Quality signed off)
+        // Derive sign-off flags: sheet data is authoritative; session memory covers the current login session
         this.emps.forEach(e=>{
-          e.hrSO   = !!(e.trainers&&e.trainers.qual&&e.trainers.qual.name);
-          e.qualSO = !!(e.joiningDept);
+          e.hrSO   = !!(e.trainers&&e.trainers.qual&&e.trainers.qual.name) || this.hrSignedOffRows.includes(e.row);
+          e.qualSO = !!(e.joiningDept) || this.qualSignedOffRows.includes(e.row);
         });
         // Clean up stale localStorage sign-off keys (no longer used)
         try{Object.keys(localStorage).filter(k=>k.startsWith('calo_hr_so_')||k.startsWith('calo_qual_so_')).forEach(k=>localStorage.removeItem(k));}catch(ex){}
@@ -5122,6 +5123,7 @@ function app(){
         this.gas('updateCandidateField',{row:e.row,field:'JoiningDept',value:dept});
       }
       e.qualSO = true;
+      this.qualSignedOffRows = [...this.qualSignedOffRows, e.row];
       this.dofl('Quality Signed Off!', e.image, e.name, 'Routed to '+deptLabel+' DM', e.country);
       this.l1AuditLog.push({type:'signoff',action:'Quality Sign-Off',detail:e.name+' → '+deptLabel+' DM · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       const tasks = (e.qual&&e.qual.items||[]).map(m=>m.name+'|'+(m.link||'#')+'|1').join(';;');
@@ -5279,6 +5281,7 @@ function app(){
       if(e.qual){ e.qual.done = 0; }
       if(trainerName){ if(!e.trainers) e.trainers={}; e.trainers.qual={name:trainerName,img:''}; }
       e.hrSO = true;
+      this.hrSignedOffRows = [...this.hrSignedOffRows, e.row];
       const oe=this.emps.find(x=>x.row===e.row);if(oe){oe.hrSO=true;if(trainerName){if(!oe.trainers)oe.trainers={};oe.trainers.qual={name:trainerName,img:''};}}
       this.dofl('Signed Off!', e.image, e.name, 'Moved to Quality'+(trainerName?' → '+trainerName:''), e.country);
       this.l1AuditLog.push({type:'signoff',action:'HR Sign-Off',detail:e.name+' → Quality'+(trainerName?' ('+trainerName+')':'')+' · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
@@ -5291,7 +5294,11 @@ function app(){
         saveStage('ori','Orientation_Status'),
         saveStage('hr','HR_Status'),
       ];
-      if(trainerName) saves.push(this.gas('updateTrainer',{row:e.row,stage:'qual',name:trainerName,img:''}));
+      if(trainerName){
+        // Build full trainers string from current state and save via existing updateCandidateField
+        const tStr=Object.entries(e.trainers).filter(([k,v])=>v&&v.name).map(([k,v])=>`${k}|${v.name}|${v.img||''}`).join(';;');
+        saves.push(this.gas('updateCandidateField',{row:e.row,field:'Trainers',value:tStr}));
+      }
       Promise.all(saves).then(()=>this.fetchAll()).catch(()=>this.fetchAll());
     },
     // HR totals for the selected month/year
