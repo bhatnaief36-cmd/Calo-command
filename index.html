@@ -3522,8 +3522,36 @@ textarea.field{resize:none}
         </div>
         <!-- END HR SIGN-OFF MODAL -->
 
-
-        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- DELETE CANDIDATE CONFIRMATION MODAL -->
+        <div x-show="cdelModal.open" style="display:none" class="overlay" @click.self="cdelModal.open=false" :style="cdelModal.open?'display:flex':''">
+          <div class="modal" style="max-width:400px;text-align:center">
+            <div style="padding:32px 28px 0">
+              <!-- Danger icon -->
+              <div style="width:64px;height:64px;border-radius:50%;background:rgba(224,83,58,.1);border:2px solid rgba(224,83,58,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E0533A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              </div>
+              <!-- Candidate photo + name -->
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--w2);border-radius:var(--r8);border:1px solid var(--w3);margin-bottom:16px;text-align:left">
+                <img :src="cdelModal.emp?.image||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--w3);flex-shrink:0">
+                <div>
+                  <div style="font-size:13px;font-weight:900;line-height:1.2" x-text="cdelModal.emp?.name"></div>
+                  <div style="font-size:11px;color:var(--w5);margin-top:2px" x-text="(cdelModal.emp?.role||'')+(cdelModal.emp?.country?' · '+cdelModal.emp.country:'')"></div>
+                </div>
+              </div>
+              <div style="font-size:15px;font-weight:900;margin-bottom:8px;color:var(--ch)">Remove this candidate?</div>
+              <div style="font-size:12px;color:var(--w5);line-height:1.6;margin-bottom:4px">This will permanently delete all onboarding data for this candidate, including task progress, notes, and trainer assignments.</div>
+              <div style="font-size:11px;font-weight:700;color:var(--danger);margin-bottom:28px">This action cannot be undone.</div>
+            </div>
+            <div class="mf" style="gap:10px">
+              <button @click="cdelModal.open=false" class="btn btn-ghost" style="flex:1;justify-content:center;height:42px">Keep Candidate</button>
+              <button @click="cdelConfirm()" :disabled="cdelModal.deleting" class="btn btn-del" style="flex:1;justify-content:center;height:42px;font-size:13px;font-weight:700">
+                <span x-show="!cdelModal.deleting">🗑 Yes, Remove</span>
+                <span x-show="cdelModal.deleting" style="display:none">Removing…</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- END DELETE MODAL -->
         <!-- HR PRE-BOARDING VIEW                                   -->
         <!-- ══════════════════════════════════════════════════════ -->
         <div x-show="v==='hr_preboard' && mlevel===4 && mdept==='HR_Status'">
@@ -4442,6 +4470,7 @@ function app(){
     de:null,sdePre:false,sdeOri:false,sdeHr:false,sdeQual:false,sdeOjt:false,sdeAssess:false,sdeCert:false,
     qualSO:{open:false,emp:null,dept:''},
     hrSO:{open:false,emp:null,trainer:''},
+    cdelModal:{open:false,emp:null,deleting:false},
     hrSignedOffRows:[],qualSignedOffRows:[],
     nh:{name:'',role:'',country:'UAE',date:'',image:'',notes:'',priority:'normal'},
     fl:{show:false,leaving:false,title:'',name:'',sub:'',b:'',img:''},
@@ -5501,8 +5530,15 @@ function app(){
     },
 
     cdel(e){
-      if(!confirm(`Remove ${e.name}? This cannot be undone.`))return;
-      this.gas('deleteEmployee',{row:e.row}).then(()=>this.fetchAll());
+      this.cdelModal={open:true,emp:e,deleting:false};
+    },
+    cdelConfirm(){
+      if(!this.cdelModal.emp)return;
+      this.cdelModal.deleting=true;
+      this.gas('deleteEmployee',{row:this.cdelModal.emp.row}).then(()=>{
+        this.cdelModal={open:false,emp:null,deleting:false};
+        this.fetchAll();
+      }).catch(()=>{this.cdelModal.deleting=false;});
     },
 
     gtr(b,k){
