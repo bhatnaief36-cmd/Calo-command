@@ -5073,9 +5073,9 @@ function app(){
       return this.emps.filter(e=>{
         const mok = e.country===this.mmarket;
         const tok = !this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
-        const qualDone = e.qual&&e.qual.done===e.qual.total;
-        // Only show candidates routed to this DM's department (if dept is known)
-        const deptOk = !this.mdeptName || !e.joiningDept || e.joiningDept===this.mdeptName;
+        const qualDone = e.qual&&e.qual.done===e.qual.total&&!!(e.joiningDept);
+        // Strict dept match: candidate joiningDept must equal this DM's department exactly
+        const deptOk = !!this.mdeptName && e.joiningDept===this.mdeptName;
         return mok&&tok&&qualDone&&deptOk;
       });
     },
