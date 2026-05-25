@@ -4585,6 +4585,8 @@ function app(){
           e.hrSO   = !!(e.trainers&&e.trainers.qual&&e.trainers.qual.name);
           e.qualSO = !!(e.joiningDept);
         });
+        // Clean up stale localStorage sign-off keys (no longer used)
+        try{Object.keys(localStorage).filter(k=>k.startsWith('calo_hr_so_')||k.startsWith('calo_qual_so_')).forEach(k=>localStorage.removeItem(k));}catch(ex){}
         this.ld=false;
       }).catch(()=>this.ld=false);
     },
