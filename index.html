@@ -4895,7 +4895,16 @@ function app(){
     },
     tcLoadTrainers(){
       if(!this.mmarket) return;
-      this.gas('getTrainers',{market:this.mmarket}).then(d=>{if(Array.isArray(d))this.tcTrainers=d;}).catch(()=>{});
+      const market=this.mmarket;
+      this.gas('getUsers').then(d=>{
+        if(!Array.isArray(d)) return;
+        const deptLabel={'Quality_Status':'Quality Trainer','HR_Status':'HR Officer','DEPT_MANAGER':'Department Manager'};
+        this.tcTrainers=d.filter(u=>u.active!==false&&(u.market===market||u.market==='All')&&u.level===4).map(u=>({
+          name:u.name||u.username,
+          stage:deptLabel[u.dept]||u.dept||'',
+          dept:'',username:u.username,active:u.active!==false,photo:u.photo||''
+        }));
+      }).catch(()=>{});
     },
     tcSaveDepts(){ /* no-op: per-item GAS saves in tcSaveDept/tcDeleteDept */ },
     tcLoadDepts(){
