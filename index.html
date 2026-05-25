@@ -2494,7 +2494,7 @@ textarea.field{resize:none}
                     <div><div class="f-label">Department *</div>
                       <select x-model="tcNewTrainer.dept" class="field" style="width:100%;box-sizing:border-box">
                         <option value="">Select dept</option>
-                        <template x-for="d in tcDepts"><option :value="d.name" x-text="d.name"></option></template>
+                        <template x-for="d in (tcDepts.length?tcDepts:[{name:'Kitchen'},{name:'Dispatch'},{name:'Steward'},{name:'Maintenance'},{name:'Store'},{name:'Admin'}])"><option :value="d.name" x-text="d.name"></option></template>
                       </select>
                     </div>
                   </div>
@@ -4911,7 +4911,7 @@ function app(){
     tcSaveDepts(){ /* no-op: per-item GAS saves in tcSaveDept/tcDeleteDept */ },
     tcLoadDepts(){
       if(!this.mmarket) return;
-      this.gas('getDepartments',{market:this.mmarket}).then(d=>{if(Array.isArray(d))this.tcDepts=d;}).catch(()=>{});
+      this.gas('getDepartments',{market:this.mmarket}).then(d=>{if(Array.isArray(d)&&d.length)this.tcDepts=d;}).catch(()=>{});
     },
     tcSaveNewTrainer(){
       if(!this.tcNewTrainer.name||!this.tcNewTrainer.stage||!this.tcNewTrainer.username||!this.tcNewTrainer.password) return;
