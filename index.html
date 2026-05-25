@@ -5119,7 +5119,11 @@ function app(){
       const deptLabel = dept || e.joiningDept || 'OJT Training';
 
       if(e.qual){ e.qual.done = e.qual.total; }
-      if(dept){ e.joiningDept = dept; const o=this.emps.find(x=>x.row===e.row);if(o)o.joiningDept=dept; }
+      if(dept){
+        e.joiningDept = dept;
+        const o=this.emps.find(x=>x.row===e.row);if(o)o.joiningDept=dept;
+        this.gas('updateCandidateField',{row:e.row,field:'JoiningDept',value:dept});
+      }
       // Persist sign-off so the indicator survives fetchAll data reload
       e.qualSO = true;
       try{

@@ -338,6 +338,7 @@ function getPipelineData() {
       trn:    _col(head,'Trainers'),
       notes:  _col(head,'Notes'),
       pri:    _col(head,'Priority'),
+      jdept:  _col(head,'JoiningDept'),
     };
 
     return data.slice(1).map((r, i) => {
@@ -350,6 +351,7 @@ function getPipelineData() {
         image:      String(r[C.img]     || ''),
         notes:      String(r[C.notes]   || ''),
         priority:   String(r[C.pri]     || 'normal'),
+        joiningDept:String(C.jdept > -1 ? (r[C.jdept] || '') : ''),
         dateString: jd ? Utilities.formatDate(jd, 'GMT+3', 'dd/MM/yyyy') : 'N/A',
         month:      jd ? jd.getMonth()    : null,
         year:       jd ? jd.getFullYear() : null,
