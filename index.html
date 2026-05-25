@@ -2514,7 +2514,7 @@ textarea.field{resize:none}
                 </div>
                 <div style="display:flex;gap:8px;margin-top:20px">
                   <button @click="tcAddTrainerForm=false;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false};tcEditIdx=-1" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
-                  <button @click="tcSaveNewTrainer()" :disabled="!tcNewTrainer.name||!tcNewTrainer.stage||!tcNewTrainer.username||!tcNewTrainer.password" class="btn btn-primary" style="flex:1;justify-content:center" x-text="tcEditIdx>=0?'Save Changes':'Add Trainer'"></button>
+                  <button @click="tcSaveNewTrainer()" :disabled="!tcNewTrainer.name||!tcNewTrainer.stage||!tcNewTrainer.username||(tcEditIdx<0&&!tcNewTrainer.password)" class="btn btn-primary" style="flex:1;justify-content:center" x-text="tcEditIdx>=0?'Save Changes':'Add Trainer'"></button>
                 </div>
               </div>
 
