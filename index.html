@@ -4179,7 +4179,7 @@ textarea.field{resize:none}
             style="border:1px solid;border-radius:6px;padding:3px 8px;font-size:11px;font-family:var(--f);outline:none;flex-shrink:0;cursor:pointer;transition:all .15s;width:128px"
             :style="m.date?'background:var(--green-l);color:var(--green);font-weight:700;border-color:var(--green)':'background:var(--w2);color:var(--w5);border-color:var(--w3)'">
           <a x-show="m.link&&m.link!=='#'" :href="m.link" target="_blank" style="font-size:11px;color:var(--info);flex-shrink:0">🔗</a>
-          <button x-show="acc(se,as?.k)" @click="mods.splice(i,1)" style="background:none;border:none;color:var(--w5);cursor:pointer;font-size:18px;line-height:1;flex-shrink:0" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--w5)'">&times;</button>
+          <button x-show="acc(se,as?.k)" @click="mods=mods.filter((_,j)=>j!==i)" style="background:none;border:none;color:var(--w5);cursor:pointer;font-size:18px;line-height:1;flex-shrink:0" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--w5)'">&times;</button>
         </div>
       </template>
       <div x-show="acc(se,as?.k)" style="padding-top:10px;border-top:1px solid var(--w3);margin-top:4px">
@@ -4189,9 +4189,9 @@ textarea.field{resize:none}
     </div>
     <div class="mf">
       <button @click="sm_=false" class="btn btn-ghost" style="flex:1;justify-content:center">Cancel</button>
-      <button @click="save_()" :disabled="sv" class="btn btn-primary" style="flex:1;justify-content:center;gap:8px">
+      <button @click="save_()" :disabled="sv||svDone" class="btn btn-primary" :style="svDone?'background:#00C07F;border-color:#00C07F;transform:scale(1.02)':''" style="flex:1;justify-content:center;gap:8px;transition:all .2s">
         <div x-show="sv" style="display:none" class="spinner spinner-w"></div>
-        <span x-text="sv?'Saving…':'Save Changes'"></span>
+        <span x-text="svDone?'✓ Saved!':sv?'Saving…':'Save Changes'"></span>
       </button>
     </div>
   </div>
@@ -4407,7 +4407,7 @@ function app(){
     loggedIn:false,lf:{u:'',p:''},selLevel:null,loginCountry:'',loginDept:'',hint:0,lerr:'',ll:false,l1CreatedUser:null,tcCreatedTrainer:null,
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',mdeptName:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
-    ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrEditMode:false,hrEditRow:null,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:'',probation:'',priority:'normal'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
+    ld:false,sv:false,svDone:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrEditMode:false,hrEditRow:null,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:'',probation:'',priority:'normal'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
     l1ExecOpen:false,l1PeaksOpen:false,l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,l1Selected:[],
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
@@ -5405,6 +5405,15 @@ function app(){
       return false;
     },
 
+    roleLabel(){
+      if(this.mlevel===1) return 'Global Admin';
+      if(this.mlevel===2) return 'RTS';
+      if(this.mlevel===3) return 'Training Coordinator';
+      if(this.mdept==='HR_Status') return 'HR Officer';
+      if(this.mdept==='Quality_Status') return 'Quality Trainer';
+      if(this.mdept==='DEPT_MANAGER') return 'Dept Manager';
+      return 'Trainer';
+    },
     omgr(e,s){
       if(!this.acc(e,s.k))return;
       this.se=e;this.as=s;
@@ -5439,13 +5448,14 @@ function app(){
           const o=this.emps.find(x=>x.row===this.se.row);
           if(o){if(!o.trainerNotes)o.trainerNotes={};o.trainerNotes[this.as.k]=this.atNotes;}
           if(this.atNotes&&this.atNotes.trim()){
-            const entry={text:this.atNotes.trim(),author:this.mname||'Unknown',role:this.mrole||'',stage:this.as.label,ts:new Date().toISOString()};
+            const entry={text:this.atNotes.trim(),author:this.mname||'Unknown',role:this.roleLabel(),stage:this.as.label,ts:new Date().toISOString()};
             const oe=this.emps.find(x=>x.row===this.se.row);
             if(oe){if(!oe.notesLog)oe.notesLog=[];oe.notesLog.unshift(entry);oe.notes=oe.notesLog[0]?.text||'';this.gas('updateCandidateField',{row:oe.row,field:'Notes',value:JSON.stringify(oe.notesLog)});}
           }
           try{const dates={};this.mods.forEach(m=>{if(m.date)dates[m.name]=m.date;});localStorage.setItem('calo_dates_'+this.se.row+'_'+this.as.k,JSON.stringify(dates));}catch(ex){}
-          this.sv=false;this.sm_=false;this.fetchAll();
+          this.sv=false;this.svDone=true;
           this.dofl('Saved!',this.se.image,this.se.name,this.as.label+' updated',this.se.country);
+          setTimeout(()=>{this.svDone=false;this.sm_=false;this.fetchAll();},1100);
         })
         .catch(()=>{this.sv=false;alert('Save failed. Please retry.');});
     },
@@ -5453,7 +5463,7 @@ function app(){
     odetail(e){this.de=JSON.parse(JSON.stringify(e));this.noteInput='';this.noteSaved=false;this.sdePre=false;this.sdeOri=false;this.sdeHr=false;this.sdeQual=false;this.sdeOjt=false;this.sdeAssess=false;this.sdeCert=false;this.sd=true;},
     snotes(de){
       const txt=this.noteInput.trim();if(!txt)return;
-      const entry={text:txt,author:this.mname||'Unknown',role:this.mrole||'',stage:null,ts:new Date().toISOString()};
+      const entry={text:txt,author:this.mname||'Unknown',role:this.roleLabel(),stage:null,ts:new Date().toISOString()};
       if(!de.notesLog)de.notesLog=[];
       de.notesLog.unshift(entry);
       this.noteInput='';
