@@ -5147,10 +5147,14 @@ function app(){
         const hrDone = e.pre&&e.pre.done===e.pre.total&&e.ori&&e.ori.done===e.ori.total&&e.hr&&e.hr.done===e.hr.total;
         // Only show candidates assigned to this quality trainer (matched by name stored in sheet)
         const mine=(()=>{
-          if(!e.trainers?.qual?.name) return false; // not yet signed off by HR — don't show
-          const t=this.tcTrainers.find(x=>x.name===e.trainers.qual.name||x.username.toUpperCase()===e.trainers.qual.name.toUpperCase());
-          if(!t) return e.trainers.qual.name.toUpperCase()===this.mname; // direct username fallback
-          return t.username.toUpperCase()===this.mname;
+          if(!e.trainers?.qual?.name) return false;
+          const mn=this.mname.toUpperCase();
+          const tn=e.trainers.qual.name.toUpperCase();
+          // mname is the display name; match against stored trainer name (display name) case-insensitively
+          if(tn===mn) return true;
+          // also check via tcTrainers lookup in case names differ slightly
+          const t=this.tcTrainers.find(x=>x.name.toUpperCase()===tn||x.username.toUpperCase()===tn);
+          return !!t&&(t.name.toUpperCase()===mn||t.username.toUpperCase()===mn);
         })();
         return mok&&tok&&hrDone&&mine;
       });
