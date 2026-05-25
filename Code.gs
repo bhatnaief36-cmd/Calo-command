@@ -34,7 +34,7 @@ const EXPECTED_HEADERS = [
   "Name","Designation","Country","Joining Date","Image",
   "PreBoarding_Status","Orientation_Status","HR_Status",
   "Quality_Status","OJTTraining_Status","Assessment_Status",
-  "Certification_Status","Trainers","Notes","Priority"
+  "Certification_Status","Trainers","Notes","Priority","JoiningDept"
 ];
 
 // ─── DEFAULT TASK SEEDS (auto-filled on new hire) ─────────────────
@@ -491,10 +491,18 @@ function updateCandidatePhoto(row, imgData) {
 
 function updateCandidateField(row, field, value) {
   try {
-    const sheet = _sheet();
-    const head  = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0];
-    const idx   = head.findIndex(h => h === field) + 1;
-    if (idx > 0) { sheet.getRange(row, idx).setValue(value); SpreadsheetApp.flush(); }
+    const sheet   = _sheet();
+    let lastCol   = sheet.getLastColumn();
+    let head      = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    let idx       = head.findIndex(h => h === field) + 1;
+    if (idx === 0) {
+      // Column missing — append it so the value can be stored
+      lastCol++;
+      sheet.getRange(1, lastCol).setValue(field);
+      idx = lastCol;
+    }
+    sheet.getRange(row, idx).setValue(value);
+    SpreadsheetApp.flush();
     return 'OK';
   } catch (err) { return 'ERROR'; }
 }
@@ -513,6 +521,7 @@ function addNewEmployee(emp) {
     set('Notes',       emp.notes || '');
     set('Priority',    emp.priority || 'normal');
     if (emp.date) set('Joining Date', new Date(emp.date));
+    if (emp.joiningDept) set('JoiningDept', emp.joiningDept);
 
     Object.entries(DEFAULT_TASKS).forEach(([col, tasks]) => set(col, tasks));
 
