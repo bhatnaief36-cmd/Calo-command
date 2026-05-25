@@ -3466,8 +3466,11 @@ textarea.field{resize:none}
                 <div style="padding-top:10px;border-top:1px solid var(--w3)">
                   <div x-show="activeTrainer(e)" style="display:none"><div style="display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--w2);border-radius:6px;border:1px solid var(--w3);margin-bottom:8px"><img :src="activeTrainer(e)?.img||'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:2px solid var(--green);flex-shrink:0"><div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="activeTrainer(e)?.name"></div><div style="font-size:9px;color:var(--w5)" x-text="activeTrainer(e)?.stage"></div></div></div></div>
                   <div x-show="e.hr && e.hr.total > 0 && e.hr.done === e.hr.total" style="display:none;margin-bottom:8px">
-                    <button x-show="!(e.hr && e.hr.total > 0 && e.hr.done === e.hr.total)" style="display:none;width:100%;justify-content:center" @click="hrSO.emp=e;hrSO.trainer='';hrSO.open=true" class="btn btn-primary btn-sm">Sign Off → Quality</button>
-                    <div x-show="e.hr && e.hr.total > 0 && e.hr.done === e.hr.total" style="display:none;text-align:center;font-size:11px;font-weight:700;color:var(--green);padding:6px;background:var(--green-l);border-radius:6px;border:1px solid var(--green-m)">✓ Signed Off to Quality</div>
+                    <button x-show="!e.hrSO" style="display:none;width:100%;justify-content:center" @click="hrSO.emp=e;hrSO.trainer='';hrSO.open=true" class="btn btn-primary btn-sm">✓ Sign Off → Quality</button>
+                    <div x-show="e.hrSO" style="display:none;display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 10px;background:var(--green-l);border:1px solid var(--green-m);border-radius:var(--r8);font-size:11px;font-weight:700;color:var(--green-h)">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      Signed Off to Quality
+                    </div>
                   </div>
                   <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">View Details</button>
                 </div>
@@ -3653,7 +3656,8 @@ textarea.field{resize:none}
                 </div>
                 <div style="display:flex;gap:6px;margin-top:10px">
                   <button @click="omgr(e,stages.find(s=>s.k==='hr'))" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Task Manager</button>
-                  <button x-show="e.hr&&e.hr.done===e.hr.total" @click="hrSignOff(e)" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → Quality</button>
+                  <button x-show="e.hr&&e.hr.done===e.hr.total&&!e.hrSO" @click="hrSO.emp=e;hrSO.trainer='';hrSO.open=true" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;background:var(--green)">✓ Sign Off → Quality</button>
+                  <div x-show="e.hrSO" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 10px;background:var(--green-l);border:1px solid var(--green-m);border-radius:var(--r8);font-size:11px;font-weight:700;color:var(--green-h)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Signed Off to Quality</div>
                 </div>
               </div>
             </template>
@@ -4459,7 +4463,7 @@ function app(){
           if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
           if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
           if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
-          if(r.level===4){this.tcLoadTrainers();}
+          if(r.level===4){this.tcLoadTrainers();this.tcLoadDepts();}
           this.fetchAll();
         }
       } catch(e){ localStorage.removeItem('calo_session'); }
@@ -4551,7 +4555,7 @@ function app(){
             if(r.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
             if(r.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
             if(r.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
-            if(r.level===4){this.tcLoadTrainers();}
+            if(r.level===4){this.tcLoadTrainers();this.tcLoadDepts();}
             this.fetchAll();
           } else {this.lerr='Invalid credentials. Please try again.';}
         })
@@ -4566,6 +4570,10 @@ function app(){
         try{
           const soRows=JSON.parse(localStorage.getItem('calo_qual_so_'+this.mmarket)||'[]');
           if(soRows.length) this.emps.forEach(e=>{if(soRows.includes(e.row))e.qualSO=true;});
+        }catch(ex){}
+        try{
+          const hrSoRows=JSON.parse(localStorage.getItem('calo_hr_so_'+this.mmarket)||'[]');
+          if(hrSoRows.length) this.emps.forEach(e=>{if(hrSoRows.includes(e.row))e.hrSO=true;});
         }catch(ex){}
         this.ld=false;
       }).catch(()=>this.ld=false);
@@ -5076,7 +5084,7 @@ function app(){
     },
     qualSignOff(e, dept){
       const deptLabel = dept || e.joiningDept || 'OJT Training';
-      if(!confirm('Sign off '+e.name+' and route to '+deptLabel+' Department Manager?')) return;
+
       if(e.qual){ e.qual.done = e.qual.total; }
       if(dept){ e.joiningDept = dept; const o=this.emps.find(x=>x.row===e.row);if(o)o.joiningDept=dept; }
       // Persist sign-off so the indicator survives fetchAll data reload
@@ -5220,6 +5228,13 @@ function app(){
       if(e.hr) { e.hr.done  = e.hr.total;  }
       if(e.qual){ e.qual.done = 0; }
       if(trainerName){ if(!e.trainers) e.trainers={}; e.trainers.qual={name:trainerName,img:''}; }
+      e.hrSO = true;
+      try{
+        const soKey='calo_hr_so_'+this.mmarket;
+        const soRows=JSON.parse(localStorage.getItem(soKey)||'[]');
+        if(!soRows.includes(e.row)){soRows.push(e.row);localStorage.setItem(soKey,JSON.stringify(soRows));}
+      }catch(ex){}
+      const oe=this.emps.find(x=>x.row===e.row);if(oe)oe.hrSO=true;
       this.dofl('Signed Off!', e.image, e.name, 'Moved to Quality'+(trainerName?' → '+trainerName:''), e.country);
       this.l1AuditLog.push({type:'signoff',action:'HR Sign-Off',detail:e.name+' → Quality'+(trainerName?' ('+trainerName+')':'')+' · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       const saveStage = (k, col) => {
