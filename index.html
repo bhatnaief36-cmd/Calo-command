@@ -4932,7 +4932,8 @@ function app(){
         this.tcTrainers=d.filter(u=>u.active!==false&&(u.market===market||u.market==='All')&&u.level===4).map(u=>({
           name:u.name||u.username,
           stage:deptLabel[u.dept]||u.dept||'',
-          dept:u.dept||'',username:u.username,active:u.active!==false,photo:u.photo||'',
+          dept:(u.dept==='DEPT_MANAGER'?(u.title||'').split(' · ')[3]||'':''),
+          username:u.username,active:u.active!==false,photo:u.photo||'',
           pass:u.pass||''
         }));
       }).catch(()=>{});
