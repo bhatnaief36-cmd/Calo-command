@@ -4405,7 +4405,7 @@ textarea.field{resize:none}
 function app(){
   return {
     loggedIn:false,lf:{u:'',p:''},selLevel:null,loginCountry:'',loginDept:'',hint:0,lerr:'',ll:false,l1CreatedUser:null,tcCreatedTrainer:null,
-    mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',
+    mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',mdeptName:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrEditMode:false,hrEditRow:null,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:'',probation:'',priority:'normal'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
     l1ExecOpen:false,l1PeaksOpen:false,l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,l1Selected:[],
@@ -4467,6 +4467,7 @@ function app(){
           const r = JSON.parse(s);
           this.mname=r.name; this.mrole=r.role; this.mlevel=r.level;
           this.mmarket=r.market; this.mdept=r.dept||null; this.mtitle=r.title;
+          {const _p=this.mtitle.split(' · ');this.mdeptName=(this.mdept==='DEPT_MANAGER'&&_p.length>=4)?_p[3]:'';}
           this.mf=r.market==='All'?'All':r.market;
           this.loggedIn=true;
           this.loadMaterials();
@@ -4559,6 +4560,7 @@ function app(){
           if(r.success){
             this.mname=r.name;this.mrole=r.role;this.mlevel=r.level;
             this.mmarket=r.market;this.mdept=r.dept;this.mtitle=r.title;
+            {const _p=this.mtitle.split(' · ');this.mdeptName=(this.mdept==='DEPT_MANAGER'&&_p.length>=4)?_p[3]:'';}
             this.mf=r.market==='All'?'All':r.market;
             this.saveSession(r);
             this.loggedIn=true;
@@ -4936,7 +4938,7 @@ function app(){
           level:    4,
           market:   this.mmarket,
           dept:     deptMap[this.tcNewTrainer.stage]||this.tcNewTrainer.stage,
-          title:    this.tcNewTrainer.name+' · '+this.tcNewTrainer.stage+' · '+this.mmarket
+          title:    this.tcNewTrainer.name+' · '+this.tcNewTrainer.stage+' · '+this.mmarket+(this.tcNewTrainer.stage==='Department Manager'&&this.tcNewTrainer.dept?' · '+this.tcNewTrainer.dept:'')
         }}).catch(e=>console.warn('Sheet sync failed:',e));
         this.tcCreatedTrainer={name:this.tcNewTrainer.name,username:this.tcNewTrainer.username.trim(),password:this.tcNewTrainer.password,market:this.mmarket,deptLabel};
       }
@@ -5044,7 +5046,9 @@ function app(){
         const mok = e.country===this.mmarket;
         const tok = !this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
         const qualDone = e.qual&&e.qual.done===e.qual.total;
-        return mok&&tok&&qualDone;
+        // Only show candidates routed to this DM's department (if dept is known)
+        const deptOk = !this.mdeptName || !e.joiningDept || e.joiningDept===this.mdeptName;
+        return mok&&tok&&qualDone&&deptOk;
       });
     },
     dmAdvance(e, stage){
@@ -5100,7 +5104,15 @@ function app(){
         const mok = e.country===this.mmarket;
         const tok = !this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
         const hrDone = e.pre&&e.pre.done===e.pre.total&&e.ori&&e.ori.done===e.ori.total&&e.hr&&e.hr.done===e.hr.total;
-        return mok&&tok&&hrDone;
+        // Only show candidates assigned to this specific quality trainer
+        const mine=(()=>{
+          if(!e.trainers?.qual?.name) return true; // not yet assigned — show to all
+          if(!this.tcTrainers.length) return true; // trainer list not loaded yet — safe fallback
+          const t=this.tcTrainers.find(x=>x.name===e.trainers.qual.name);
+          if(!t) return true; // trainer not in registry — safe fallback
+          return t.username.toUpperCase()===this.mname;
+        })();
+        return mok&&tok&&hrDone&&mine;
       });
     },
     qualSignOff(e, dept){
