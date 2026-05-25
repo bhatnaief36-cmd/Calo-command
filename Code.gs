@@ -132,6 +132,8 @@ function _routeAction(action, p) {
     // Write
     case 'saveFullUpdate':
       return saveFullUpdate(p.row, p.colLabel, p.taskStr, p.trainer);
+    case 'updateTrainer':
+      return updateTrainer(p.row, p.stage, p.name, p.img);
     case 'updateCandidatePhoto':
       return updateCandidatePhoto(p.row, p.imgData);
     case 'updateCandidateField':
@@ -434,6 +436,22 @@ function saveFullUpdate(row, colLabel, taskStr, trainer) {
       map[key] = `${key}|${trainer.name}|${trainer.img||''}`;
       sheet.getRange(row, tIdx).setValue(Object.values(map).join(';;'));
     }
+    SpreadsheetApp.flush();
+    return 'OK';
+  } catch (err) { Logger.log(err); return 'ERROR: ' + err; }
+}
+
+function updateTrainer(row, stage, name, img) {
+  try {
+    const sheet = _sheet();
+    const head  = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0];
+    const tIdx  = head.findIndex(h => h === 'Trainers') + 1;
+    if (tIdx < 1) return 'ERROR: Trainers column not found';
+    const existing = String(sheet.getRange(row, tIdx).getValue() || '');
+    const map = {};
+    existing.split(';;').filter(x=>x).forEach(c => { const p=c.split('|'); if(p[0]) map[p[0]]=c; });
+    map[stage] = `${stage}|${name}|${img||''}`;
+    sheet.getRange(row, tIdx).setValue(Object.values(map).join(';;'));
     SpreadsheetApp.flush();
     return 'OK';
   } catch (err) { Logger.log(err); return 'ERROR: ' + err; }

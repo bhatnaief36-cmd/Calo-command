@@ -4580,15 +4580,11 @@ function app(){
       this.ld=true;
       this.gas('getPipelineData').then(d=>{
         this.emps=(d||[]).map(e=>{let nl=[];try{const p=JSON.parse(e.notes||'[]');nl=Array.isArray(p)?p:(e.notes?[{text:e.notes,author:'',role:'',stage:null,ts:''}]:[]);}catch(ex){nl=e.notes?[{text:e.notes,author:'',role:'',stage:null,ts:''}]:[];}return{...e,notesLog:nl};});
-        // Re-apply quality sign-off flags from localStorage after data reload
-        try{
-          const soRows=JSON.parse(localStorage.getItem('calo_qual_so_'+this.mmarket)||'[]');
-          if(soRows.length) this.emps.forEach(e=>{if(soRows.includes(e.row))e.qualSO=true;});
-        }catch(ex){}
-        try{
-          const hrSoRows=JSON.parse(localStorage.getItem('calo_hr_so_'+this.mmarket)||'[]');
-          if(hrSoRows.length) this.emps.forEach(e=>{if(hrSoRows.includes(e.row))e.hrSO=true;});
-        }catch(ex){}
+        // Derive sign-off flags from sheet data (trainer assigned = HR signed off; dept set = Quality signed off)
+        this.emps.forEach(e=>{
+          e.hrSO   = !!(e.trainers&&e.trainers.qual&&e.trainers.qual.name);
+          e.qualSO = !!(e.joiningDept);
+        });
         this.ld=false;
       }).catch(()=>this.ld=false);
     },
@@ -5104,12 +5100,11 @@ function app(){
         const mok = e.country===this.mmarket;
         const tok = !this.useDateFilter||(parseInt(e.year)==parseInt(this.sy)&&parseInt(e.month)==parseInt(this.sm));
         const hrDone = e.pre&&e.pre.done===e.pre.total&&e.ori&&e.ori.done===e.ori.total&&e.hr&&e.hr.done===e.hr.total;
-        // Only show candidates assigned to this specific quality trainer
+        // Only show candidates assigned to this quality trainer (matched by name stored in sheet)
         const mine=(()=>{
-          if(!e.trainers?.qual?.name) return true; // not yet assigned — show to all
-          if(!this.tcTrainers.length) return true; // trainer list not loaded yet — safe fallback
-          const t=this.tcTrainers.find(x=>x.name===e.trainers.qual.name);
-          if(!t) return true; // trainer not in registry — safe fallback
+          if(!e.trainers?.qual?.name) return false; // not yet signed off by HR — don't show
+          const t=this.tcTrainers.find(x=>x.name===e.trainers.qual.name||x.username.toUpperCase()===e.trainers.qual.name.toUpperCase());
+          if(!t) return e.trainers.qual.name.toUpperCase()===this.mname; // direct username fallback
           return t.username.toUpperCase()===this.mname;
         })();
         return mok&&tok&&hrDone&&mine;
@@ -5124,13 +5119,7 @@ function app(){
         const o=this.emps.find(x=>x.row===e.row);if(o)o.joiningDept=dept;
         this.gas('updateCandidateField',{row:e.row,field:'JoiningDept',value:dept});
       }
-      // Persist sign-off so the indicator survives fetchAll data reload
       e.qualSO = true;
-      try{
-        const soKey='calo_qual_so_'+this.mmarket;
-        const soRows=JSON.parse(localStorage.getItem(soKey)||'[]');
-        if(!soRows.includes(e.row)){soRows.push(e.row);localStorage.setItem(soKey,JSON.stringify(soRows));}
-      }catch(ex){}
       this.dofl('Quality Signed Off!', e.image, e.name, 'Routed to '+deptLabel+' DM', e.country);
       this.l1AuditLog.push({type:'signoff',action:'Quality Sign-Off',detail:e.name+' → '+deptLabel+' DM · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       const tasks = (e.qual&&e.qual.items||[]).map(m=>m.name+'|'+(m.link||'#')+'|1').join(';;');
@@ -5288,23 +5277,20 @@ function app(){
       if(e.qual){ e.qual.done = 0; }
       if(trainerName){ if(!e.trainers) e.trainers={}; e.trainers.qual={name:trainerName,img:''}; }
       e.hrSO = true;
-      try{
-        const soKey='calo_hr_so_'+this.mmarket;
-        const soRows=JSON.parse(localStorage.getItem(soKey)||'[]');
-        if(!soRows.includes(e.row)){soRows.push(e.row);localStorage.setItem(soKey,JSON.stringify(soRows));}
-      }catch(ex){}
-      const oe=this.emps.find(x=>x.row===e.row);if(oe)oe.hrSO=true;
+      const oe=this.emps.find(x=>x.row===e.row);if(oe){oe.hrSO=true;if(trainerName){if(!oe.trainers)oe.trainers={};oe.trainers.qual={name:trainerName,img:''};}}
       this.dofl('Signed Off!', e.image, e.name, 'Moved to Quality'+(trainerName?' → '+trainerName:''), e.country);
       this.l1AuditLog.push({type:'signoff',action:'HR Sign-Off',detail:e.name+' → Quality'+(trainerName?' ('+trainerName+')':'')+' · '+e.country,user:this.mname,date:new Date().toLocaleDateString()});this.l1SaveAudit();
       const saveStage = (k, col) => {
         const tasks = (e[k].items||[]).map(m=>`${m.name}|${m.link||'#'}|1`).join(';;');
         return this.gas('saveFullUpdate',{row:e.row, colLabel:col, taskStr:tasks||'Complete|#|1', trainer:{}});
       };
-      Promise.all([
+      const saves = [
         saveStage('pre','PreBoarding_Status'),
         saveStage('ori','Orientation_Status'),
         saveStage('hr','HR_Status'),
-      ]).then(()=>this.fetchAll()).catch(()=>this.fetchAll());
+      ];
+      if(trainerName) saves.push(this.gas('updateTrainer',{row:e.row,stage:'qual',name:trainerName,img:''}));
+      Promise.all(saves).then(()=>this.fetchAll()).catch(()=>this.fetchAll());
     },
     // HR totals for the selected month/year
     hrTotalHired(){
