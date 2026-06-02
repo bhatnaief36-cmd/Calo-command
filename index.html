@@ -225,6 +225,14 @@ textarea.field{resize:none}
 .cmd-bar{background:linear-gradient(135deg,#00C07F 0%,#00A96E 60%,#009960 100%);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .cmd-stat{text-align:center;padding:0 20px;border-right:1px solid rgba(255,255,255,.2)}
 .cmd-stat:last-child{border-right:none}
+.embed-nav{display:none;background:var(--w1);border-bottom:1px solid var(--w3);padding:10px 18px;gap:8px;align-items:center;overflow-x:auto;flex-shrink:0}
+.embed-nav .embed-tab{border:1px solid var(--w3);background:var(--w1);color:var(--w6);border-radius:var(--r8);padding:8px 12px;font-size:12px;font-weight:700;font-family:var(--f);cursor:pointer;white-space:nowrap}
+.embed-nav .embed-tab:hover{border-color:var(--green);color:var(--green)}
+.embed-nav .embed-tab.on{background:var(--green-l);border-color:var(--green);color:var(--green)}
+body.tms-embed .sidebar{display:none!important}
+body.tms-embed .app-shell{display:flex;flex-direction:column}
+body.tms-embed .main-area{height:auto;flex:1}
+body.tms-embed .embed-nav{display:flex}
 @keyframes count-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .count-up{animation:count-up .5s ease forwards}
 
@@ -476,6 +484,45 @@ textarea.field{resize:none}
 
 <!-- MAIN APP -->
 <div x-show="loggedIn" x-cloak class="app-shell">
+
+  <!-- EMBEDDED TMS NAVIGATION -->
+  <div class="embed-nav">
+    <button x-show="mlevel===1" class="embed-tab" :class="v==='dash'?'on':''" @click="v='dash'">Dashboard</button>
+    <button x-show="mlevel===1" class="embed-tab" :class="v==='pipe'?'on':''" @click="v='pipe';dashTile=null;pf='all'">Talent Pipeline</button>
+    <button x-show="mlevel===1" class="embed-tab" :class="v==='l1_announce'?'on':''" @click="v='l1_announce'">Announcements</button>
+    <button x-show="mlevel===1" class="embed-tab" :class="v==='trainers'?'on':''" @click="v='trainers';l1LoadUsers()">Trainers</button>
+    <button x-show="mlevel===1" class="embed-tab" :class="v==='tpl'?'on':''" @click="v='tpl'">Templates</button>
+    <button x-show="mlevel===1" class="embed-tab" :class="v==='l1_admin'?'on':''" @click="v='l1_admin'">Users</button>
+    <button x-show="mlevel===1" class="embed-tab" :class="v==='l1_sla'?'on':''" @click="v='l1_sla'">SLA Rules</button>
+    <button x-show="mlevel===1" class="embed-tab" :class="v==='l1_audit'?'on':''" @click="v='l1_audit'">Audit Log</button>
+
+    <button x-show="mlevel===2" class="embed-tab" :class="v==='dash'?'on':''" @click="v='dash'">Dashboard</button>
+    <button x-show="mlevel===2" class="embed-tab" :class="v==='rts_mp'?'on':''" @click="v='rts_mp'">MP Performance</button>
+    <button x-show="mlevel===2" class="embed-tab" :class="v==='rts_reports'?'on':''" @click="v='rts_reports'">Reports</button>
+    <button x-show="mlevel===2" class="embed-tab" :class="v==='rts_admin'?'on':''" @click="v='rts_admin'">Add Coordinator</button>
+    <button x-show="mlevel===2" class="embed-tab" :class="v==='rts_countries'?'on':''" @click="v='rts_countries'">Countries / MPs</button>
+    <button x-show="mlevel===2" class="embed-tab" :class="v==='rts_depts'?'on':''" @click="v='rts_depts'">Departments</button>
+    <button x-show="mlevel===2" class="embed-tab" :class="v==='rts_creds'?'on':''" @click="v='rts_creds'">Credentials</button>
+
+    <button x-show="mlevel===3" class="embed-tab" :class="v==='dash'?'on':''" @click="v='dash'">Dashboard</button>
+    <button x-show="mlevel===3" class="embed-tab" :class="v==='tc_pipe'?'on':''" @click="v='tc_pipe'">Pipeline</button>
+    <button x-show="mlevel===3" class="embed-tab" :class="v==='tc_depts'?'on':''" @click="v='tc_depts'">Departments</button>
+    <button x-show="mlevel===3" class="embed-tab" :class="v==='tc_materials'?'on':''" @click="v='tc_materials'">Materials</button>
+    <button x-show="mlevel===3" class="embed-tab" :class="v==='tc_reports'?'on':''" @click="v='tc_reports'">Reports</button>
+    <button x-show="mlevel===3" class="embed-tab" :class="v==='tc_admin'?'on':''" @click="v='tc_admin'">Add Trainer</button>
+
+    <button x-show="mlevel===4" class="embed-tab" :class="v==='dash'?'on':''" @click="v='dash'">Dashboard</button>
+    <button x-show="mlevel===4 && mdept==='DEPT_MANAGER'" class="embed-tab" :class="v==='dm_pipe'?'on':''" @click="v='dm_pipe'">Team Pipeline</button>
+    <button x-show="mlevel===4 && mdept==='DEPT_MANAGER'" class="embed-tab" :class="v==='dm_ojt'?'on':''" @click="v='dm_ojt'">OJT</button>
+    <button x-show="mlevel===4 && mdept==='DEPT_MANAGER'" class="embed-tab" :class="v==='dm_assess'?'on':''" @click="v='dm_assess'">Assessment</button>
+    <button x-show="mlevel===4 && mdept==='DEPT_MANAGER'" class="embed-tab" :class="v==='dm_cert'?'on':''" @click="v='dm_cert'">Certification</button>
+    <button x-show="mlevel===4 && mdept==='Quality_Status'" class="embed-tab" :class="v==='qual_pipe'?'on':''" @click="v='qual_pipe'">Quality Pipeline</button>
+    <button x-show="mlevel===4 && mdept==='Quality_Status'" class="embed-tab" :class="v==='qual_training'?'on':''" @click="v='qual_training'">Quality Training</button>
+    <button x-show="mlevel===4 && mdept==='HR_Status'" class="embed-tab" :class="v==='hr_pipe'?'on':''" @click="v='hr_pipe'">HR Pipeline</button>
+    <button x-show="mlevel===4 && mdept==='HR_Status'" class="embed-tab" :class="v==='hr_preboard'?'on':''" @click="v='hr_preboard'">Pre-Boarding</button>
+    <button x-show="mlevel===4 && mdept==='HR_Status'" class="embed-tab" :class="v==='hr_orient'?'on':''" @click="v='hr_orient'">Orientation</button>
+    <button x-show="mlevel===4 && mdept==='HR_Status'" class="embed-tab" :class="v==='hr_compliance'?'on':''" @click="v='hr_compliance'">HR Compliance</button>
+  </div>
 
   <!-- SIDEBAR -->
   <div class="sidebar">
@@ -4490,6 +4537,11 @@ function app(){
     },
 
     init(){
+      let embedParams = null;
+      try {
+        embedParams = new URLSearchParams(window.location.search);
+        if(embedParams.get('embed') === 'tms') document.body.classList.add('tms-embed');
+      } catch(e){}
       // Restore session from localStorage on page load
       try {
         const s = localStorage.getItem('calo_session');
@@ -4509,6 +4561,37 @@ function app(){
           this.fetchAll();
         }
       } catch(e){ localStorage.removeItem('calo_session'); }
+      if(!this.loggedIn){
+        try {
+          const p = embedParams || new URLSearchParams(window.location.search);
+          if(p.get('embed') === 'tms'){
+            const level = parseInt(p.get('level') || '3', 10);
+            const market = p.get('market') || 'All';
+            const name = p.get('name') || 'TMS User';
+            const title = p.get('title') || (level===1 ? 'Global Administrator' : 'Training Coordinator');
+            const session = {
+              success: true,
+              name,
+              role: level===1 ? 'GLOBAL_ADMIN' : 'COORDINATOR',
+              level,
+              market,
+              dept: null,
+              title
+            };
+            this.mname=session.name; this.mrole=session.role; this.mlevel=session.level;
+            this.mmarket=session.market; this.mdept=session.dept; this.mtitle=session.title;
+            this.mf=session.market==='All'?'All':session.market;
+            this.loggedIn=true;
+            this.loadMaterials();
+            this.l1LoadAnnouncements();
+            if(session.level===1){this.l1LoadUsers();this.l1LoadAudit();this.loadSlaRules();}
+            if(session.level===2){this.rtsLoadMaterials();this.rtsLoadCoordinators();this.rtsLoadMPs();this.rtsLoadDepts();}
+            if(session.level===3){this.tcLoadTrainers();this.tcLoadDepts();this.tcLoadMaterials();}
+            if(session.level===4){this.tcLoadTrainers();this.tcLoadDepts();}
+            this.fetchAll();
+          }
+        } catch(e){}
+      }
       this.gas('getTemplateList').then(l=>this.tpls=l||[]).catch(()=>{});
     },
 
