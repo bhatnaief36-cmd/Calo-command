@@ -4016,9 +4016,32 @@ body.tms-embed .embed-nav{display:flex}
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
                   <span style="font-size:26px;line-height:1" x-text="flag(b)"></span>
                   <span style="font-size:15px;font-weight:900" x-text="b"></span>
-                  <span class="chip c-green" style="font-size:10px" x-text="l1Users.filter(u=>u.market===b&&parseInt(u.level)===4).length+' trainers'"></span>
+                  <span class="chip c-green" style="font-size:10px" x-text="l1TrainersForMarket(b).length+' trainers'"></span>
                   <span class="chip c-grey" style="font-size:9px;letter-spacing:.06em">MP</span>
                   <span class="chip" style="font-size:9px;background:rgba(74,144,226,.1);color:#4A90E2" x-text="emps.filter(e=>e.country===b).length+' candidates'"></span>
+                </div>
+
+                <!-- TMS Trainers row -->
+                <div style="margin-bottom:12px;padding:14px;background:var(--w2);border-radius:var(--r8)">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                    <span style="font-size:16px">🎓</span>
+                    <div style="flex:1">
+                      <div style="font-size:12px;font-weight:900;color:var(--ch)">TMS Trainers</div>
+                      <div style="font-size:10px;color:var(--w5);font-weight:300">Existing active trainer users from TMS</div>
+                    </div>
+                    <span class="chip c-green" style="font-size:10px" x-text="l1TrainersForMarket(b).length+' assigned'"></span>
+                  </div>
+                  <div x-show="l1TrainersForMarket(b).length===0" style="font-size:11px;color:var(--w5);font-style:italic;padding:2px 0">No TMS trainers found for this MP</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px">
+                    <template x-for="u in l1TrainersForMarket(b)">
+                      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--w1);border-radius:20px;border:1px solid var(--w3)">
+                        <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--green)"></div>
+                        <span style="font-size:12px;font-weight:700" x-text="u.name"></span>
+                        <span style="font-size:10px;color:var(--w5);font-family:monospace" x-text="u.username"></span>
+                        <span class="chip c-grey" style="font-size:9px" x-show="u.dept" x-text="u.dept"></span>
+                      </div>
+                    </template>
+                  </div>
                 </div>
 
                 <!-- HR Officers row -->
@@ -4489,7 +4512,7 @@ function app(){
     mname:'',mrole:'',mlevel:0,mmarket:'All',mdept:null,mtitle:'',mdeptName:'',
     v:'dash',mf:'All',sq:'',pf:'all',sm:new Date().getMonth(),sy:new Date().getFullYear(),
     ld:false,sv:false,svDone:false,useDateFilter:false,dashTile:null,hrForm:false,hrSaving:false,hrEditMode:false,hrEditRow:null,hrNH:{n:'',d:'',c:'',dt:'',stage:'pre',image:'',dept:'',section:'',probation:'',priority:'normal'},hrSuccess:false,hrNow:Date.now(),rtsMat:{title:'',type:'google_slides',url:'',desc:'',mp:'all'},rtsMaterials:[],
-    l1ExecOpen:false,l1PeaksOpen:false,l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1UsersLoading:false,l1Selected:[],
+    l1ExecOpen:false,l1PeaksOpen:false,l1AdminTab:'all',l1AdminForm:false,l1NewUser:{name:'',level:2,market:'UAE',dept:'',username:'',pass:'',title:'',active:true},l1Users:[],l1TmsTrainers:[],l1UsersLoading:false,l1Selected:[],
     l1AnnNew:{title:'',body:'',priority:'normal',audience:'all'},l1Announcements:[],
     l1AuditLog:[],
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
@@ -4806,6 +4829,13 @@ function app(){
     },
     l1LoadUsers(){
       this.l1UsersLoading=true;
+      fetch(this.tmsTrainersApi+'?market=All')
+        .then(r=>r.ok?r.json():Promise.reject(r))
+        .then(payload=>{
+          const trainers=Array.isArray(payload)?payload:payload.trainers;
+          this.l1TmsTrainers=Array.isArray(trainers)?trainers:[];
+        })
+        .catch(()=>{this.l1TmsTrainers=[];});
       this.gas('getUsers').then(users=>{
         this.l1Users=users||[];
         this.l1UsersLoading=false;
@@ -4814,6 +4844,11 @@ function app(){
         try{const d=localStorage.getItem('calo_l1_users_cache');if(d)this.l1Users=JSON.parse(d);}catch(e){}
         this.l1UsersLoading=false;
       });
+    },
+    marketKey(v){return String(v||'').trim().toLowerCase().replace(/\s+mp$/,'');},
+    l1TrainersForMarket(b){
+      const key=this.marketKey(b);
+      return this.l1TmsTrainers.filter(t=>this.marketKey(t.market)===key);
     },
     l1SaveNewUser(){
       if(!this.l1NewUser.name||!this.l1NewUser.username||!this.l1NewUser.pass)return;
