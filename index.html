@@ -509,7 +509,7 @@ body.tms-embed .embed-nav{display:flex}
     <button x-show="mlevel===3" class="embed-tab" :class="v==='tc_depts'?'on':''" @click="v='tc_depts'">Departments</button>
     <button x-show="mlevel===3" class="embed-tab" :class="v==='tc_materials'?'on':''" @click="v='tc_materials'">Materials</button>
     <button x-show="mlevel===3" class="embed-tab" :class="v==='tc_reports'?'on':''" @click="v='tc_reports'">Reports</button>
-    <button x-show="mlevel===3" class="embed-tab" :class="v==='tc_admin'?'on':''" @click="v='tc_admin'">Add Trainer</button>
+    <button x-show="mlevel===3" class="embed-tab" :class="v==='tc_admin'?'on':''" @click="v='tc_admin'">Trainers</button>
 
     <button x-show="mlevel===4" class="embed-tab" :class="v==='dash'?'on':''" @click="v='dash'">Dashboard</button>
     <button x-show="mlevel===4 && mdept==='DEPT_MANAGER'" class="embed-tab" :class="v==='dm_pipe'?'on':''" @click="v='dm_pipe'">Team Pipeline</button>
@@ -2430,13 +2430,17 @@ body.tms-embed .embed-nav{display:flex}
         <div x-show="v==='tc_admin' && mlevel===3">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
             <div>
-              <div class="ptitle">Trainer Management</div>
-              <div class="psub" x-text="tcTrainers.filter(t=>t.active).length+' active · '+tcTrainers.length+' total · '+mmarket+' MP'"></div>
+              <div class="ptitle">Trainers Directory</div>
+              <div class="psub" x-text="tcTrainers.filter(t=>t.active).length+' active · '+tcTrainers.length+' total · '+mmarket+' MP · managed in TMS'"></div>
             </div>
-            <div style="display:flex;gap:8px">
+            <div style="display:none;gap:8px">
               <button @click="tcBulkOpen=true" class="btn btn-ghost btn-sm">📥 Bulk Upload CSV</button>
               <button @click="tcAddTrainerForm=true;tcEditIdx=-1;tcNewTrainer={name:'',stage:'',dept:'',username:'',password:genPass(),photo:'',active:true,showPass:false}" class="btn btn-primary btn-sm">+ Add Trainer</button>
             </div>
+          </div>
+          <div class="card" style="padding:12px 14px;margin-bottom:14px;background:var(--green-l);border-color:var(--green-m)">
+            <div style="font-size:12px;font-weight:800;color:var(--green-h);margin-bottom:3px">Trainer access is managed in TMS</div>
+            <div style="font-size:11px;color:var(--w6);line-height:1.5">Add, edit, deactivate, and reset trainers in TMS. The Onboarding Command Center only shows the trainers directory so the same trainer identity is reused across both apps.</div>
           </div>
 
           <!-- Trainer List with full admin controls -->
@@ -2457,7 +2461,7 @@ body.tms-embed .embed-nav{display:flex}
                     <div style="width:8px;height:8px;border-radius:50%" :style="t.active?'background:var(--green)':'background:var(--w4)'"></div>
                     <span style="font-size:10px;font-weight:700" :style="t.active?'color:var(--green)':'color:var(--w5)'" x-text="t.active?'Active':'Inactive'"></span>
                   </div>
-                  <div style="display:flex;gap:6px">
+                  <div style="display:none;gap:6px">
                     <button @click="tcEditTrainer(ti)" class="btn btn-ghost btn-sm">Edit</button>
                     <button @click="t.active=!t.active;tcSaveOneTrainer(t)" class="btn btn-ghost btn-sm" :style="t.active?'color:var(--danger)':'color:var(--green)'" x-text="t.active?'Deactivate':'Activate'"></button>
                     <button @click="tcResetPW(ti)" class="btn btn-ghost btn-sm" style="color:var(--info)">Reset PW</button>
@@ -2468,8 +2472,8 @@ body.tms-embed .embed-nav{display:flex}
             </template>
             <div x-show="tcTrainers.length===0" class="empty">
               <div style="font-size:32px;margin-bottom:10px">👤</div>
-              <div style="font-weight:700">No trainers yet</div>
-              <div style="font-size:12px;margin-top:4px;font-weight:300">Add trainers using the button above or bulk upload CSV</div>
+              <div style="font-weight:700">No trainers synced yet</div>
+              <div style="font-size:12px;margin-top:4px;font-weight:300">Add trainers in TMS so the same credentials can be reused.</div>
             </div>
           </div>
 
@@ -3491,6 +3495,7 @@ body.tms-embed .embed-nav{display:flex}
                       <span class="chip c-green" style="font-size:9px"><span x-text="flag(e.country)"></span>&nbsp;<span x-text="e.country"></span></span>
                     </div>
                     <div style="font-size:10px;color:var(--w5);margin-top:3px;font-weight:300">📅 <span x-text="e.dateString"></span></div>
+                    <div x-show="e.probation" style="font-size:10px;margin-top:3px" class="chip c-warn" x-text="'⏳ Probation ends '+(e.probationEnd?probationDisplay(e.probationEnd,0):probationDisplay(e.dateString,e.probation))"></div>
                   </div>
                 </div>
                 <!-- Stage ladder — HR sees pre-board, orientation, HR compliance highlighted -->
@@ -3520,7 +3525,7 @@ body.tms-embed .embed-nav{display:flex}
                     </div>
                   </div>
                   <div style="display:flex;gap:6px">
-                    <button @click="(()=>{const ds=e.dateString;let dt='';if(ds&&ds!=='N/A'){const p=ds.split('/');if(p.length===3)dt=p[2]+'-'+p[1]+'-'+p[0];}hrEditMode=true;hrEditRow=e.row;hrNH={n:e.name,d:e.role,c:e.country,dt:dt,image:e.image||'',priority:e.priority||'normal',dept:'',section:'',stage:'pre',probation:''};hrForm=true;hrSuccess=false;})()" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">✏ Edit</button>
+                    <button @click="(()=>{const ds=e.dateString;let dt='';if(ds&&ds!=='N/A'){const p=ds.split('/');if(p.length===3)dt=p[2]+'-'+p[1]+'-'+p[0];}hrEditMode=true;hrEditRow=e.row;hrNH={n:e.name,d:e.role,c:e.country,dt:dt,image:e.image||'',priority:e.priority||'normal',dept:e.joiningDept||'',section:e.joiningSection||'',stage:'pre',probation:e.probation||''};hrForm=true;hrSuccess=false;})()" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">✏ Edit</button>
                     <button @click="odetail(e)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">Details</button>
                   </div>
                 </div>
@@ -3797,7 +3802,7 @@ body.tms-embed .embed-nav{display:flex}
                 </div>
                 <div>
                   <div class="f-label">Probation End Date</div>
-                  <div class="field" style="background:var(--w2);color:var(--w5);display:flex;align-items:center;min-height:38px;font-size:12px" x-text="(hrNH.dt&&hrNH.probation)?(()=>{const d=new Date(hrNH.dt);d.setMonth(d.getMonth()+parseInt(hrNH.probation));return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});})():'Auto-calculated'"></div>
+                  <div class="field" style="background:var(--w2);color:var(--w5);display:flex;align-items:center;min-height:38px;font-size:12px" x-text="probationDisplay(hrNH.dt,hrNH.probation)||'Auto-calculated'"></div>
                 </div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -4300,6 +4305,7 @@ body.tms-embed .embed-nav{display:flex}
             </span>
             <span class="chip c-grey" style="font-size:9px;letter-spacing:.06em">MP</span>
             <span style="font-size:11px;color:var(--w5);font-weight:300">📅 <span x-text="de?.dateString"></span></span>
+            <span x-show="de?.probation" class="chip c-warn" style="font-size:9px" x-text="'⏳ Probation ends '+(de?.probationEnd?probationDisplay(de.probationEnd,0):probationDisplay(de?.dateString,de?.probation))"></span>
           </div>
           <div style="display:flex;gap:5px;margin-top:7px">
             <template x-for="p in [{k:'normal',l:'Normal'},{k:'high',l:'High'},{k:'urgent',l:'Urgent'}]">
@@ -5301,6 +5307,7 @@ function app(){
       const stg = this.hrNH.stage||'pre';
       const blank = (t)=>({done:0,total:t,items:[]});
       const today = new Date().toISOString().split('T')[0];
+      const probationEnd = this.probationEndDate(this.hrNH.dt, this.hrNH.probation);
 
       // Build employee object — added locally for instant feedback
       const newEmp = {
@@ -5311,6 +5318,8 @@ function app(){
         image:    this.hrNH.image||'',
         joiningDept: this.hrNH.dept||'',
         joiningSection: this.hrNH.section||'',
+        probation: this.hrNH.probation||'',
+        probationEnd: probationEnd,
         priority: 'normal',
         notes:    '',
         month:    dt.getMonth(),
@@ -5346,6 +5355,8 @@ function app(){
           image:    newEmp.image||'',
           joiningDept: newEmp.joiningDept||'',
           joiningSection: newEmp.joiningSection||'',
+          probation: newEmp.probation||'',
+          probationEnd: newEmp.probationEnd||'',
         }
       })
       .then(r=>{
@@ -5368,18 +5379,34 @@ function app(){
       const image=this.hrNH.image||o.image||'';
       const priority=this.hrNH.priority||'normal';
       const dt=this.hrNH.dt;
-      o.name=name;o.role=role;o.country=country;o.image=image;o.priority=priority;
+      const probation=this.hrNH.probation||'';
+      const probationEnd=this.probationEndDate(dt||o.dateString, probation);
+      o.name=name;o.role=role;o.country=country;o.image=image;o.priority=priority;o.probation=probation;o.probationEnd=probationEnd;
       if(dt){const d=new Date(dt+'T00:00:00');o.month=d.getMonth();o.year=d.getFullYear();const p=dt.split('-');o.dateString=p[2]+'/'+p[1]+'/'+p[0];}
-      if(this.de&&this.de.row===row){this.de.name=name;this.de.role=role;this.de.image=image;}
+      if(this.de&&this.de.row===row){this.de.name=name;this.de.role=role;this.de.image=image;this.de.probation=probation;this.de.probationEnd=probationEnd;}
       this.hrForm=false;this.hrEditMode=false;this.hrEditRow=null;
       this.hrNH={n:'',d:'',c:this.mmarket,dt:'',stage:'pre',image:'',dept:'',section:'',probation:'',priority:'normal'};
       this.dofl('Candidate Updated!',o.image,name,'Profile saved to database',o.country);
       const saves=[this.gas('updateCandidateField',{row,field:'Name',value:name}),this.gas('updateCandidateField',{row,field:'Designation',value:role}),this.gas('updateCandidateField',{row,field:'Country',value:country}),this.gas('updateCandidateField',{row,field:'Priority',value:priority})];
       if(image) saves.push(this.gas('updateCandidateField',{row,field:'Image',value:image}));
       if(dt) saves.push(this.gas('updateCandidateField',{row,field:'Joining Date',value:new Date(dt+'T00:00:00').toISOString()}));
+      saves.push(this.gas('updateCandidateField',{row,field:'Probation',value:probation}));
+      saves.push(this.gas('updateCandidateField',{row,field:'Probation_End',value:probationEnd}));
       Promise.all(saves).then(()=>this.fetchAll()).catch(()=>this.fetchAll());
     },
     hrNHUpload(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onloadend=()=>this.hrNH.image=r.result;r.readAsDataURL(f);},
+    probationEndDate(dateValue, monthsValue){
+      if(!dateValue||(monthsValue===''||monthsValue===null||monthsValue===undefined)) return '';
+      const d = new Date(String(dateValue).includes('/') ? String(dateValue).split('/').reverse().join('-')+'T00:00:00' : String(dateValue)+'T00:00:00');
+      if(isNaN(d)) return '';
+      d.setMonth(d.getMonth()+parseInt(monthsValue));
+      return d.toISOString().split('T')[0];
+    },
+    probationDisplay(dateValue, monthsValue){
+      const end=this.probationEndDate(dateValue, monthsValue);
+      if(!end) return '';
+      return new Date(end+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    },
     // Calculate elapsed time for a stage
     hrElapsed(e, k){
       if(!e.stageEntries||!e.stageEntries[k]) return null;

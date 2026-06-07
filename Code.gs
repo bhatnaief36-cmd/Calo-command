@@ -34,7 +34,8 @@ const EXPECTED_HEADERS = [
   "Name","Designation","Country","Joining Date","Image",
   "PreBoarding_Status","Orientation_Status","HR_Status",
   "Quality_Status","OJTTraining_Status","Assessment_Status",
-  "Certification_Status","Trainers","Notes","Priority","JoiningDept"
+  "Certification_Status","Trainers","Notes","Priority","JoiningDept",
+  "Probation","Probation_End"
 ];
 
 // ─── DEFAULT TASK SEEDS (auto-filled on new hire) ─────────────────
@@ -343,6 +344,8 @@ function getPipelineData() {
       notes:  _col(head,'Notes'),
       pri:    _col(head,'Priority'),
       jdept:  _col(head,'JoiningDept'),
+      prob:   _col(head,'Probation'),
+      probEnd:_col(head,'Probation_End'),
     };
 
     return data.slice(1).map((r, i) => {
@@ -356,6 +359,8 @@ function getPipelineData() {
         notes:      String(r[C.notes]   || ''),
         priority:   String(r[C.pri]     || 'normal'),
         joiningDept:String(C.jdept > -1 ? (r[C.jdept] || '') : ''),
+        probation:  String(C.prob > -1 ? (r[C.prob] || '') : ''),
+        probationEnd:String(C.probEnd > -1 ? (r[C.probEnd] || '') : ''),
         dateString: jd ? Utilities.formatDate(jd, 'GMT+3', 'dd/MM/yyyy') : 'N/A',
         month:      jd ? jd.getMonth()    : null,
         year:       jd ? jd.getFullYear() : null,
@@ -522,6 +527,8 @@ function addNewEmployee(emp) {
     set('Priority',    emp.priority || 'normal');
     if (emp.date) set('Joining Date', new Date(emp.date));
     if (emp.joiningDept) set('JoiningDept', emp.joiningDept);
+    if (emp.probation) set('Probation', emp.probation);
+    if (emp.probationEnd) set('Probation_End', emp.probationEnd);
 
     Object.entries(DEFAULT_TASKS).forEach(([col, tasks]) => set(col, tasks));
 
