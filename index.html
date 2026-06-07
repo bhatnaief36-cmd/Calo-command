@@ -4495,7 +4495,7 @@ function app(){
     slaRules:{pre:5,ori:5,hr:5,qual:7,ojt:10,assess:5,cert:3},
     rtsCoordinators:[],rtsNewCoord:{name:'',mp:'',username:'',password:'',active:true,showPass:false},rtsCoordForm:false,
     rtsMPs:[{name:'UAE',flag:'🇦🇪'},{name:'Qatar',flag:'🇶🇦'},{name:'Kuwait',flag:'🇰🇼'},{name:'Bahrain',flag:'🇧🇭'},{name:'Riyadh',flag:'🇸🇦'},{name:'Jeddah',flag:'🇸🇦'},{name:'Oman',flag:'🇴🇲'},{name:'UK',flag:'🇬🇧'}],rtsNewMP:{name:'',flag:''},rtsMPForm:false,
-    rtsDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],rtsNewDept:{name:'',icon:''},rtsDeptForm:false,tcTrainers:[],tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all',shareWith:[]},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,tcBulkOpen:false,tcBulkPreview:[],qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
+    rtsDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],rtsNewDept:{name:'',icon:''},rtsDeptForm:false,tcTrainers:[],tcTrainersSource:'',tmsTrainersApi:'https://calo-training-management.vercel.app/api/onboarding/trainers',tcDepts:[{name:'Kitchen',icon:'🍳'},{name:'Dispatch',icon:'🚚'},{name:'Steward',icon:'🧹'},{name:'Maintenance',icon:'🔧'},{name:'Store',icon:'📦'},{name:'Admin',icon:'💼'}],tcMat:{title:'',type:'google_slides',url:'',desc:'',stage:'all',shareWith:[]},tcMaterials:[],tcNewTrainer:{name:'',stage:'',dept:'',username:'',password:'',photo:'',active:true,showPass:false},tcNewDept:{name:'',icon:''},tcAddTrainerForm:false,tcDeptForm:false,tcEditIdx:-1,tcBulkOpen:false,tcBulkPreview:[],qualMat:{title:'',type:'google_slides',url:'',desc:''},qualMaterials:[],dmMat:{title:'',type:'google_slides',url:'',desc:''},dmMaterials:[],hrMat:{title:'',type:'google_slides',url:'',desc:''},hrMaterials:[],
     emps:[],tpls:[],
     branches:['Riyadh','Bahrain','Kuwait','Jeddah','Qatar','UK','Oman','UAE'],
     flags:{
@@ -5015,6 +5015,25 @@ function app(){
     tcLoadTrainers(){
       if(!this.mmarket) return;
       const market=this.mmarket;
+      fetch(this.tmsTrainersApi+'?market='+encodeURIComponent(market))
+        .then(r=>r.ok?r.json():Promise.reject(r))
+        .then(payload=>{
+          const trainers=Array.isArray(payload)?payload:payload.trainers;
+          if(!Array.isArray(trainers)) throw new Error('Invalid trainer response');
+          this.tcTrainers=trainers.map(t=>({
+            name:t.name||t.username||'Trainer',
+            stage:t.stage||t.dept||'Trainer',
+            dept:t.dept||'',
+            username:t.username||t.employeeId||'',
+            active:t.active!==false,
+            photo:t.photo||'',
+            pass:''
+          }));
+          this.tcTrainersSource='tms';
+        })
+        .catch(()=>this.tcLoadSheetTrainers(market));
+    },
+    tcLoadSheetTrainers(market){
       this.gas('getUsers').then(d=>{
         if(!Array.isArray(d)) return;
         const deptLabel={'Quality_Status':'Quality Trainer','HR_Status':'HR Officer','DEPT_MANAGER':'Department Manager'};
@@ -5025,6 +5044,7 @@ function app(){
           username:u.username,active:u.active!==false,photo:u.photo||'',
           pass:u.pass||''
         }));
+        this.tcTrainersSource='sheet';
       }).catch(()=>{});
     },
     tcSaveDepts(){ /* no-op: per-item GAS saves in tcSaveDept/tcDeleteDept */ },
